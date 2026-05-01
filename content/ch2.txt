@@ -16,7 +16,7 @@ CH2_IMAGE|gradient_descent.png|Hình 2.3. Minh họa nguyên lý Hạ Gradient (
 
 Thay vì duy trì tốc độ học $\eta$ cố định cho mọi tham số, đề tài sử dụng bộ tối ưu Adam (Adaptive Moment Estimation) ưu việt hơn. Adam kết hợp ưu điểm của thuật toán Momentum và RMSprop bằng cách tính trung bình động bậc một $m_t$ và bậc hai $v_t$ của gradient, từ đó cập nhật trọng số theo công thức:
 CH2_EQ|w_{t+1} = w_t - \frac{\eta}{\sqrt{v_t} + \epsilon} m_t
-Cơ sở toán học này giúp mạng tự động điều chỉnh bước nhảy: bước dài ở vùng bằng phẳng và bước ngắn rón rén ở gần đích, đảm bảo hội tụ cực nhanh mà không bị kẹt tại cực tiểu cục bộ (Local Minima).
+Cơ sở toán học này giúp mạng tự động điều chỉnh bước nhảy: bước dài ở vùng bằng phẳng và các bước nhảy nhỏ ở gần đích, đảm bảo hội tụ cực nhanh mà không bị kẹt tại cực tiểu cục bộ (Local Minima).
 
 CH2_H3|Giới hạn của mạng nơ-ron truyền thống và sự cần thiết của CNN
 Mặc dù các mạng nơ-ron kết nối đầy đủ (FCNN) hoạt động tốt trên dữ liệu dạng bảng 1D, chúng gặp phải những rào cản nghiêm trọng khi xử lý dữ liệu hình ảnh 2D:
