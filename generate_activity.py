@@ -20,74 +20,74 @@ skinparam ActivityDiamondBorderColor #AAAAAA
 skinparam SwimlaneBorderColor #AAAAAA
 skinparam SwimlaneBackgroundColor #FAFAFA
 
-|Client (Browser)|
+|Trình duyệt (Client)|
 start
-:Sinh vien nhan "Bat dau thi";
-if (JWT hop le?) then (No)
-  :Bao loi xac thuc;
+:Sinh viên nhấn "Bắt đầu thi";
+if (JWT còn hiệu lực?) then (Không)
+  :Báo lỗi xác thực;
   stop
 endif
-if (Camera duoc cap quyen?) then (No)
-  :Yeu cau cap quyen camera;
+if (Camera được cấp quyền?) then (Không)
+  :Yêu cầu cấp quyền camera;
   stop
 endif
 fork
-  partition "AI Analysis Loop (60 FPS)" {
+  partition "Luồng phân tích AI (60 FPS)" {
     repeat
-      :Nhan khung hinh tu webcam;
-      :Phat hien khuon mat (BlazeFace);
-      if (Co khuon mat?) then (No)
-        :Ghi nhan "Vang mat";
-      else (Yes)
-        :Trich xuat 468 diem moc (MediaPipe);
-        :Tinh EAR va goc quay dau;
-        :Cap nhat Focus Score (Sliding Window);
-        :Luu tam vao bo nho (useRef);
+      :Nhận khung hình từ webcam;
+      :Phát hiện khuôn mặt (BlazeFace);
+      if (Có khuôn mặt?) then (Không)
+        :Ghi nhận "Vắng mặt";
+      else (Có)
+        :Trích xuất 468 điểm mốc (MediaPipe);
+        :Tính EAR và góc quay đầu;
+        :Cập nhật Focus Score (Sliding Window);
+        :Lưu tạm vào bộ nhớ (useRef);
       endif
-    repeat while (Phien thi dang hoat dong?)
+    repeat while (Phiên thi đang hoạt động?)
   }
 fork again
-  partition "Heartbeat Loop (every 5s)" {
+  partition "Luồng đồng bộ Heartbeat (5 giây)" {
     repeat
-      :Doi 5 giay;
-      :Doc chi so tu bo nho tam;
-      :Ky xac thuc HMAC SHA-256;
-      :Gui goi tin JSON len Server;
+      :Đợi 5 giây;
+      :Đọc chỉ số từ bộ nhớ tạm;
+      :Ký xác thực HMAC SHA-256;
+      :Gửi gói tin JSON lên Server;
 
       |Server (Backend)|
-      if (Chu ky HMAC hop le?) then (No)
-        :Ghi nhan canh bao\ngian lan du lieu;
-      else (Yes)
-        :Luu ban ghi vao PostgreSQL;
-        if (Focus Score thap lien tuc?) then (Yes)
-          :Phat sinh thu thach Liveness;
+      if (Chữ ký HMAC hợp lệ?) then (Không)
+        :Ghi nhận cảnh báo\\ngian lận dữ liệu;
+      else (Có)
+        :Lưu bản ghi vào PostgreSQL;
+        if (Focus Score thấp liên tục?) then (Có)
+          :Phát sinh thử thách Liveness;
 
-          |Client (Browser)|
-          :Hien thi yeu cau cu dong ngau nhien;
-          :Dem nguoc 15 giay;
-          if (Sinh vien thuc hien dung cu dong?) then (Yes)
-            :Gui ket qua thanh cong;
+          |Trình duyệt (Client)|
+          :Hiển thị yêu cầu cử động ngẫu nhiên;
+          :Đếm ngược 15 giây;
+          if (Sinh viên thực hiện đúng?) then (Có)
+            :Gửi kết quả thành công;
             |Server (Backend)|
-            :Ghi nhan Liveness PASSED;
-          else (No / Het gio)
-            :Gui ket qua that bai;
+            :Ghi nhận: Liveness PASSED;
+          else (Không / Hết giờ)
+            :Gửi kết quả thất bại;
             |Server (Backend)|
-            :Ghi nhan VI PHAM;
-            :Thong bao len Dashboard;
+            :Ghi nhận VI PHẠM;
+            :Thông báo lên Dashboard;
           endif
-        else (No)
-          :Cap nhat trang thai Dashboard;
+        else (Không)
+          :Cập nhật trạng thái Dashboard;
         endif
       endif
-      |Client (Browser)|
-    repeat while (Phien thi dang hoat dong?)
+      |Trình duyệt (Client)|
+    repeat while (Phiên thi đang hoạt động?)
   }
 end fork
-:Sinh vien nhan "Ket thuc phien";
+:Sinh viên nhấn "Kết thúc phiên";
 |Server (Backend)|
-:Cap nhat trang thai: COMPLETED;
-:Tinh toan Focus Score tong ket;
-:Luu bao cao cuoi phien;
+:Cập nhật trạng thái: COMPLETED;
+:Tính toán Focus Score tổng kết;
+:Lưu báo cáo cuối phiên;
 stop
 @enduml
 """
