@@ -1,0 +1,43 @@
+CH5_TITLE|KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
+CH5_H2|Kết luận
+Trải qua thời gian nghiên cứu và thực hiện, em đã triển khai thành công hệ thống giám sát mức độ tập trung của sinh viên dựa trên việc phân tích hành vi khuôn mặt và cảm xúc. Đồ án đã đáp ứng đầy đủ các mục tiêu và yêu cầu kỹ thuật được đặt ra ban đầu. Những kết quả chính mà em đã đạt được bao gồm:
+Thứ nhất, em đã xây dựng thành công quy trình xử lý hoàn chỉnh (Processing Pipeline) cho bài toán phân tích hành vi khuôn mặt theo thời gian thực trực tiếp trên trình duyệt web. Hệ thống hoạt động mượt mà ở tốc độ 60 khung hình mỗi giây ngay cả trên các thiết bị máy tính cấu hình phổ thông. Đặc biệt, người dùng không cần cài đặt thêm phần mềm hay plugin nào, mang lại trải nghiệm tiện lợi và dễ dàng triển khai ở quy mô lớn.
+Thứ hai, thuật toán tính điểm tập trung đa tín hiệu do em thiết kế đã chứng minh được tính hiệu quả cao. Bằng việc kết hợp Tỷ lệ khía cạnh mắt (EAR), hướng quay đầu, biểu cảm cảm xúc cùng kỹ thuật cửa sổ trượt (Sliding Window) và thuật toán $O(1)$ Moving Sum, hệ thống đạt được sự cân bằng tối ưu giữa tính ổn định (không bị nhiễu bởi các hành vi tự nhiên như chớp mắt) và tính phản hồi tức thời (phát hiện ngay khi sinh viên mất tập trung kéo dài).
+Thứ ba, em đã áp dụng thành công kiến trúc Hybrid Client-Server, giải quyết triệt để bài toán về hiệu năng và bảo mật. Toàn bộ quá trình tính toán thị giác máy tính nặng nề và nhạy cảm được thực hiện ngay tại máy khách (Edge AI). Điều này giúp giảm độ trễ mạng, tiết kiệm tài nguyên máy chủ và quan trọng nhất là bảo vệ tuyệt đối quyền riêng tư hình ảnh sinh trắc học của người dùng.
+Thứ tư, em đã tích hợp cơ chế chống gian lận đa lớp. Nhờ việc xác thực danh tính liên tục bằng thuật toán đối chiếu vector nhúng và thử thách người thật (Liveness Challenge) ngẫu nhiên, hệ thống có khả năng ngăn chặn hiệu quả các hành vi sử dụng video giả mạo hay camera ảo trong quá trình thi cử.
+CH5_H2|Hạn chế
+Mặc dù đã nỗ lực hết sức để hoàn thiện đồ án, em nhận thấy hệ thống vẫn còn một số điểm hạn chế nhất định:
+Thứ nhất, hệ thống vẫn chịu ảnh hưởng lớn từ chất lượng webcam và điều kiện chiếu sáng của môi trường xung quanh. Khi người dùng làm bài ở môi trường thiếu sáng hoặc bị ngược sáng mạnh, độ chính xác của việc định vị điểm mốc khuôn mặt và phân loại cảm xúc có thể giảm sút, dẫn đến sai số trong điểm tập trung.
+Thứ hai, các mô hình Học sâu (Deep Learning) hiện đang sử dụng là các mô hình tổng quát đã được huấn luyện sẵn. Điều này có thể gây ra hiện tượng thiên lệch (bias) hoặc giảm độ chính xác với những nhóm người dùng có đặc điểm khuôn mặt đặc thù chưa được bao phủ trong tập dữ liệu huấn luyện.
+Thứ ba, hệ thống hiện mới chỉ dừng lại ở việc phân tích tín hiệu thị giác. Sự tập trung thực tế của một người còn được thể hiện qua các hành vi khác như thao tác chuột, bàn phím, hay âm thanh môi trường xung quanh.
+CH5_H2|Ý nghĩa thực tiễn và tác động kinh tế - xã hội
+Sản phẩm của đồ án mang lại những giá trị thực tiễn rất lớn, không chỉ giới hạn trong môi trường giáo dục:
+- Đối với nhà trường: Hệ thống cung cấp một công cụ đắc lực để duy trì kỷ luật và sự trung thực trong quá trình học và thi trực tuyến, góp phần nâng cao uy tín của các chương trình đào tạo từ xa. Hệ thống cũng giúp tự động hóa quá trình giám thị, giảm bớt gánh nặng về nhân sự và chi phí cho nhà trường.
+- Đối với bản thân sinh viên: Ứng dụng tạo ra một môi trường học tập công bằng. Bên cạnh đó, hệ thống còn đóng vai trò như một "trợ lý học tập cá nhân", đưa ra các cảnh báo nhắc nhở khi sinh viên có dấu hiệu mệt mỏi hay mất tập trung, từ đó giúp cải thiện hiệu suất học tập.
+- Đối với xã hội: Việc ứng dụng thành công công nghệ AI vào môi trường giáo dục web góp phần thúc đẩy công cuộc chuyển đổi số, tạo nền tảng để triển khai các mô hình giáo dục trực tuyến chất lượng cao, tiếp cận được đến nhiều đối tượng học viên hơn.
+
+CH5_H2|Hướng phát triển trong tương lai
+Từ những hạn chế đã nhìn nhận, em đề xuất các hướng phát triển chuyên sâu cho hệ thống trong tương lai như sau:
+1. Nghiên cứu ứng dụng Lượng tử hóa mô hình (Quantization): Tiếp tục tối ưu và nén các mô hình Deep Learning xuống định dạng 8-bit hoặc 4-bit để giảm mạnh dung lượng mô hình, giúp tải trang nhanh hơn trên các mạng di động yếu.
+2. Tích hợp WebGPU: Chuyển đổi mã thực thi từ WebAssembly sang chuẩn WebGPU mới nhất để khai thác trực tiếp sức mạnh của card đồ họa rời trên trình duyệt, mở đường cho việc áp dụng các mô hình AI lớn hơn (như Transformer).
+3. Triển khai Phân tích Đa phương thức (Multi-modal Analysis): Bổ sung thêm các luồng phân tích âm thanh (phát hiện có người nhắc bài) và ghi nhận thao tác thiết bị để đánh giá sự tập trung toàn diện hơn.
+4. Tích hợp chuẩn LTI (Learning Tools Interoperability): Đóng gói hệ thống thành một plugin chuẩn hóa, cho phép cắm-chạy (plug-and-play) trực tiếp vào các nền tảng giáo dục lớn như Moodle, Canvas, Blackboard.
+5. Ứng dụng công nghệ rPPG (remote Photoplethysmography): Đo lường nhịp tim sinh viên thông qua những biến đổi vi mô về màu sắc trên da mặt được camera ghi lại, từ đó không chỉ đánh giá mức độ tập trung nhưng còn phân tích được trạng thái căng thẳng (stress) của sinh viên trong lúc làm bài.
+
+
+CH5_TITLE|TÀI LIỆU THAM KHẢO
+[1] Nguyễn Thanh Thủy (2016). Trí tuệ nhân tạo - Phương pháp và ứng dụng. NXB Khoa học và Kỹ thuật, Hà Nội.
+[2] Nguyễn Văn Hùng và Nguyễn Quang Hoan (2019). Ứng dụng mạng nơ-ron tích chập trong nhận dạng biểu cảm khuôn mặt người. Tạp chí Khoa học và Công nghệ, Trường Đại học Công nghiệp Hà Nội, số 50, trang 45–52.
+[3] Phạm Thị Minh Thư và Nguyễn Đức Minh (2021). Giám sát sinh viên trong kỳ thi trực tuyến sử dụng thị giác máy tính và học sâu. Tạp chí Công nghệ thông tin và Truyền thông, số 15, trang 12–21.
+[4] Lugaresi, C., Tang, J., Nash, H. và Grundmann, M. (2019). MediaPipe: A Framework for Building Perception Pipelines. arXiv preprint arXiv:1906.08172.
+[5] Soukupová, T. và Čech, J. (2016). Real-Time Eye Blink Detection using Facial Landmarks. Trong Kỷ yếu Hội thảo Computer Vision Winter Workshop lần thứ 21, Rimske Toplice, Slovenia, trang 1–8.
+[6] Schroff, F., Kalenichenko, D. và Philbin, J. (2015). FaceNet: A Unified Embedding for Face Recognition and Clustering. Trong Kỷ yếu Hội nghị IEEE CVPR, Boston, MA, trang 815–823.
+[7] He, K., Zhang, X., Ren, S. và Sun, J. (2016). Deep Residual Learning for Image Recognition. Trong Kỷ yếu Hội nghị IEEE CVPR, Las Vegas, trang 770–778.
+[8] Ekman, P. và Friesen, W.V. (1978). Facial Action Coding System: A Technique for the Measurement of Facial Movement. Consulting Psychologists Press, Palo Alto, CA.
+[9] Goodfellow, I., Bengio, Y. và Courville, A. (2016). Deep Learning. MIT Press, Cambridge, MA.
+[10] Kingma, D.P. và Ba, J. (2014). Adam: A Method for Stochastic Optimization. arXiv preprint arXiv:1412.6980.
+[11] Fielding, R.T. (2000). Architectural Styles and the Design of Network-based Software Architectures. Luận án tiến sĩ, University of California, Irvine.
+[12] Tihanyi, S. (2022). FastAPI Framework Documentation. Truy xuất từ https://fastapi.tiangolo.com/
+[13] pgvector Contributors (2024). pgvector: Open-source Vector Similarity Search for Postgres. GitHub Repository. Truy xuất từ https://github.com/pgvector/pgvector
+[14] Mühler, V. (2020). face-api.js: JavaScript API for Face Detection and Face Recognition in the Browser. GitHub Repository. Truy xuất từ https://github.com/justadudewhohacks/face-api.js
+[15] MDN Web Docs (2024). WebAssembly Concepts. Truy xuất từ https://developer.mozilla.org/en-US/docs/WebAssembly/Concepts

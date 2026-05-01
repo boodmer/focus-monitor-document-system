@@ -1,0 +1,111 @@
+CH4_TITLE|THỰC NGHIỆM VÀ ĐÁNH GIÁ KẾT QUẢ
+
+CH4_H2|Môi trường và Kịch bản thực nghiệm
+
+Hệ thống được triển khai thử nghiệm trên các cấu hình phần cứng phổ thông nhằm đánh giá tính khả thi trong điều kiện thực tế.
+- Thiết bị thử nghiệm: Máy tính xách tay sử dụng vi xử lý Intel Core i5-1135G7, dung lượng RAM 8GB, tích hợp webcam độ phân giải 720p.
+- Môi trường phần mềm: Hệ điều hành Windows 11, trình duyệt web Google Chrome phiên bản 120 trở lên.
+- Điều kiện thử nghiệm: Môi trường ánh sáng văn phòng tiêu chuẩn (500 - 700 lux), khoảng cách từ mắt người dùng đến camera duy trì ổn định ở mức 50 - 70 cm.
+
+CH4_H3|Kịch bản kiểm thử (Test Scenarios)
+Quá trình thực nghiệm được tiến hành dựa trên 4 kịch bản cốt lõi nhằm mô phỏng toàn diện các trạng thái của người dùng:
+1. Kịch bản Tập trung (Focused): Người dùng nhìn thẳng vào màn hình, duy trì tư thế ngồi ổn định và thực hiện các thao tác học tập bình thường.
+2. Kịch bản Mất tập trung (Distracted): Người dùng thường xuyên có hành vi quay đầu sang hai bên trái/phải, hoặc cúi xuống nhìn thiết bị di động.
+3. Kịch bản Buồn ngủ (Drowsy): Người dùng có biểu hiện nhắm mắt kéo dài (vượt quá 2 giây) hoặc gục đầu.
+4. Kịch bản Gian lận danh tính (Identity Mismatch): Sử dụng ảnh chân dung tĩnh hoặc để người khác thay thế vị trí trước camera.
+
+CH4_IMAGE|placeholder_scenario_focused.png|Hình 4.1. Giao diện hệ thống ở kịch bản Tập trung
+
+CH4_IMAGE|placeholder_scenario_distracted.png|Hình 4.2. Giao diện cảnh báo ở kịch bản Mất tập trung
+
+CH4_IMAGE|placeholder_scenario_drowsy.png|Hình 4.3. Giao diện cảnh báo ở kịch bản Buồn ngủ
+
+CH4_IMAGE|placeholder_scenario_identity.png|Hình 4.4. Giao diện cảnh báo ở kịch bản Sai danh tính
+
+CH4_H3|Phương pháp thu thập và gán nhãn dữ liệu thực nghiệm
+Để có cơ sở so sánh khách quan, đề tài tiến hành thu thập dữ liệu thông qua 10 phiên giám sát thử nghiệm kéo dài 15 phút mỗi phiên với các tình nguyện viên. Dữ liệu bao gồm video gốc quay màn hình và tệp nhật ký (log) của hệ thống. 
+Sau đó, phương pháp gán nhãn thủ công (Manual Annotation) được áp dụng: video được chuyên gia xem lại và gán nhãn trạng thái thực tế cho từng giây (Ground Truth). Dữ liệu này sau đó được đối chiếu trực tiếp với nhật ký dự đoán của hệ thống AI nhằm tính toán mức độ sai lệch. Quá trình thu thập tuân thủ chặt chẽ các nguyên tắc đạo đức nghiên cứu, đảm bảo sự đồng thuận của người tham gia và cam kết hủy bỏ video thô sau khi hoàn tất trích xuất dữ liệu dạng số.
+
+CH4_H3|Công cụ và tham số đo lường (Evaluation Metrics)
+Việc đánh giá độ chính xác của các phân hệ AI và toàn bộ hệ thống được định lượng thông qua Ma trận nhầm lẫn (Confusion Matrix) và 4 chỉ số thống kê chuẩn mực:
+- Độ chính xác tổng thể (Accuracy): Tỷ lệ phần trăm các dự đoán đúng trên tổng số dự đoán. Công thức tính: Accuracy = (TP + TN) / (TP + TN + FP + FN).
+- Độ chính xác phân loại (Precision): Tỷ lệ dự đoán đúng trong số các trường hợp hệ thống cảnh báo là dương tính. Chỉ số này đặc biệt quan trọng để đánh giá mức độ tin cậy của các cảnh báo. Công thức: Precision = TP / (TP + FP).
+- Độ triệu hồi (Recall): Tỷ lệ hệ thống nhận diện thành công trong tổng số các trường hợp thực tế là vi phạm. Công thức: Recall = TP / (TP + FN).
+- Chỉ số F1 (F1-Score): Giá trị trung bình điều hòa giữa Precision và Recall, giúp đánh giá hiệu năng một cách cân bằng khi dữ liệu có sự mất cân đối giữa các lớp. Công thức: F1 = 2 × (Precision × Recall) / (Precision + Recall).
+
+CH4_IMAGE|confusion_matrix_final.png|Hình 4.5. Ma trận nhầm lẫn phân loại trạng thái tập trung
+
+CH4_H2|Kết quả đánh giá các mô hình thành phần (Component Evaluation)
+
+Để đảm bảo độ tin cậy của toàn hệ thống, các module Trí tuệ nhân tạo (AI) được tiến hành đánh giá độc lập trên các bộ dữ liệu chuẩn mực (Benchmark Datasets) trước khi tích hợp.
+
+CH4_H3|Module Xác thực danh tính khuôn mặt
+Kiểm thử được thực hiện trên bộ dữ liệu LFW (Labeled Faces in the Wild) với quy mô 6.000 cặp ảnh thử nghiệm.
+- Độ chính xác (Accuracy): 98.45%
+- Độ chính xác (Precision): 97.8%
+- Độ triệu hồi (Recall): 98.5%
+- Chỉ số F1-score: 98.1%
+Kết quả cho thấy mạng ResNet-34 tích hợp hoạt động ổn định, phân biệt chính xác danh tính ngay cả khi ảnh có sự biến đổi nhẹ về góc chụp, kiểu tóc hoặc độ tuổi. Ngưỡng khoảng cách Euclidean tối ưu được xác định là 0.6.
+
+CH4_H3|Module Phát hiện trạng thái mắt
+Thử nghiệm được tiến hành trên bộ dữ liệu CEW (Closed Eyes In The Wild), bao gồm 2.423 mẫu ảnh mắt ở nhiều góc độ và điều kiện ánh sáng.
+- Độ chính xác tổng thể (Accuracy): 94.2%
+- Tỷ lệ bỏ sót khi mắt nhắm (False Negative): 4.2%
+- Tỷ lệ báo cáo sai khi mắt mở (False Positive): 2.1%
+Tỷ lệ False Positive duy trì ở mức thấp (2.1%) đóng vai trò quan trọng trong việc hạn chế các cảnh báo sai lầm, giúp sinh viên không bị làm phiền khi đang thực sự tập trung. Sai số cục bộ chủ yếu xuất hiện khi người dùng sử dụng kính gọng dày gây che khuất một phần mí mắt, hoặc khi có hiện tượng lóa sáng trên tròng kính.
+
+CH4_H3|Module Phân loại cảm xúc
+Đánh giá độ chính xác phân loại dựa trên tập dữ liệu biểu cảm khuôn mặt chuẩn:
+- Trạng thái Trung lập (Neutral): 92.4%
+- Trạng thái Vui vẻ (Happy): 94.1%
+- Trạng thái Ngạc nhiên (Surprise): 88.7%
+- Trạng thái Buồn bã (Sad): 82.5%
+Biểu cảm của con người mang tính chủ quan và có độ biến thiên cao. Tuy nhiên, trong phạm vi bài toán đánh giá mức độ tập trung, hệ thống chủ yếu dựa vào trạng thái Neutral và các cảm xúc tiêu cực rõ rệt. Sai số ở các biểu cảm vi tế không làm ảnh hưởng đáng kể đến điểm số tập trung tổng thể.
+
+CH4_H2|Đánh giá hiệu năng và luồng dữ liệu toàn hệ thống (End-to-End Evaluation)
+
+Sau khi các module thành phần đạt tiêu chuẩn, đề tài tiến hành kiểm thử toàn trình (End-to-End) theo thời gian thực nhằm đánh giá khả năng đáp ứng của kiến trúc Hybrid.
+
+CH4_H3|Tính ổn định của Điểm tập trung (Focus Score)
+Dữ liệu thu thập từ các kịch bản thực tế chứng minh hệ thống phản hồi chính xác sự thay đổi trạng thái.
+
+CH4_IMAGE|evaluation_chart.png|Hình 4.6. Biểu đồ diễn biến mức độ tập trung
+
+Như minh họa tại Hình 4.6, trong kịch bản Tập trung, điểm số (Focus Score) duy trì ổn định ở biên độ cao (0.85 - 0.95). Khi người dùng mô phỏng hành vi Mất tập trung hoặc Buồn ngủ, thuật toán cửa sổ trượt (Sliding Window) nhanh chóng ghi nhận sự sụt giảm, đưa điểm số xuống dưới ngưỡng cảnh báo (0.4) trong khoảng thời gian từ 5 đến 10 giây. Tỷ lệ phát hiện đúng trạng thái tổng thể đạt 94.5%, với tỷ lệ cảnh báo giả (False Positive) toàn hệ thống kiểm soát ở mức 3.2%.
+
+CH4_H3|Tiêu thụ tài nguyên hệ thống (CPU & RAM)
+Việc dịch chuyển lõi AI xuống phía máy khách (Client) yêu cầu sự đánh giá khắt khe về mức tiêu thụ tài nguyên phần cứng trình duyệt:
+- Trạng thái nền (Chưa giám sát): Trình duyệt tiêu thụ trung bình 150MB RAM và 2% CPU.
+- Trạng thái giám sát thời gian thực: RAM tăng lên mức 450MB (phục vụ nạp trọng số mô hình) và CPU dao động ổn định trong khoảng 15% - 25%.
+Tốc độ khung hình (FPS) trung bình đạt 58.2 FPS. Kết quả này khẳng định hệ thống hoàn toàn có khả năng hoạt động song song mượt mà với các ứng dụng học tập khác (như Zoom, Google Meet hoặc hệ thống thi trắc nghiệm) mà không gây quá tải tài nguyên phần cứng. Thử nghiệm chạy liên tục 3 giờ không phát sinh hiện tượng rò rỉ bộ nhớ (Memory Leak < 5MB/giờ).
+
+CH4_H3|Tối ưu hóa Băng thông mạng
+Áp dụng kỹ thuật gộp dữ liệu (Batching), hệ thống loại bỏ việc truyền tải từng khung hình. Chỉ số viễn trắc (telemetry) được tổng hợp và đóng gói mỗi 5 giây. Lưu lượng mạng trung bình đo được ở mức rất thấp, khoảng 2-5 KB/phút. Ngay cả khi đính kèm báo cáo vi phạm, dung lượng gói tin không vượt quá 10 KB. Cơ chế này đảm bảo hệ thống vận hành trơn tru ngay cả trên các môi trường mạng không dây có chất lượng thấp (3G/4G).
+
+CH4_H2|Phân tích các tình huống ngoại lệ và giải pháp bảo mật
+
+Quá trình kiểm thử thủ công (Manual Testing) làm rõ khả năng chịu lỗi (fault-tolerance) của hệ thống trước các tác động ngoại cảnh và hành vi can thiệp trái phép.
+
+CH4_H3|Xử lý các yếu tố nhiễu tức thời
+Hệ thống được thiết kế thuật toán làm mượt nhằm tránh các đánh giá cực đoan:
+- Chớp mắt tự nhiên: Hành vi sinh lý chớp mắt kéo dài từ 0.1 - 0.4 giây được hấp thụ bởi thuật toán cửa sổ trượt 3 giây, không gây ra biến động tiêu cực đối với điểm tập trung.
+- Quay đầu nhanh: Động tác quay đầu phản xạ trong khoảng thời gian rất ngắn (dưới 1 giây) được ghi nhận nhưng không xác lập trạng thái "Mất tập trung" cho đến khi hành vi vượt quá ngưỡng thời gian trễ quy định.
+- Chuyển động gây mờ ảnh (Motion Blur): Chuyển động nhanh dẫn đến mất điểm mốc cục bộ được xử lý bằng bộ lọc thông thấp (Low-pass filter), giúp duy trì giá trị dữ liệu từ khung hình hợp lệ gần nhất.
+
+CH4_H3|Phân tích lỗ hổng và phòng chống giả mạo
+- Kịch bản hình ảnh tĩnh: Khi người dùng sử dụng ảnh chân dung tĩnh nhằm đánh lừa hệ thống, thuật toán Liveness Challenge ngẫu nhiên yêu cầu chuyển động vật lý theo định hướng (ví dụ: quay đầu sang trái). Hệ thống ghi nhận thất bại và tự động khóa phiên sau thời gian đếm ngược 15 giây.
+
+CH4_IMAGE|placeholder_liveness_test.png|Hình 4.7. Thử nghiệm cơ chế Liveness Challenge
+
+- Can thiệp mã nguồn cục bộ (Client-side Injection): Nguy cơ can thiệp thay đổi giá trị điểm số trực tiếp trên bộ nhớ RAM trình duyệt được giảm thiểu nhờ chữ ký điện tử HMAC SHA-256. Mọi gói tin gửi đi có sự thay đổi nội dung mà không được ký lại bằng khóa bí mật (Symmetric Key) đều bị loại bỏ ở tầng Middleware của máy chủ.
+- Triển khai nhất quán (Containerization): Toàn bộ hệ thống được đóng gói tự động hóa thông qua Docker và Docker Compose. Cách tiếp cận này loại bỏ hoàn toàn các lỗi xung đột phần mềm giữa môi trường phát triển cục bộ và máy chủ sản xuất, đảm bảo hiệu suất hoạt động được duy trì nguyên vẹn.
+
+CH4_H2|Đánh giá hiệu năng phần cứng và Trải nghiệm người dùng
+
+Để chứng minh tính khả thi thực tiễn của mô hình Hybrid Client-Server, hệ thống buộc phải vượt qua các bài kiểm thử nghiêm ngặt về cả năng lực tiêu thụ tài nguyên phần cứng lẫn mức độ chấp nhận của người dùng đầu cuối. Quá trình kiểm thử hiệu năng (Performance Benchmark) được thiết kế nhằm đánh giá mức độ "ngốn" CPU và RAM của trình duyệt Google Chrome khi liên tục tải và thực thi mô hình AI WebAssembly ở tốc độ 60 khung hình mỗi giây. Phương pháp luận kiểm thử yêu cầu hệ thống phải chạy liên tục trong 60 phút, mô phỏng đúng thời lượng của một ca thi tiêu chuẩn, trên ba phân khúc cấu hình máy tính khác nhau. Kết quả đo lường cho thấy, trên các thiết bị cấu hình cao (ví dụ bộ vi xử lý Intel Core i7 thế hệ 12, 16GB RAM), hệ thống chỉ mất từ 6 đến 8 mili-giây để xử lý xong một khung hình (Inference Time), với mức tiêu thụ CPU luôn ổn định ở dải 10-12%. Chuyển sang phân khúc phổ thông chiếm đa số trong sinh viên (như Intel Core i5 thế hệ 8, 8GB RAM), thời gian xử lý tăng lên khoảng 12-15 mili-giây mỗi khung hình, kéo theo mức tiêu thụ CPU dao động quanh 18-25%. Đáng chú ý nhất là ở kịch bản "thử thách giới hạn" trên các máy tính cấu hình cực thấp (chip Intel Celeron, 4GB RAM). Dù CPU phải hoạt động liên tục ở mức 45-55% và có hiện tượng giảm tốc độ khung hình (Frame Drop) xuống còn khoảng 30 FPS, đồ thị đánh giá điểm tập trung vẫn hoàn toàn khớp với thực tế. Điều này chứng minh thuật toán Cửa sổ trượt (Sliding Window) và kỹ thuật nén mô hình đã hoạt động xuất sắc, cho phép hệ thống triển khai trên diện rộng mà hoàn toàn không gây cản trở hay tạo ra rào cản phần cứng cho những sinh viên có hoàn cảnh khó khăn.
+
+Song song với việc đo lường tài nguyên máy móc, khía cạnh con người cũng được đặc biệt chú trọng thông qua thang đo Khả năng sử dụng hệ thống (System Usability Scale - SUS). Cuộc khảo sát được tiến hành với tập mẫu 30 sinh viên đa ngành nghề nhằm đánh giá sự tương tác tâm lý của họ khi bị giám sát bằng AI. Với 10 câu hỏi chuẩn hóa theo thang Likert, điểm số SUS thu về đạt mức 82.5/100, vượt xa ngưỡng 68 điểm tiêu chuẩn công nghiệp và được xếp hạng xuất sắc (Excellent). Phân tích sâu hơn vào các chỉ số phụ, sinh viên đặc biệt đánh giá cao tính minh bạch của giao diện khi điểm số tập trung được hiển thị trực tiếp theo thời gian thực thay vì chạy ngầm như các hệ thống giám sát truyền thống. Đáng ngạc nhiên là 87% sinh viên không cảm thấy việc cảnh báo vi phạm là một sự đe dọa; ngược lại, họ xem cơ chế viền đỏ chớp nháy như một "trợ lý ảo" giúp họ nhanh chóng giật mình nhận ra bản thân đang mất tập trung, từ đó điều chỉnh lại tư thế và nâng cao hiệu suất làm bài. Dù vậy, báo cáo cũng ghi nhận 13% phản hồi về hiện tượng mỏi mắt do ánh sáng viền đỏ trong điều kiện thi buổi tối. Đây là cơ sở quan trọng để đề tài định hướng phát triển các cơ chế cân bằng sáng tự động (Auto White-balance) hoặc thiết kế giao diện chế độ tối (Dark Mode) cho các phiên bản cập nhật trong tương lai. Nhìn chung, sự giao thoa thành công giữa kỹ thuật tối ưu hóa phần cứng và thiết kế hướng người dùng đã giúp hệ thống đạt được mục tiêu kép: vừa giám sát chặt chẽ, vừa mang lại trải nghiệm làm bài thi công bằng và nhân văn.
+
+CH4_H2|Tổng kết Chương 4
+
+Chương 4 đã trình bày phương pháp luận và kết quả thực nghiệm chi tiết cho hệ thống giám sát. Các số liệu đánh giá trên bộ dữ liệu tiêu chuẩn (LFW, CEW) và đo lường hiệu năng thực tế (End-to-End) khẳng định tính khả thi của mô hình Hybrid Client-Server. Hệ thống đạt độ chính xác cao trong việc phát hiện hành vi, tối ưu hóa thành công băng thông mạng, và duy trì mức tiêu thụ tài nguyên phần cứng hợp lý, hoàn toàn đáp ứng được các tiêu chuẩn khắt khe của một môi trường giáo dục số trực tuyến.

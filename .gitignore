@@ -1,0 +1,21 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+venv/
+.env
+
+# Build/Output directory
+out/
+
+# MS Word temporary files
+~$*.docx
+
+# Temporary/Test files
+test_math.png
+
+# OS specific files
+.DS_Store
+Thumbs.db

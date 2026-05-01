@@ -1,0 +1,175 @@
+CH3_TITLE|PHÂN TÍCH VÀ THIẾT KẾ HỆ THỐNG
+
+CH3_H2|Phân tích yêu cầu hệ thống
+
+Hệ thống giám sát thi cử và học tập trực tuyến cần đáp ứng các tiêu chuẩn khắt khe về tính năng và hiệu năng để đảm bảo tính minh bạch, chính xác và mang lại trải nghiệm người dùng liền mạch. Dưới đây là phân tích chi tiết về các nhóm yêu cầu.
+
+CH3_H3|Yêu cầu chức năng
+Hệ thống được thiết kế dựa trên các nhóm chức năng cốt lõi nhằm theo dõi và đánh giá toàn diện trạng thái của người dùng:
+- Phân tích hành vi khuôn mặt: Hệ thống phải liên tục phát hiện khuôn mặt từ luồng video webcam; nếu người dùng rời khỏi khung hình, trạng thái "vắng mặt" sẽ được ghi nhận. Hệ thống tiến hành trích xuất lưới điểm mốc không gian ba chiều nhằm tính toán chỉ số mở mắt (EAR) để phát hiện hành vi nhắm mắt, đồng thời ước lượng hướng quay đầu (Head Pose) theo 5 trạng thái (chính diện, nghiêng trái, nghiêng phải, ngửa, cúi). Ngoài ra, biểu cảm khuôn mặt cũng được phân loại thành 7 trạng thái cảm xúc cơ bản.
+- Tính điểm tập trung (Focus Score): Dựa trên các tín hiệu hành vi thu thập được, hệ thống tự động tổng hợp và tính toán một điểm số duy nhất (thang điểm 0 - 100) theo thời gian thực nhằm phản ánh mức độ chú ý của người dùng. Quá trình này ứng dụng thuật toán cửa sổ trượt dài hạn để duy trì tính ổn định của điểm số.
+- Xác thực danh tính: Hệ thống có khả năng trích xuất vector nhúng sinh trắc học 256 chiều từ khuôn mặt và liên tục đối chiếu với mẫu dữ liệu gốc đã đăng ký để phòng chống hành vi gian lận thi hộ.
+- Chống giả mạo (Anti-Spoofing): Cơ chế thử thách người thật (Liveness Challenge) được triển khai ngẫu nhiên, yêu cầu người dùng thực hiện các thao tác vật lý (như quay đầu) trong một khoảng thời gian giới hạn để xác minh sự hiện diện thực tế và ngăn chặn việc sử dụng video phát lại.
+- Báo cáo và Quản trị: Dữ liệu viễn trắc (telemetry) được mã hóa bằng chữ ký số HMAC SHA-256 để đảm bảo tính toàn vẹn trước khi truyền về máy chủ thông qua giao thức RESTful API. Dữ liệu này sau đó được trực quan hóa trên bảng điều khiển (Dashboard) phục vụ công tác giám sát của giảng viên.
+
+CH3_H3|Yêu cầu phi chức năng
+- Hiệu năng (Performance): Chuỗi xử lý AI trên trình duyệt cần được tối ưu hóa để đạt tốc độ xử lý mục tiêu là 60 khung hình/giây (FPS), và duy trì tối thiểu 30 FPS trên các thiết bị phổ thông (Intel Core i5, RAM 8GB), với tỷ lệ chiếm dụng CPU không vượt quá 30%.
+- Quyền riêng tư (Privacy): Hệ thống cam kết không truyền tải hình ảnh hoặc video tĩnh ra khỏi thiết bị cục bộ. Chỉ các thông số hành vi đã qua xử lý (dạng văn bản) mới được mã hóa qua HTTPS để gửi về máy chủ.
+- Khả năng mở rộng (Scalability): Máy chủ ứng dụng (Backend) tuân thủ kiến trúc phi trạng thái (Stateless), có khả năng chịu tải tối thiểu 100 kết nối đồng thời với độ trễ API dưới 100 mili-giây.
+
+CH3_H2|Biểu đồ ca sử dụng và Biểu đồ hoạt động
+
+Để cung cấp cái nhìn tổng quan về cách các đối tượng tương tác với hệ thống và luồng logic cốt lõi, quy trình hoạt động được cụ thể hóa thông qua các biểu đồ UML.
+
+CH3_H3|Các tác nhân và Đặc tả ca sử dụng chính
+Hệ thống bao gồm ba tác nhân chính:
+1. Sinh viên (Người bị giám sát): Người dùng cuối tương tác trực tiếp với giao diện phân tích.
+2. Giảng viên / Quản trị viên (Người giám sát): Người có quyền xem xét, đánh giá kết quả từ xa.
+3. Hệ thống AI cục bộ (AI Worker): Tác nhân chạy tự động trên trình duyệt, đảm nhiệm các nghiệp vụ thị giác máy tính.
+
+CH3_IMAGE|usecase_diagram.png|Hình 3.1. Biểu đồ ca sử dụng hệ thống giám sát
+
+Các ca sử dụng cốt lõi được đặc tả chi tiết như sau:
+- Ca sử dụng "Đăng ký sinh trắc học" (Enrollment): Tiền điều kiện là sinh viên đã đăng nhập thành công. Sau khi cấp quyền truy cập camera, hệ thống AI sẽ phân tích chất lượng ánh sáng và góc mặt. Nếu đạt tiêu chuẩn, hệ thống trích xuất vector nhúng 256 chiều, đóng gói và lưu trữ trên máy chủ làm dữ liệu nền tảng (baseline).
+- Ca sử dụng "Giám sát thời gian thực": Khi phiên giám sát bắt đầu, hệ thống AI tự động thu thập luồng video. Trình duyệt phân chia công việc thành nhiều luồng: luồng phân tích điểm mốc và hướng đầu chạy ở tốc độ cao (60 FPS), luồng nhận diện cảm xúc hoạt động với tần suất thấp hơn (1 FPS). Tác nhân sinh viên không cần tương tác trừ khi có cảnh báo xuất hiện. Dữ liệu trạng thái (Heartbeat) được gửi định kỳ về máy chủ mỗi 5 giây.
+- Ca sử dụng "Thử thách người thật" (Liveness Challenge): Đây là một luồng ngoại lệ. Khi có yêu cầu từ máy chủ, màn hình sẽ hiển thị cảnh báo đỏ kèm âm thanh. Sinh viên buộc phải thực hiện thao tác (ví dụ: quay đầu sang phải) trong khoảng thời gian quy định (15 giây). Hệ thống AI ghi nhận góc quay, xác thực và trả kết quả về máy chủ. Nếu thất bại, hệ thống ghi nhận vi phạm nghiêm trọng và tự động cảnh báo giảng viên.
+
+CH3_H3|Biểu đồ hoạt động (Activity Diagram)
+Biểu đồ hoạt động trình bày chi tiết sự phân nhánh logic và các luồng xử lý đồng thời (concurrent streams) giữa Client (môi trường Trình duyệt) và Server (Backend).
+Quy trình bắt đầu khi sinh viên khởi tạo phiên thi. Sau khi kiểm tra cấp quyền thiết bị thành công, hệ thống đi vào vòng lặp phân tích vô hạn (Infinite Loop). Tại đây, máy khách liên tục trích xuất đặc trưng và tính điểm. Đồng thời, một nhánh xử lý song song thực hiện đếm ngược chu kỳ 5 giây để tạo chữ ký HMAC và gọi API. Tại Backend, máy chủ thực thi nhánh quyết định thứ hai: kiểm tra tính hợp lệ của chữ ký HMAC. Nếu chữ ký không khớp, luồng rẽ nhánh sang việc tạo cảnh báo can thiệp dữ liệu. Nếu hợp lệ, hệ thống tiến hành lưu trữ vào cơ sở dữ liệu và đồng bộ tới bảng điều khiển của giảng viên.
+
+CH3_IMAGE|activity_diagram.png|Hình 3.2. Biểu đồ hoạt động hệ thống giám sát
+
+CH3_H2|Kiến trúc hệ thống Hybrid Client-Server
+
+Thay vì áp dụng mô hình Server-side AI truyền thống, hệ thống áp dụng kiến trúc Hybrid Client-Server, phân bổ tải trọng tính toán dựa trên nguyên tắc "xử lý dữ liệu ngay tại nguồn sinh ra".
+
+CH3_H3|Biện luận Kiến trúc Hybrid Client-Server
+Trong mô hình này, máy khách (trình duyệt web) đảm nhiệm toàn bộ khối lượng tính toán liên quan đến thị giác máy tính. Quá trình phát hiện khuôn mặt, trích xuất điểm mốc và chạy mô hình học sâu được thực thi cục bộ thông qua các công nghệ WebAssembly và WebGL. Máy chủ ứng dụng (Backend) tập trung vào vai trò tiếp nhận, lưu trữ và quản trị luồng dữ liệu viễn trắc. Quyết định dịch chuyển lõi AI xuống thiết bị đầu cuối (Edge Computing) xuất phát từ việc giải quyết triệt để ba rào cản chí mạng của các hệ thống AI thời gian thực truyền thống. Đầu tiên là bài toán băng thông mạng (Network Bandwidth): Thay vì ép mỗi sinh viên phải truyền tải một luồng video liên tục tiêu tốn từ 2 đến 10 Mbps lên đám mây để phân tích, trình duyệt sẽ tự đóng vai trò là "bộ não" xử lý tại chỗ. Kết quả trích xuất được nén lại thành một chuỗi JSON siêu nhẹ (chỉ khoảng 300 byte) và gửi đi mỗi 5 giây. Khối lượng dữ liệu đẩy qua mạng giảm xuống hàng vạn lần, đảm bảo hệ thống vẫn mượt mà ngay cả khi sinh viên thi ở những vùng có kết nối Internet kém. Rào cản thứ hai là vấn đề quyền riêng tư (Data Privacy): Bằng cách giữ nguyên dữ liệu hình ảnh nhạy cảm trên thiết bị cục bộ, hệ thống miễn nhiễm hoàn toàn với các vụ rò rỉ dữ liệu hoặc tấn công đánh cắp hình ảnh trên đường truyền mạng. Cuối cùng là bài toán về khả năng mở rộng (Scalability): Chi phí để duy trì một cụm máy chủ GPU (Graphics Processing Unit) đủ sức chạy AI thời gian thực cho hàng ngàn người là một con số khổng lồ. Kiến trúc Hybrid phân tán tải trọng tính toán này xuống chính thiết bị của sinh viên. Máy chủ Backend nhờ đó được giải phóng khỏi các tác vụ nặng, chỉ đóng vai trò ghi nhận trạng thái, cho phép hệ thống triển khai trên các máy chủ CPU thông thường nhưng vẫn chịu tải được hàng vạn sinh viên thi cùng lúc.
+
+CH3_IMAGE|hybrid_architecture_diagram_1777606426835.png|Hình 3.3. Kiến trúc tổng thể Hybrid Client-Server
+
+CH3_H3|Luồng xử lý viễn trắc (Data Pipeline) từ Client đến Server
+Để hiện thực hóa kiến trúc Hybrid, các thành phần của hệ thống được thiết kế thành một luồng chảy dữ liệu (Data Pipeline) liền mạch từ Client tới Server. Tại điểm khởi đầu trên thiết bị người dùng (Client-side), dữ liệu hình ảnh thô được thu nhận ở tốc độ 60 khung hình/giây thông qua API `WebRTC`. Luồng video này ngay lập tức được chuyển giao cho Động cơ tính toán (Processing Engine), nơi chứa lõi `MediaPipe Face Mesh` và `face-api.js` đã được biên dịch sâu dưới dạng WebAssembly (WASM) để vượt qua giới hạn của JavaScript. Tại đây, hình ảnh được "tiêu hóa" thành các con số toán học vô tri (tọa độ 468 điểm mốc, vector danh tính 256 chiều). Những con số này không được gửi đi ngay lập tức mà đi vào Tầng quản lý trạng thái, nơi thuật toán Cửa sổ trượt (Sliding Window) tổng hợp chúng thành một Điểm tập trung (Focus Score) duy nhất. Dữ liệu sau khi chắt lọc sẽ được giao diện ReactJS hiển thị lên màn hình để sinh viên tự điều chỉnh hành vi. 
+
+Chuỗi dữ liệu viễn trắc này sau đó bắt đầu hành trình đi lên đám mây (Server-side). Điểm chạm đầu tiên tại Backend là Tầng API Gateway được xây dựng bằng framework `FastAPI` (Python). Nền tảng này sử dụng cơ chế I/O bất đồng bộ (Asynchronous I/O), cho phép nó mở cửa đón nhận hàng ngàn kết nối cùng lúc mà không bị nghẽn cổ chai. Tuy nhiên, trước khi dữ liệu được ghi nhận, nó phải vượt qua Tầng trung gian bảo mật (Security Middleware). Tại đây, thuật toán kiểm tra tính toàn vẹn HMAC SHA-256 sẽ đối chiếu chữ ký số; chỉ những gói tin nguyên bản, chưa bị sinh viên dùng phần mềm thứ ba can thiệp mới được phép đi tiếp. Điểm đến cuối cùng của luồng dữ liệu là hệ quản trị cơ sở dữ liệu `PostgreSQL`. Tại đây, dữ liệu chuỗi thời gian (Time-series data) về mức độ tập trung được ghi chép để giảng viên có thể xem biểu đồ trực quan, trong khi vector danh tính được đưa vào vùng nhớ đặc biệt của phần mở rộng `pgvector` để phục vụ truy vấn đối chiếu khuôn mặt tốc độ cao.
+
+CH3_H3|Kiến trúc truyền tải phi trạng thái (Stateless Synchronization)
+Một điểm nhấn quan trọng trong thiết kế kiến trúc là việc lựa chọn giao thức đồng bộ dữ liệu. Thay vì duy trì một kênh giao tiếp mở liên tục như WebSockets, hệ thống sử dụng giao thức HTTP qua các RESTful API định kỳ (Heartbeat mechanism). Quyết định này bắt nguồn từ bản chất của kiến trúc phi trạng thái (Stateless). Nếu sử dụng WebSockets, máy chủ buộc phải cấp phát và giữ lại một vùng nhớ RAM (Socket) vĩnh viễn cho mỗi sinh viên đang thi. Khi số lượng thí sinh lên tới hàng vạn, tài nguyên RAM sẽ cạn kiệt nhanh chóng, kéo theo sự sụp đổ của toàn bộ hệ thống. Ngược lại, với cơ chế Heartbeat mỗi 5 giây, mỗi gói tin JSON gửi lên (chứa Điểm tập trung, EAR, góc quay đầu, cảm xúc) đều mang đầy đủ thông tin tự thân (Self-contained). Trình duyệt chủ động gửi một Request (yêu cầu), máy chủ tiếp nhận, xác thực, ghi vào database, trả về mã 200 OK, và ngay lập tức "quên" sinh viên đó đi để giải phóng hoàn toàn bộ nhớ RAM. Khi một sự cố đứt cáp hoặc rớt mạng xảy ra, trình duyệt vẫn tiếp tục tính điểm AI cục bộ và lưu nháp; ngay khi có mạng trở lại, nó sẽ gửi bù dữ liệu lên máy chủ. Sự tách bạch hoàn toàn về mặt trạng thái này là yếu tố quyết định giúp máy chủ Backend đạt được sự ổn định tuyệt đối và khả năng mở rộng không giới hạn trong các kỳ thi quy mô lớn.
+
+CH3_H2|Quy trình xử lý dữ liệu và xác thực danh tính
+
+Quá trình thu thập, phân tích và đồng bộ dữ liệu được tổ chức thành các luồng xử lý chạy song song với tần suất khác nhau nhằm tối ưu hóa việc sử dụng tài nguyên phần cứng tại máy khách.
+
+CH3_H3|Luồng xử lý chính và phụ trợ
+Quy trình chính hoạt động đệ quy liên tục dựa trên hàm `requestAnimationFrame`, đồng bộ hóa với tần số quét của màn hình (thường là 60 Hz). Tại mỗi khung hình, hình ảnh từ webcam được đưa qua công cụ MediaPipe Face Landmarker để trích xuất 468 điểm mốc trong không gian ba chiều. Từ dữ liệu này, hệ thống áp dụng tính toán hình học để xác định Tỷ lệ Khía cạnh Mắt (EAR) và hướng đầu.
+Để ngăn chặn tình trạng quá tải luồng xử lý chính của JavaScript (Main Thread Blocking), hệ thống tích hợp bộ định thời (Intervals) cho các tác vụ AI phức tạp. Cụ thể, luồng nhận diện cảm xúc sử dụng mạng nơ-ron tích chập (CNN) chỉ được kích hoạt 1 lần/giây. Song song đó, quy trình xác thực danh tính được thực thi 2 lần/giây, nơi khuôn mặt hiện tại được đối chiếu với vector gốc thông qua thuật toán tính khoảng cách Euclidean.
+
+CH3_IMAGE|pipeline_vi_new.png|Hình 3.4. Luồng xử lý phân tích hành vi thời gian thực
+
+CH3_IMAGE|face_biometric_auth_1777606446899.png|Hình 3.5. Quá trình đối chiếu vector danh tính
+
+CH3_H3|Thiết lập mô hình Zero Trust và bảo vệ luồng dữ liệu viễn trắc
+Khi dịch chuyển toàn bộ quá trình xử lý AI xuống thiết bị người dùng (Client-side), hệ thống phải đối mặt với một thách thức bảo mật cốt lõi: môi trường trình duyệt nằm hoàn toàn trong tầm kiểm soát của sinh viên. Theo nguyên tắc bảo mật thông tin, máy khách luôn bị xem là một môi trường không đáng tin cậy (Zero Trust). Nguy cơ sinh viên sử dụng các công cụ can thiệp bộ nhớ (RAM injection) hoặc đánh chặn gói tin HTTP để chỉnh sửa điểm số `focus_score` từ 0.2 (mất tập trung) thành 1.0 (tập trung) trước khi gửi về máy chủ là hoàn toàn hiện hữu. Bên cạnh đó, hệ thống còn phải đối phó với nguy cơ tấn công bằng hình ảnh giả mạo (Presentation Attack), khi sinh viên đặt một bức ảnh tĩnh hoặc phát một đoạn video quay sẵn trước webcam để đánh lừa thuật toán AI.
+
+Để triệt tiêu những rủi ro này, kiến trúc hệ thống áp dụng cơ chế bảo mật đa lớp khép kín. Lớp bảo vệ đầu tiên nhắm vào tính toàn vẹn của dữ liệu thông qua tiêu chuẩn chữ ký điện tử HMAC SHA-256 (Hash-based Message Authentication Code). Khi sinh viên đăng nhập thành công, máy chủ sẽ sinh ra một Khóa bí mật đối xứng (Symmetric Key) 256-bit độc bản và cấp phát an toàn cho phiên làm việc đó qua giao thức HTTPS. Trong quá trình thi, cứ mỗi chu kỳ 5 giây, trình duyệt không chỉ đóng gói các số liệu viễn trắc thành một payload JSON mà còn phải sử dụng API `window.crypto.subtle` để băm toàn bộ payload này cùng với Khóa bí mật. Chuỗi Hash 256-bit sinh ra đóng vai trò như một "niêm phong điện tử" và được đính kèm vào HTTP Header. Khi tiếp nhận, máy chủ tách lấy payload nguyên bản và tự tính toán lại mã Hash bằng Khóa bí mật đang lưu trữ ở backend. Đặc tính nổi bật của thuật toán SHA-256 là "hiệu ứng tuyết lở" (Avalanche Effect): chỉ một sự thay đổi cực nhỏ trên payload (ví dụ sửa giá trị thập phân của điểm số) cũng khiến mã Hash sinh ra khác biệt hoàn toàn. Nếu hai mã Hash không trùng khớp, máy chủ lập tức thả drop (từ chối) gói tin với mã lỗi 403 Forbidden. Lớp bảo vệ thứ hai nhắm vào tính trung thực của hình ảnh thông qua cơ chế Thử thách người thật (Liveness Challenge). Thay vì xác thực tĩnh, hệ thống sử dụng thuật toán xác suất ngẫu nhiên để kích hoạt yêu cầu sinh viên thực hiện chuyển động vật lý (ví dụ: "Vui lòng quay đầu sang trái 30 độ"). Ngay lúc này, thuật toán xử lý cục bộ sẽ trích xuất đạo hàm góc quay theo thời gian thực từ ma trận Face Mesh 3D. Nếu quỹ đạo góc quay không khớp với bài thử thách trong thời gian đếm ngược 15 giây, hệ thống nhận định đây là hình ảnh giả mạo tĩnh, lập tức khóa phiên thi và gửi cảnh báo trực tiếp cho giảng viên giám thị.
+
+CH3_IMAGE|liveness_vi2_1777524433515.png|Hình 3.6. Luồng xác thực người thật (Liveness Challenge)
+
+CH3_H2|Thiết kế thuật toán đánh giá mức độ tập trung
+
+Tính toán Điểm tập trung (Focus Score) là công đoạn then chốt giúp giảng viên đánh giá trực quan tình trạng của học viên. Yêu cầu đặt ra là thuật toán cần sự ổn định (không phản ứng quá mức với các hiện tượng sinh lý bình thường như chớp mắt) nhưng vẫn phải đảm bảo tính nhạy bén.
+
+CH3_H3|Đầu vào và thuật toán cửa sổ trượt (Sliding Window)
+Quy trình bắt đầu bằng việc tính điểm cơ sở trên từng khung hình. Trạng thái "tập trung" được gán giá trị 1.0, "mất tập trung" là 0.2, "buồn ngủ" là 0.1 và "vắng mặt" là 0.0. Tiếp theo, một hệ số điều chỉnh (Emotion Modifier) được áp dụng nhằm phản ánh cảm xúc: trạng thái bình thường/vui vẻ sẽ có hệ số bù dương, trong khi các biểu cảm tiêu cực sẽ kéo giảm điểm số. Ngoài ra, tần suất chớp mắt bất thường trong 60 giây gần nhất cũng là tham số để áp dụng mức phạt (penalty) thích hợp. Tất cả các tham số này được giới hạn qua hàm Clamp trong khoảng [0.0, 1.0].
+Thay vì tính toán trung bình cộng tuyến tính $O(n)$ truyền thống cho 18.000 phần tử dữ liệu (tương ứng với cửa sổ 5 phút ở 60 FPS), hệ thống sử dụng cấu trúc Bộ đệm vòng (Circular Buffer) thông qua `Float64Array`. Thuật toán Moving Sum giúp giảm độ phức tạp xuống mức $O(1)$: giá trị tổng mới được cập nhật nhanh chóng bằng cách cộng thêm điểm khung hình mới và trừ đi điểm của khung hình cũ nhất đã rời khỏi cửa sổ. Cải tiến này tối ưu hóa hàng triệu phép toán dư thừa mỗi giây, giúp hệ thống hoạt động mượt mà trên nền tảng phần cứng hạn chế.
+
+CH3_IMAGE|sliding_window_diagram.png|Hình 3.7. Cửa sổ trượt đánh giá trạng thái
+
+CH3_H2|Kiến trúc Frontend và tối ưu hóa luồng hiển thị
+Giao diện người dùng (Frontend) không đơn thuần chỉ là nơi hiển thị thông tin mà còn là nền tảng trực tiếp gánh vác toàn bộ khối lượng tính toán AI của hệ thống. Một trong những nút thắt kỹ thuật (bottleneck) lớn nhất khi phát triển ứng dụng thời gian thực trên ReactJS là việc quản lý vòng đời render (Render Lifecycle). Theo mặc định, mỗi khi trạng thái (State) thay đổi, React sẽ kích hoạt thuật toán đối chiếu Virtual DOM để cập nhật lại giao diện. Tuy nhiên, luồng phân tích Face Mesh của hệ thống hoạt động đệ quy liên tục 60 lần mỗi giây. Nếu hệ thống ngây thơ lưu trữ tọa độ điểm mốc hoặc điểm số tức thời trực tiếp vào trạng thái Component thông qua Hook `useState`, trình duyệt sẽ bị ép buộc phải tính toán lại toàn bộ cấu trúc DOM 60 lần trong một giây. Khối lượng công việc khổng lồ này lập tức vượt quá giới hạn của Luồng chính (Main Thread), gây ra hiện tượng đơ cứng toàn bộ giao diện (UI Freeze) và kích hoạt quá trình dọn rác bộ nhớ (Garbage Collection Pause) liên tục, khiến thiết bị của sinh viên nóng lên nhanh chóng.
+
+Để giải quyết triệt để nút thắt này, kiến trúc Frontend được thiết kế tuân theo nguyên tắc phân tách rõ ràng giữa "Dữ liệu điện toán" (Computational Data) và "Dữ liệu hiển thị" (Presentational Data). Toàn bộ khối dữ liệu biến thiên ở tần số cao (bao gồm tọa độ 468 điểm mốc khuôn mặt, biến đếm chu kỳ, và kết quả phân tích trung gian) được hệ thống cô lập hoàn toàn vào trong Hook `useRef`. Bản chất của `useRef` là cung cấp một vùng nhớ tham chiếu (mutable object) tồn tại xuyên suốt vòng đời của Component, cho phép vòng lặp AI đọc/ghi dữ liệu liên tục 60 FPS mà không hề đánh thức cơ chế re-render của React. Giao diện người dùng chỉ thực sự được đánh thức và cập nhật thông qua `useState` ở tần số cực thấp (0.2 FPS) — tương đương với mỗi chu kỳ Heartbeat 5 giây khi gói tin đã được gửi thành công, hoặc ngay lập tức khi phát hiện hành vi gian lận cần chớp cảnh báo (Alert Modal). Sự kết hợp giữa WebAssembly ở tầng tính toán và chiến lược `useRef` ở tầng giao diện giúp hệ thống giải phóng hoàn toàn gánh nặng cho Luồng chính. Nhờ đó, mức tiêu thụ CPU của tab trình duyệt luôn được duy trì ổn định, đảm bảo giao diện đồ họa mượt mà tuyệt đối và cho phép sinh viên làm bài thi liên tục hàng giờ liền mà không gặp tình trạng tràn RAM hay giảm sút hiệu năng.
+
+Giao diện hệ thống được thiết kế theo hướng hiện đại, đơn giản hóa và tập trung vào trải nghiệm (User-Centric Design), nhằm đáp ứng đặc thù của một hệ thống hoạt động thời gian thực.
+
+CH3_H3|Giao diện Giám sát dành cho Sinh viên (Client Dashboard)
+Màn hình phía sinh viên tuân thủ nguyên tắc tối giản (Minimalism) để tránh gây phân tâm trong quá trình thi cử hoặc học tập:
+- Không gian chính: Dành cho việc hiển thị tài liệu học tập hoặc nội dung bài thi.
+- Thành phần giám sát nổi (Floating Widget): Một khung hình nhỏ (Picture-in-Picture) hiển thị luồng video từ webcam cùng các lớp phủ (Overlay) phản hồi trực quan về trạng thái khuôn mặt (bounding box, hướng quay đầu).
+- Bảng thông số kỹ thuật (Telemetry Panel): Hiển thị minh bạch điểm số tập trung (Focus Score), trạng thái cảm xúc hiện tại, và trạng thái kết nối mạng.
+- Cửa sổ cảnh báo (Alert Modal): Chỉ hiển thị khi hệ thống phát hiện hành vi vi phạm (ví dụ: vắng mặt quá lâu) hoặc khi kích hoạt quy trình Liveness Challenge ngẫu nhiên, yêu cầu người dùng phản hồi tương tác vật lý.
+
+CH3_H3|Giao diện Quản trị dành cho Giảng viên (Admin Analytics)
+Bảng điều khiển quản trị (Admin Dashboard) được thiết kế tập trung vào tính trực quan hóa dữ liệu lớn:
+- Tổng quan hệ thống (Overview): Hiển thị số liệu tổng hợp về tổng số sinh viên đang kết nối, biểu đồ phân bổ trạng thái tập trung toàn lớp, và danh sách các sự cố vi phạm đang chờ xử lý.
+- Giám sát luồng trực tiếp (Live Feed): Lưới danh sách sinh viên theo thời gian thực (Grid View), cho phép giảng viên nhanh chóng nhận diện những sinh viên có Focus Score thấp dưới ngưỡng cảnh báo (được đánh dấu màu đỏ).
+- Phân tích chi tiết (Session Detail): Khi truy cập vào một phiên học cụ thể, giảng viên có thể xem biểu đồ dạng chuỗi thời gian (Time-series Chart) phân tích diễn biến mức độ tập trung, tần suất chớp mắt, và góc quay đầu trong suốt toàn bộ thời lượng buổi học.
+
+CH3_H2|Thiết kế Cơ sở dữ liệu và API
+
+Để thực thi kiến trúc Stateless đồng bộ, hệ thống ủy thác hoàn toàn việc lưu trữ ngữ cảnh cho Cơ sở dữ liệu PostgreSQL. Cấu trúc lược đồ (Schema) được thiết kế riêng nhằm đáp ứng luồng lưu lượng chuỗi thời gian phân giải cao.
+
+CH3_H3|Mô hình thực thể liên kết (ERD) và Đặc tả dữ liệu
+Cơ sở dữ liệu được thiết kế đạt Chuẩn hóa mức 3 (3NF) với 6 thực thể nòng cốt. Hệ thống áp dụng quy tắc phân lập nghiêm ngặt giữa dữ liệu thông tin cá nhân và dữ liệu sinh trắc học:
+
+1. Bảng `users`: Quản lý danh tính cơ bản và phân quyền.
+- `id` (UUID, Primary Key).
+- `username`, `password_hash` (VARCHAR): Thông tin xác thực truy cập.
+- `role` (ENUM): Phân định quyền 'STUDENT' hoặc 'ADMIN'.
+
+2. Bảng `biometric_profiles`: Lưu trữ thông tin sinh trắc học định danh người dùng.
+- `user_id` (UUID, Primary Key & Foreign Key liên kết tới `users(id)`).
+- `baseline_embedding` (VECTOR(256)): Cột lưu trữ quan trọng sử dụng kiểu dữ liệu đặc thù của `pgvector`. Cột này được lập chỉ mục HNSW (Hierarchical Navigable Small World) nhằm tối ưu hóa hiệu năng truy vấn cho thuật toán K-Nearest Neighbors, đảm bảo thời gian phản hồi dưới 5ms.
+
+3. Bảng `sessions`: Quản lý vòng đời hoạt động của từng phiên làm việc.
+- `id` (UUID, Primary Key).
+- `user_id` (UUID, Foreign Key).
+- `status` (ENUM): Trạng thái của phiên ('ACTIVE', 'COMPLETED', 'TERMINATED').
+- `start_time`, `end_time` (TIMESTAMP): Mốc thời gian bắt đầu và kết thúc.
+
+4. Bảng `heartbeat_logs`: Bảng tiếp nhận lưu lượng lớn nhất, đóng vai trò cốt lõi trong việc theo dõi luồng dữ liệu liên tục.
+- `id` (UUID, Primary Key).
+- `session_id` (UUID, Foreign Key).
+- `timestamp` (TIMESTAMP): Mốc thời gian thiết bị khách gửi dữ liệu.
+- `focus_score` (FLOAT), `blink_rate` (INT), `head_pose` (VARCHAR), `emotion` (VARCHAR): Các tham số viễn trắc thu thập được.
+- `violations` (JSONB): Cấu trúc linh hoạt lưu trữ các biên bản lỗi trong chu kỳ 5 giây.
+Để đáp ứng tần suất chèn (Insert) lớn, bảng được thiết lập chỉ mục B-Tree tổ hợp trên khóa `(session_id, timestamp)`, phục vụ truy xuất tốc độ cao cho biểu đồ Dashboard.
+
+5. Bảng `violations`: Lưu trữ các cảnh báo vi phạm mang tính chất nghiêm trọng.
+- `id` (UUID, Primary Key).
+- `session_id` (UUID, Foreign Key).
+- `type` (VARCHAR): Phân loại lỗi (Ví dụ: FACE_NOT_FOUND, IDENTITY_MISMATCH).
+- `severity` (ENUM): Mức độ ảnh hưởng ('LOW', 'HIGH', 'CRITICAL').
+
+6. Bảng `challenges`: Quản lý lịch sử thử thách chống giả mạo.
+- `id` (UUID, Primary Key).
+- `session_id` (UUID, Foreign Key).
+- `issued_at`, `expires_at` (TIMESTAMP): Khung thời gian hiệu lực của thử thách (thường là 15 giây).
+- `result` (ENUM): Kết quả phản hồi ('PENDING', 'PASSED', 'FAILED').
+
+CH3_IMAGE|erd_diagram.png|Hình 3.8. Biểu đồ thực thể liên kết (ERD)
+
+CH3_H3|Thiết kế Giao diện lập trình ứng dụng (API)
+Mạng lưới API được phát triển trên nền tảng Python FastAPI, tuân thủ chặt chẽ các tiêu chuẩn RESTful và OpenAPI. Hệ thống bảo mật cấp ứng dụng ứng dụng chuẩn JSON Web Token (JWT) kết hợp thuật toán OAuth2 Password Bearer.
+
+Hệ thống phân chia thành 3 nhóm API cốt lõi như sau:
+
+1. Nhóm Xác thực và Định danh (Users & Identity):
+- `POST /api/auth/login`: Xác thực danh tính và cấp phát JWT Token.
+- `GET /api/identity/status`: Truy xuất trạng thái hồ sơ sinh trắc học của sinh viên.
+- `POST /api/identity/register`: Đăng ký và lưu trữ vector nhúng khuôn mặt vào cơ sở dữ liệu làm mẫu tham chiếu.
+
+2. Nhóm Giám sát thời gian thực (Sessions & Monitoring):
+- `POST /api/session/start`: Khởi tạo phiên giám sát mới, tạo và trả về mã `session_id`.
+- `POST /api/session/heartbeat`: Điểm cuối (endpoint) xử lý lưu lượng lớn nhất. Tích hợp chuỗi middleware phục vụ giải mã token, xác minh chữ ký HMAC SHA-256 và đối chiếu danh tính cục bộ với chu kỳ 5 giây/lần.
+- `POST /api/challenge/submit`: Nơi tiếp nhận và kiểm chứng kết quả từ thử thách Liveness Challenge.
+- `POST /api/session/end`: Ghi nhận hoàn tất phiên giám sát và tổng hợp báo cáo.
+
+3. Nhóm Quản trị và Thống kê (Admin & Analytics):
+- `GET /api/admin/live`: Cho phép truy xuất trạng thái của các học viên đang trực tuyến theo thời gian thực.
+- `GET /api/admin/sessions` và `GET /api/admin/students`: Cung cấp công cụ quản lý danh sách sinh viên và tra cứu lịch sử các phiên giám sát.
+- `POST /api/admin/challenge`: Hỗ trợ giảng viên kích hoạt Liveness Challenge thủ công tới một máy khách mục tiêu.
+- Các API phân tích `/api/analytics/*` (ví dụ: `timeline`, `head-pose`, `emotion-trend`): Phục vụ truy xuất dữ liệu chuỗi thời gian nhằm hiển thị lên biểu đồ thống kê của Dashboard.
+
+Nhờ việc tuân thủ nguyên tắc thiết kế phi trạng thái, kiến trúc backend có thể được container hóa (Docker) và dễ dàng triển khai nhân rộng (horizontal scaling) dưới sự điều phối của hệ thống cân bằng tải (Load Balancer) để đáp ứng quy mô hoạt động thực tế lớn.

@@ -1,0 +1,94 @@
+CH0_TITLE|PHỤ LỤC
+CH0_H2|Phụ lục A: Hướng dẫn cài đặt và chạy hệ thống
+
+Hệ thống bao gồm hai thành phần cần khởi chạy độc lập: Backend API (Python/FastAPI) và Frontend Web (React/Vite).
+
+Yêu cầu môi trường:
+- Python 3.10 trở lên và Node.js 18 trở lên.
+- PostgreSQL đã được cài sẵn phần mở rộng pgvector.
+- Trình duyệt Google Chrome hoặc Microsoft Edge (hỗ trợ WebAssembly).
+- Webcam có độ phân giải tối thiểu 720p.
+
+Các bước khởi chạy Backend:
+- Bước 1: Sao chép tệp `.env.example` thành `.env` và điền thông tin kết nối database, SECRET_KEY và ALGORITHM (HS256).
+- Bước 2: Cài đặt các thư viện phụ thuộc bằng lệnh: `pip install -r requirements.txt`
+- Bước 3: Khởi chạy server với lệnh: `python app/main.py`
+- Bước 4: Backend tự động khởi tạo các bảng database và dữ liệu mẫu (seed) qua cơ chế lifespan. API được phục vụ tại `http://localhost:8000`.
+
+Các bước khởi chạy Frontend:
+- Bước 1: Sao chép tệp `.env.example` thành `.env` và cập nhật địa chỉ Backend API.
+- Bước 2: Cài đặt các gói Node.js bằng lệnh: `npm install`
+- Bước 3: Khởi chạy giao diện bằng lệnh: `npm run dev`
+- Bước 4: Truy cập `http://localhost:5173` để sử dụng hệ thống.
+
+CH0_H2|Phụ lục B: Cấu trúc mã nguồn chính
+
+Mã nguồn Backend được tổ chức theo kiến trúc module hóa:
+
+```
+focus-monitor-backend/
+├── app/
+│   ├── main.py              # Điểm khởi động FastAPI, cấu hình CORS và lifespan
+│   ├── core/
+│   │   ├── security.py      # JWT, bcrypt, HMAC SHA-256 cho Challenge
+│   │   ├── deps.py          # Dependency injection (CurrentStudent, DbSession)
+│   │   └── constants.py     # Enum: SessionStatus, ViolationType, ChallengeType
+│   ├── db/
+│   │   ├── database.py      # Cấu hình async engine PostgreSQL + pgvector
+│   │   └── seed.py          # Dữ liệu mẫu khởi tạo
+│   └── modules/
+│       ├── users/           # Đăng ký, đăng nhập, lưu embedding khuôn mặt
+│       ├── sessions/        # Vòng lặp giám sát: start/heartbeat/end/challenge
+│       └── admin/           # Cấu hình hệ thống (ngưỡng vi phạm, xác suất Challenge)
+└── requirements.txt
+```
+
+Mã nguồn Frontend được tổ chức theo module chức năng:
+
+```
+focus-ai-web/src/
+├── App.tsx                  # Định tuyến và quản lý trạng thái phiên
+├── components/              # Các thành phần giao diện (MonitorView, Dashboard)
+├── hooks/                   # Custom hooks (useFaceLandmarker, useMonitoring)
+├── services/                # Giao tiếp API (heartbeatService, authService)
+├── utils/                   # Tính EAR, Head Pose, Focus Score
+└── constants.ts             # Ngưỡng EAR, trọng số Focus Score, cấu hình vòng lặp
+```
+
+CH0_H2|Phụ lục C: Các API endpoint chính của Backend
+
+Bảng dưới đây liệt kê các endpoint cốt lõi của hệ thống:
+
+| Method | Endpoint | Mô tả |
+| POST | /api/auth/login | Đăng nhập, trả về JWT token |
+| POST | /api/identity/register | Đăng ký embedding khuôn mặt sinh trắc học |
+| POST | /api/session/start | Khởi tạo phiên giám sát mới |
+| POST | /api/session/heartbeat | Gửi gói tin viễn trắc định kỳ (5 giây/lần) |
+| POST | /api/session/end | Kết thúc phiên giám sát |
+| POST | /api/challenge/submit | Nộp kết quả thử thách Liveness |
+| GET | /api/admin/sessions | Xem danh sách phiên (dành cho giảng viên) |
+
+CH0_H2|Phụ lục D: Cấu trúc gói tin Heartbeat
+
+Đây là cấu trúc JSON thực tế của một gói tin Heartbeat được trình duyệt gửi lên Backend mỗi 5 giây:
+
+```json
+{
+  "session_id": "a3f1c2d4-...",
+  "timestamp": 1714550400,
+  "focus_score": 78.5,
+  "focus_percent": 0.785,
+  "state": "FOCUSED",
+  "blink_rate": 14,
+  "avg_ear": 0.312,
+  "head_pose": "FORWARD",
+  "emotion": "neutral",
+  "identity_status": "MATCH",
+  "identity_score": 0.91,
+  "violations": {
+    "multi_face": false,
+    "absent": false,
+    "identity_mismatch": false
+  }
+}
+```
