@@ -30,9 +30,9 @@ focus-monitor-backend/
 ├── app/
 │   ├── main.py              # Điểm khởi động FastAPI, cấu hình CORS và lifespan
 │   ├── core/
-│   │   ├── security.py      # JWT, bcrypt, HMAC SHA-256 cho Challenge
-│   │   ├── deps.py          # Dependency injection (CurrentStudent, DbSession)
-│   │   └── constants.py     # Enum: SessionStatus, ViolationType, ChallengeType
+│   │   ├── security.py      # JWT, thuật toán băm bcrypt, HMAC SHA-256 cho Challenge
+│   │   ├── deps.py          # Tiêm phụ thuộc (Dependency injection: CurrentStudent, DbSession)
+│   │   └── constants.py     # Định nghĩa hằng số (Enum): SessionStatus, ViolationType, ChallengeType
 │   ├── db/
 │   │   ├── database.py      # Cấu hình async engine PostgreSQL + pgvector
 │   │   └── seed.py          # Dữ liệu mẫu khởi tạo
@@ -49,8 +49,8 @@ Mã nguồn Frontend được tổ chức theo module chức năng:
 focus-ai-web/src/
 ├── App.tsx                  # Định tuyến và quản lý trạng thái phiên
 ├── components/              # Các thành phần giao diện (MonitorView, Dashboard)
-├── hooks/                   # Custom hooks (useFaceLandmarker, useMonitoring)
-├── services/                # Giao tiếp API (heartbeatService, authService)
+├── hooks/                   # Các móc tùy chỉnh (Custom hooks: useFaceLandmarker, useMonitoring)
+├── services/                # Dịch vụ giao tiếp API (heartbeatService, authService)
 ├── utils/                   # Tính EAR, Head Pose, Focus Score
 └── constants.ts             # Ngưỡng EAR, trọng số Focus Score, cấu hình vòng lặp
 ```

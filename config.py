@@ -20,7 +20,7 @@ META = {
     'location': 'Hà Nội',
     'year': '2026',
     'duration': 'từ 06/04/2026 đến 08/06/2026.',
-    'goal': 'Đề tài nhằm giải quyết bài toán đánh giá mức độ tập trung của người dùng trong môi trường học trực tuyến thông qua phân tích dữ liệu hình ảnh từ webcam.'
+    'goal': 'Đề tài nhằm giải quyết bài toán đánh giá mức độ tập trung của người dùng trong quá trình học tập và thi cử trực tuyến thông qua phân tích dữ liệu hình ảnh từ webcam.'
 }
 
 CHAPTER_FILES = [
@@ -37,6 +37,7 @@ ABBREVIATIONS = [
     ('AI', 'Artificial Intelligence – Trí tuệ nhân tạo'),
     ('API', 'Application Programming Interface – Giao diện lập trình ứng dụng'),
     ('ANN', 'Artificial Neural Network – Mạng nơ-ron nhân tạo'),
+    ('CEW', 'Closed Eyes In The Wild – Bộ dữ liệu trạng thái mắt chuẩn'),
     ('CNN', 'Convolutional Neural Network – Mạng nơ-ron tích chập'),
     ('CPU', 'Central Processing Unit – Bộ xử lý trung tâm'),
     ('CSDL', 'Cơ sở dữ liệu'),
@@ -45,10 +46,19 @@ ABBREVIATIONS = [
     ('GPU', 'Graphics Processing Unit – Bộ xử lý đồ họa'),
     ('HD', 'High Definition – Độ phân giải cao'),
     ('HMAC', 'Hash-based Message Authentication Code – Mã xác thực thông điệp dựa trên hàm băm'),
+    ('HNSW', 'Hierarchical Navigable Small World – Thuật toán tìm kiếm láng giềng gần nhất'),
     ('HTTPS', 'HyperText Transfer Protocol Secure – Giao thức truyền tải siêu văn bản bảo mật'),
     ('JWT', 'JSON Web Token – Mã thông báo xác thực JSON'),
+    ('LFW', 'Labeled Faces in the Wild – Bộ dữ liệu khuôn mặt chuẩn'),
+    ('LTI', 'Learning Tools Interoperability – Khả năng tương tác của công cụ học tập'),
+    ('NMS', 'Non-Maximum Suppression – Thuật toán triệt tiêu vĩ đại phi cực đại'),
+    ('ORM', 'Object-Relational Mapping – Ánh xạ đối tượng-quan hệ'),
     ('ReLU', 'Rectified Linear Unit – Hàm kích hoạt tuyến tính chỉnh lưu'),
+    ('rPPG', 'Remote Photoplethysmography – Đo quang thể tích từ xa'),
     ('SSD', 'Single Shot Detector – Bộ phát hiện đơn bước'),
+    ('SUS', 'System Usability Scale – Thang đo khả năng sử dụng hệ thống'),
+    ('UI', 'User Interface – Giao diện người dùng'),
+    ('UX', 'User Experience – Trải nghiệm người dùng'),
     ('WASM', 'WebAssembly – Định dạng mã máy chạy trên trình duyệt'),
     ('WebRTC', 'Web Real-Time Communication – Giao thức truyền thông thời gian thực trên web'),
 ]
