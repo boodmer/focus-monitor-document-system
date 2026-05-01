@@ -1,0 +1,18 @@
+flowchart LR
+    Student(("Sinh viên"))
+    Admin(("Giảng viên /\nQuản trị viên"))
+
+    subgraph System["Hệ thống giám sát thi cử"]
+        direction TB
+        Enroll["Đăng ký sinh trắc học"]
+        Realtime["Giám sát thời gian thực"]
+        Liveness["Thử thách Liveness"]
+        Report["Xem báo cáo giám sát"]
+    end
+
+    Student --> Enroll
+    Student --> Realtime
+    Student --> Liveness
+
+    Admin --> Realtime
+    Admin --> Report

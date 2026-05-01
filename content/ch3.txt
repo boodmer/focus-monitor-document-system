@@ -17,26 +17,45 @@ CH3_H3|Yêu cầu phi chức năng
 - Quyền riêng tư (Privacy): Hệ thống cam kết không truyền tải hình ảnh hoặc video tĩnh ra khỏi thiết bị cục bộ. Chỉ các thông số hành vi đã qua xử lý (dạng văn bản) mới được mã hóa qua HTTPS để gửi về máy chủ.
 - Khả năng mở rộng (Scalability): Máy chủ ứng dụng (Backend) tuân thủ kiến trúc phi trạng thái (Stateless), có khả năng chịu tải tối thiểu 100 kết nối đồng thời với độ trễ API dưới 100 mili-giây.
 
-CH3_H2|Biểu đồ ca sử dụng và Biểu đồ hoạt động
+CH3_H2|Biểu đồ Use case và Biểu đồ hoạt động
 
 Để cung cấp cái nhìn tổng quan về cách các đối tượng tương tác với hệ thống và luồng logic cốt lõi, quy trình hoạt động được cụ thể hóa thông qua các biểu đồ UML.
 
-CH3_H3|Các tác nhân và Đặc tả ca sử dụng chính
-Hệ thống bao gồm ba tác nhân chính:
-1. Sinh viên (Người bị giám sát): Người dùng cuối tương tác trực tiếp với giao diện phân tích.
-2. Giảng viên / Quản trị viên (Người giám sát): Người có quyền xem xét, đánh giá kết quả từ xa.
-3. Hệ thống AI cục bộ (AI Worker): Tác nhân chạy tự động trên trình duyệt, đảm nhiệm các nghiệp vụ thị giác máy tính.
+CH3_H3|Các tác nhân và Đặc tả Use case chính
+Trong chuẩn phân tích thiết kế UML, hệ thống bao gồm hai tác nhân chính (Actors) tương tác trực tiếp với các luồng nghiệp vụ:
+1. Sinh viên (Người bị giám sát): Người dùng đăng nhập vào hệ thống để thực hiện ca thi, bị ràng buộc bởi các yêu cầu giám sát sinh trắc học liên tục.
+2. Giảng viên / Quản trị viên (Người giám sát): Người thiết lập ca thi, có quyền theo dõi trạng thái thời gian thực của sinh viên và đánh giá kết quả vi phạm.
 
-CH3_IMAGE|usecase_diagram.png|Hình 3.1. Biểu đồ ca sử dụng hệ thống giám sát
+CH3_IMAGE|usecase_diagram.png|Hình 3.1. Biểu đồ Use case tổng thể của hệ thống giám sát
 
-Các ca sử dụng cốt lõi được đặc tả chi tiết như sau:
-- Ca sử dụng "Đăng ký sinh trắc học" (Enrollment): Tiền điều kiện là sinh viên đã đăng nhập thành công. Sau khi cấp quyền truy cập camera, hệ thống AI sẽ phân tích chất lượng ánh sáng và góc mặt. Nếu đạt tiêu chuẩn, hệ thống trích xuất vector nhúng 256 chiều, đóng gói và lưu trữ trên máy chủ làm dữ liệu nền tảng (baseline).
-- Ca sử dụng "Giám sát thời gian thực": Khi phiên giám sát bắt đầu, hệ thống AI tự động thu thập luồng video. Trình duyệt phân chia công việc thành nhiều luồng: luồng phân tích điểm mốc và hướng đầu chạy ở tốc độ cao (60 FPS), luồng nhận diện cảm xúc hoạt động với tần suất thấp hơn (1 FPS). Tác nhân sinh viên không cần tương tác trừ khi có cảnh báo xuất hiện. Dữ liệu trạng thái (Heartbeat) được gửi định kỳ về máy chủ mỗi 5 giây.
-- Ca sử dụng "Thử thách người thật" (Liveness Challenge): Đây là một luồng ngoại lệ. Khi có yêu cầu từ máy chủ, màn hình sẽ hiển thị cảnh báo đỏ kèm âm thanh. Sinh viên buộc phải thực hiện thao tác (ví dụ: quay đầu sang phải) trong khoảng thời gian quy định (15 giây). Hệ thống AI ghi nhận góc quay, xác thực và trả kết quả về máy chủ. Nếu thất bại, hệ thống ghi nhận vi phạm nghiêm trọng và tự động cảnh báo giảng viên.
+Các Use case được phân rã thành hai nhóm chức năng theo từng tác nhân. Bảng dưới đây đặc tả chi tiết từng Use case theo chuẩn UML, bao gồm tiền điều kiện, luồng chính và hậu điều kiện:
+
+1. Nhóm Use case của Sinh viên:
+- Login (Đăng nhập). Tiền điều kiện: Người dùng chưa được xác thực. Luồng chính: Sinh viên nhập thông tin đăng nhập; hệ thống kiểm tra thông tin với cơ sở dữ liệu (mật khẩu được băm bằng bcrypt); nếu hợp lệ, hệ thống cấp phát JWT token và chuyển hướng vào trang chính. Hậu điều kiện: Phiên làm việc được khởi tạo, token JWT lưu trên trình duyệt.
+- Identity Registration (Đăng ký định danh sinh trắc học). Tiền điều kiện: Sinh viên đã đăng nhập, chưa có dữ liệu khuôn mặt trong hệ thống. Luồng chính: Sinh viên cấp quyền truy cập camera; hệ thống AI kiểm tra chất lượng ánh sáng và góc mặt; nếu đạt tiêu chuẩn, trích xuất vector nhúng 256 chiều rồi lưu làm dữ liệu đối chiếu gốc (baseline). Hậu điều kiện: Dữ liệu sinh trắc học của sinh viên được lưu trữ trên máy chủ, sẵn sàng cho các phiên giám sát tiếp theo.
+- Session Management (Tham gia phiên giám sát). Tiền điều kiện: Sinh viên đã đăng nhập và đã hoàn tất đăng ký định danh. Luồng chính: Sinh viên khởi động phiên giám sát, camera bắt đầu thu hình; hệ thống AI phân tích liên tục theo thời gian thực; khi kết thúc, sinh viên đóng phiên và hệ thống lưu tổng kết. Hậu điều kiện: Dữ liệu phiên thi (điểm tập trung, chuỗi thời gian hành vi) được lưu trữ đầy đủ trên máy chủ.
+- Heartbeat (Đồng bộ trạng thái). Tiền điều kiện: Phiên giám sát đang hoạt động. Luồng chính (kích hoạt tự động - Include): Định kỳ mỗi 5 giây, AI cục bộ tổng hợp các chỉ số đã tính (EAR, góc quay đầu, Focus Score, kết quả đối chiếu danh tính), ký xác thực bằng HMAC và gửi lên máy chủ. Hậu điều kiện: Bản ghi viễn trắc mới được lưu; giảng viên thấy trạng thái sinh viên cập nhật trên Dashboard.
+- Submit Challenge (Phản hồi thử thách Liveness). Tiền điều kiện: Phiên giám sát đang hoạt động, hệ thống đã phát ra thử thách (tự động hoặc do giảng viên kích hoạt). Luồng chính: Màn hình hiển thị hướng dẫn cử động (ví dụ: quay đầu sang trái); sinh viên thực hiện trong vòng 15 giây; hệ thống đo góc quay thực tế và so sánh với yêu cầu. Hậu điều kiện: Nếu đạt, thử thách được đánh dấu thành công; nếu thất bại hoặc hết giờ, hệ thống ghi nhận vi phạm và thông báo ngay lên Dashboard của giảng viên.
+
+2. Nhóm Use case của Giảng viên / Quản trị viên:
+- Login (Đăng nhập). Tương tự như sinh viên nhưng hệ thống cấp phát token với quyền Admin, mở khóa toàn bộ các chức năng quản lý.
+- Live Monitoring (Giám sát trực tuyến). Tiền điều kiện: Giảng viên đã đăng nhập. Luồng chính: Giảng viên truy cập Dashboard; hệ thống liên tục cập nhật danh sách sinh viên đang trong phiên thi, kèm Điểm tập trung, trạng thái vắng mặt, cảnh báo thi hộ (Mismatch Identity). Hậu điều kiện: Giảng viên nắm bắt toàn bộ tình hình phòng thi theo thời gian thực.
+- Trigger Challenge (Kích hoạt thử thách thủ công). Tiền điều kiện: Giảng viên đang xem Live Monitoring, phát hiện sinh viên có dấu hiệu bất thường. Luồng chính: Giảng viên chọn sinh viên và nhấn nút kích hoạt; hệ thống đẩy lệnh thử thách Liveness xuống trình duyệt của sinh viên đó. Hậu điều kiện: Sinh viên nhận được thử thách; kết quả trả về cập nhật ngay trên Dashboard.
+- Analytics & History (Phân tích và Lịch sử). Tiền điều kiện: Phiên thi đã kết thúc hoặc đang diễn ra. Luồng chính: Giảng viên chọn một phiên thi; hệ thống hiển thị biểu đồ dòng thời gian Focus Score, phân bổ cảm xúc, phân bổ hướng đầu và danh sách vi phạm Liveness kèm mốc thời gian. Hậu điều kiện: Giảng viên có đủ bằng chứng để đưa ra quyết định xử lý học vụ.
+- System Configuration (Cấu hình hệ thống). Tiền điều kiện: Giảng viên có quyền quản trị hệ thống. Luồng chính: Giảng viên điều chỉnh các ngưỡng cảnh báo AI (số khung hình mất mặt tối đa, ngưỡng EAR phát hiện nhắm mắt, tần suất thử thách tự động). Hậu điều kiện: Các tham số mới có hiệu lực ngay cho tất cả các phiên giám sát tiếp theo.
 
 CH3_H3|Biểu đồ hoạt động (Activity Diagram)
-Biểu đồ hoạt động trình bày chi tiết sự phân nhánh logic và các luồng xử lý đồng thời (concurrent streams) giữa Client (môi trường Trình duyệt) và Server (Backend).
-Quy trình bắt đầu khi sinh viên khởi tạo phiên thi. Sau khi kiểm tra cấp quyền thiết bị thành công, hệ thống đi vào vòng lặp phân tích vô hạn (Infinite Loop). Tại đây, máy khách liên tục trích xuất đặc trưng và tính điểm. Đồng thời, một nhánh xử lý song song thực hiện đếm ngược chu kỳ 5 giây để tạo chữ ký HMAC và gọi API. Tại Backend, máy chủ thực thi nhánh quyết định thứ hai: kiểm tra tính hợp lệ của chữ ký HMAC. Nếu chữ ký không khớp, luồng rẽ nhánh sang việc tạo cảnh báo can thiệp dữ liệu. Nếu hợp lệ, hệ thống tiến hành lưu trữ vào cơ sở dữ liệu và đồng bộ tới bảng điều khiển của giảng viên.
+Biểu đồ hoạt động mô tả luồng nghiệp vụ chính của hệ thống qua hai làn bơi (Swim Lane) tương ứng với hai thành phần: Client (trình duyệt của sinh viên) và Server (Backend).
+
+Giai đoạn 1 — Khởi động phiên thi: Sinh viên nhấn nút bắt đầu. Hệ thống kiểm tra hai điều kiện: JWT token còn hiệu lực và camera đã được cấp quyền. Nếu một trong hai thất bại, giao diện hiển thị thông báo lỗi và dừng lại. Khi cả hai điều kiện thỏa mãn, hệ thống đồng thời khởi chạy hai luồng xử lý song song.
+
+Giai đoạn 2 — Luồng phân tích AI (chạy liên tục 60 FPS): Webcam liên tục cung cấp khung hình cho MediaPipe Face Mesh. Với mỗi khung hình, hệ thống phát hiện khuôn mặt, trích xuất 468 điểm mốc không gian, tính toán độ mở mắt (EAR) và góc quay đầu. Các chỉ số này được cập nhật vào bộ nhớ tạm (useRef) mà không kích hoạt việc vẽ lại giao diện, giúp duy trì hiệu năng 60 FPS ổn định.
+
+Giai đoạn 3 — Luồng đồng bộ Heartbeat (mỗi 5 giây): Định kỳ 5 giây, hệ thống đọc các chỉ số tổng hợp từ bộ nhớ tạm, ký xác thực bằng HMAC SHA-256 và gửi gói tin JSON lên Server. Phía Server xác minh chữ ký: nếu không hợp lệ, hệ thống ghi nhận cảnh báo giả mạo dữ liệu; nếu hợp lệ, Server lưu bản ghi vào PostgreSQL và cập nhật trạng thái trên Dashboard của giảng viên.
+
+Giai đoạn 4 — Thử thách Liveness (khi được kích hoạt): Thử thách có thể được kích hoạt theo hai cách: tự động khi Server phát hiện sinh viên có Focus Score liên tục thấp, hoặc thủ công khi giảng viên nhấn nút trên Dashboard. Màn hình sinh viên hiển thị yêu cầu thực hiện một cử động ngẫu nhiên trong vòng 15 giây. Nếu góc quay đầu đo được khớp với yêu cầu, thử thách được đánh dấu thành công. Nếu hết giờ hoặc không đạt, Server ghi nhận vi phạm và thông báo ngay lên Dashboard.
+
+Giai đoạn 5 — Kết thúc phiên thi: Khi sinh viên nhấn kết thúc, hai luồng song song dừng lại và hợp nhất. Server cập nhật trạng thái phiên thành COMPLETED, tính toán Focus Score tổng kết toàn phiên và lưu báo cáo cuối để giảng viên có thể xem lại sau.
 
 CH3_IMAGE|activity_diagram.png|Hình 3.2. Biểu đồ hoạt động hệ thống giám sát
 
