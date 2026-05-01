@@ -128,7 +128,7 @@ def update_fields_via_word(filepath):
 def setup(doc):
     style = doc.styles['Normal']
     style.font.name = 'Times New Roman'
-    style.font.size = Pt(14)
+    style.font.size = Pt(config.STYLES['normal_size'])
     style.paragraph_format.line_spacing = 1.3
     for s in doc.sections:
         s.page_width = Mm(210)

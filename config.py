@@ -127,7 +127,8 @@ SYMBOLS_LATEX = [
 
 
 STYLES = {
-    'chapter_title_size': 13,
-    'heading2_size': 13,
-    'heading3_size': 13,
+    'normal_size': 14,
+    'chapter_title_size': 14,
+    'heading2_size': 14,
+    'heading3_size': 14,
 }
