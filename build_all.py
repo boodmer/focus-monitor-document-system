@@ -38,6 +38,6 @@ if __name__ == "__main__":
     run_xelatex()
     
     # Run Word compilation
-    run_script('compile_v5.py')
+    run_script('compile_word.py')
     
     print("\nXONG! Da tao thanh cong ca hai ban PDF va Word tu cau hinh chung.")

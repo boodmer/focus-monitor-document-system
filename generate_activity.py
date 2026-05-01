@@ -11,83 +11,87 @@ if sys.stderr.encoding != 'utf-8':
 plantuml_code = """
 @startuml
 !theme plain
-skinparam backgroundColor transparent
-skinparam ArrowColor #444444
-skinparam ActivityBorderColor #444444
-skinparam ActivityBackgroundColor #EEF4FF
-skinparam ActivityDiamondBackgroundColor #FFF5CC
-skinparam ActivityDiamondBorderColor #AAAAAA
+skinparam backgroundColor white
+skinparam ArrowColor #333333
+skinparam ActivityBorderColor #5B8DB8
+skinparam ActivityBackgroundColor #EFF6FF
+skinparam ActivityDiamondBackgroundColor #FFF9C4
+skinparam ActivityDiamondBorderColor #F0AD00
 skinparam SwimlaneBorderColor #AAAAAA
-skinparam SwimlaneBackgroundColor #FAFAFA
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
 
-|Trình duyệt (Client)|
+|Client|
 start
-:Sinh viên nhấn "Bắt đầu thi";
-if (JWT còn hiệu lực?) then (Không)
-  :Báo lỗi xác thực;
+:Bắt đầu thi;
+
+if (JWT + Camera hợp lệ?) then (Không)
+  #FFD6D6:Dừng hệ thống;
   stop
 endif
-if (Camera được cấp quyền?) then (Không)
-  :Yêu cầu cấp quyền camera;
-  stop
-endif
+
 fork
-  partition "Luồng phân tích AI (60 FPS)" {
+  partition "Luồng AI (60 FPS)" {
     repeat
-      :Nhận khung hình từ webcam;
-      :Phát hiện khuôn mặt (BlazeFace);
-      if (Có khuôn mặt?) then (Không)
-        :Ghi nhận "Vắng mặt";
-      else (Có)
-        :Trích xuất 468 điểm mốc (MediaPipe);
-        :Tính EAR và góc quay đầu;
-        :Cập nhật Focus Score (Sliding Window);
-        :Lưu tạm vào bộ nhớ (useRef);
+      :Nhận khung hình;
+
+      if (Có khuôn mặt?) then (Có)
+
+        :Trích xuất landmark;
+        :Nhận diện khuôn mặt (identity);
+        :Nhận diện cảm xúc;
+
+        :Tính EAR + Head pose;
+        :Cập nhật Focus Score;
+
+      else (Không)
+        :Ghi nhận vắng mặt;
       endif
-    repeat while (Phiên thi đang hoạt động?)
+
+    repeat while (Phiên đang chạy?)
   }
+
 fork again
-  partition "Luồng đồng bộ Heartbeat (5 giây)" {
+
+  partition "Heartbeat (5 giây)" {
     repeat
-      :Đợi 5 giây;
-      :Đọc chỉ số từ bộ nhớ tạm;
-      :Ký xác thực HMAC SHA-256;
-      :Gửi gói tin JSON lên Server;
+      :Gửi dữ liệu lên Server;
 
-      |Server (Backend)|
-      if (Chữ ký HMAC hợp lệ?) then (Không)
-        :Ghi nhận cảnh báo\\ngian lận dữ liệu;
-      else (Có)
-        :Lưu bản ghi vào PostgreSQL;
-        if (Focus Score thấp liên tục?) then (Có)
-          :Phát sinh thử thách Liveness;
+      |Server|
+      :Lưu dữ liệu;
 
-          |Trình duyệt (Client)|
-          :Hiển thị yêu cầu cử động ngẫu nhiên;
-          :Đếm ngược 15 giây;
-          if (Sinh viên thực hiện đúng?) then (Có)
-            :Gửi kết quả thành công;
-            |Server (Backend)|
-            :Ghi nhận: Liveness PASSED;
-          else (Không / Hết giờ)
-            :Gửi kết quả thất bại;
-            |Server (Backend)|
-            :Ghi nhận VI PHẠM;
-            :Thông báo lên Dashboard;
-          endif
-        else (Không)
-          :Cập nhật trạng thái Dashboard;
-        endif
+      if (Vi phạm vượt ngưỡng?) then (Có)
+        :Gửi lệnh Logout;
+        |Client|
+        #FFD6D6:Force logout;
+        stop
       endif
-      |Trình duyệt (Client)|
-    repeat while (Phiên thi đang hoạt động?)
+
+      |Client|
+
+      if (Có yêu cầu Liveness?) then (Có)
+
+        :Hiển thị thử thách;
+        :Chờ tối đa 30 giây;
+
+        if (Hoàn thành trong thời gian?) then (Có)
+          :Gửi kết quả;
+        else (Không)
+          #FFD6D6:Logout;
+          stop
+        endif
+
+      endif
+
+    repeat while (Phiên đang chạy?)
   }
+
 end fork
-:Sinh viên nhấn "Kết thúc phiên";
-|Server (Backend)|
-:Cập nhật trạng thái: COMPLETED;
-:Tính toán Focus Score tổng kết;
-:Lưu báo cáo cuối phiên;
+
+:Kết thúc phiên;
+
+|Server|
+:Lưu báo cáo;
 stop
 @enduml
 """
