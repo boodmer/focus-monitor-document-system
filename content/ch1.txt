@@ -6,27 +6,30 @@ Bên cạnh đó, vấn đề minh bạch trong các quá trình học tập và
 Xuất phát từ thực trạng đó, đề tài nghiên cứu xây dựng hệ thống giám sát mức độ tập trung dựa trên phân tích hành vi khuôn mặt và cảm xúc sử dụng trí tuệ nhân tạo được đề xuất. Hệ thống hướng tới việc xây dựng một giải pháp cân bằng: vừa đảm bảo tính chính xác trong việc đánh giá sự chú ý và chống gian lận, vừa tối ưu hóa hiệu năng xử lý ngay trên trình duyệt web, đồng thời bảo vệ tuyệt đối quyền riêng tư dữ liệu hình ảnh của người dùng.
 CH1_H2|Mục tiêu nghiên cứu
 Đề tài đặt ra các mục tiêu nghiên cứu cụ thể nhằm giải quyết các bài toán kỹ thuật và thực tiễn sau:
-Thứ nhất, nghiên cứu và xây dựng quy trình xử lý video hoàn toàn trên môi trường trình duyệt web, đảm bảo khả năng thực thi các mô hình trí tuệ nhân tạo ở tốc độ thời gian thực mà không gây gián đoạn trải nghiệm người dùng.
-Thứ hai, thiết kế các thuật toán định lượng hành vi khuôn mặt dựa trên Face Mesh. Trọng tâm là việc tính toán chỉ số EAR để phát hiện trạng thái buồn ngủ và ước lượng hướng đầu để xác định vùng chú ý của người dùng.
-Thứ ba, tích hợp mô hình mạng nơ-ron tích chập (CNN) để nhận diện cảm xúc khuôn mặt. Việc kết hợp dữ liệu cảm xúc vào mô hình đánh giá giúp hệ thống có cái nhìn sâu sắc hơn về trạng thái tâm lý của người học, thay vì chỉ dựa vào các cử động vật lý bề ngoài.
-Thứ tư, đề xuất và triển khai thuật toán tổng hợp Focus Score tối ưu. Thuật toán cần sử dụng kỹ thuật Sliding Window với độ phức tạp O(1) để đảm bảo hệ thống có thể hoạt động liên tục trong thời gian dài mà không bị tích lũy độ trễ.
-Thứ năm, xây dựng các cơ chế bảo mật và chống gian lận đa lớp, bao gồm xác thực danh tính sinh trắc học và thử thách Liveness Challenge, nhằm nâng cao tính tin cậy cho các phiên học tập và thi cử trực tuyến.
+
+1. Xây dựng quy trình xử lý trên trình duyệt: Nghiên cứu và triển khai xử lý video bằng Edge AI trên trình duyệt web, đảm bảo khả năng thực thi các mô hình trí tuệ nhân tạo ở tốc độ thời gian thực mà không gây gián đoạn trải nghiệm người dùng.
+2. Thiết kế thuật toán định lượng hành vi: Trích xuất lưới điểm mốc khuôn mặt (Face Mesh) để tính toán chỉ số EAR (phát hiện trạng thái buồn ngủ) và ước lượng hướng quay đầu (xác định vùng chú ý).
+3. Nhận diện cảm xúc (CNN): Tích hợp mô hình mạng nơ-ron tích chập để đánh giá cảm xúc khuôn mặt, giúp hệ thống có cái nhìn sâu sắc hơn về trạng thái tâm lý thay vì chỉ dựa vào cử động vật lý.
+4. Tối ưu thuật toán Focus Score: Đề xuất và triển khai thuật toán tổng hợp điểm số sử dụng cấu trúc Cửa sổ trượt (Sliding Window) với độ phức tạp $O(1)$ nhằm tránh tích lũy độ trễ trong các phiên giám sát kéo dài.
+5. Xây dựng cơ chế chống gian lận đa lớp: Đảm bảo tính minh bạch bằng cách xác thực danh tính sinh trắc học liên tục và áp dụng thử thách người thật (Liveness Challenge) ngẫu nhiên.
 CH1_H2|Đối tượng và phạm vi nghiên cứu
 Đối tượng nghiên cứu chính của đề tài là các kỹ thuật xử lý ảnh và Deep Learning ứng dụng trong việc nhận dạng đặc điểm khuôn mặt người. Cụ thể, đề tài đi sâu vào nghiên cứu các mô hình Lightweight CNN có khả năng chạy trên trình duyệt, các phương pháp trích xuất 468 điểm mốc khuôn mặt và thuật toán ước lượng hướng đầu từ ảnh 2D.
 Về phạm vi thực hiện, hệ thống được thiết kế dưới dạng ứng dụng web (Web Application), tập trung vào bối cảnh học tập trực tuyến và thi cử từ xa. Hệ thống hỗ trợ các loại máy tính cá nhân (laptop, PC) trang bị webcam tiêu chuẩn, hoạt động trên các trình duyệt hiện đại hỗ trợ công nghệ WebAssembly như Google Chrome, Microsoft Edge và Mozilla Firefox.
 CH1_H2|Phương pháp nghiên cứu
 Để thực hiện đề tài, một quy trình nghiên cứu có hệ thống đã được áp dụng, bao gồm các phương pháp sau:
-Phương pháp nghiên cứu lý thuyết: Tìm hiểu các công trình nghiên cứu trong và ngoài nước về bài toán phát hiện buồn ngủ, nhận diện cảm xúc và các thuật toán đánh giá sự tập trung. Nghiên cứu các tài liệu kỹ thuật về WebAssembly, TensorFlow.js và các framework hỗ trợ xử lý AI trên trình duyệt.
-Phương pháp nghiên cứu thực nghiệm: Xây dựng các phiên bản thử nghiệm để kiểm chứng tốc độ xử lý của từng thành phần trong quy trình. Thu thập dữ liệu phản hồi từ người dùng thực tế để điều chỉnh các ngưỡng của thuật toán tính điểm, nhằm đảm bảo hệ thống không quá nhạy gây cảnh báo sai nhưng cũng không quá chậm trễ khi người dùng mất tập trung.
-Phương pháp phân tích và so sánh: Đánh giá hiệu năng của hệ thống trong các điều kiện môi trường khác nhau (ánh sáng mạnh/yếu, khoảng cách xa/gần). So sánh kết quả của mô hình đề xuất với các phương pháp giám sát truyền thống về các tiêu chí: tốc độ phản hồi, mức tiêu thụ tài nguyên và tính bảo mật thông tin.
+
+- Phương pháp nghiên cứu lý thuyết: Tìm hiểu các công trình nghiên cứu trong và ngoài nước về bài toán phát hiện buồn ngủ, nhận diện cảm xúc và các thuật toán đánh giá sự tập trung. Nghiên cứu các tài liệu kỹ thuật về WebAssembly, MediaPipe và các framework hỗ trợ xử lý AI trên trình duyệt.
+- Phương pháp nghiên cứu thực nghiệm: Xây dựng các phiên bản thử nghiệm để kiểm chứng tốc độ xử lý của từng luồng thuật toán. Thu thập dữ liệu phản hồi từ người dùng thực tế để điều chỉnh các tham số (ngưỡng EAR, tần suất thử thách), đảm bảo độ phản hồi cân bằng.
+- Phương pháp phân tích và so sánh: Đánh giá hiệu năng của hệ thống trong nhiều điều kiện môi trường thực tế (ánh sáng, khoảng cách, thiết bị khác nhau). So sánh với các phương pháp giám sát truyền thống dựa trên 3 tiêu chí: tốc độ phản hồi, mức tiêu thụ tài nguyên (CPU/RAM) và tính bảo mật thông tin (Privacy by Design).
 CH1_H2|Ý nghĩa khoa học và thực tiễn của đề tài
 Về ý nghĩa khoa học, đề tài đã chứng minh tính khả thi của việc triển khai một hệ thống giám sát AI phức tạp hoàn toàn trên trình duyệt thông qua kiến trúc Edge AI mà không cần máy chủ hỗ trợ tính toán. Việc áp dụng thành công và tối ưu hóa thuật toán Sliding Window với độ phức tạp O(1) là một đóng góp quan trọng trong việc xử lý luồng dữ liệu thời gian thực trên môi trường web, giúp duy trì hiệu suất ổn định ngay cả với các phiên học tập và thi cử kéo dài.
 Về ý nghĩa thực tiễn, hệ thống cung cấp một giải pháp giám sát tập trung và chống gian lận có chi phí triển khai thấp do tận dụng tối đa tài nguyên tại thiết bị đầu cuối. Đặc biệt, với kiến trúc xử lý tại chỗ, hệ thống đảm bảo tính riêng tư tuyệt đối cho dữ liệu hình ảnh của người dùng, sẵn sàng để tích hợp vào các nền tảng học tập trực tuyến hiện nay nhằm nâng cao chất lượng đào tạo và tính minh bạch trong quá trình học tập và kiểm tra trực tuyến.
 CH1_H2|Cấu trúc báo cáo
-Báo cáo đồ án tốt nghiệp được tổ chức thành 5 chương chính
-Chương 1: Tổng quan về đề tài - Trình bày lý do, mục tiêu, đối tượng, phạm vi và phương pháp nghiên cứu.
-Chương 2: Cơ sở lý thuyết - Nghiên cứu các khái niệm về CNN, MediaPipe, WebAssembly và các mô hình toán học sử dụng trong hệ thống.
-Chương 3: Phân tích và thiết kế hệ thống - Mô tả kiến trúc Hybrid Client-Server, thiết kế thuật toán tính điểm và các quy trình xử lý dữ liệu.
-Chương 4: Triển khai và đánh giá - Trình bày kết quả thực nghiệm, ma trận nhầm lẫn và các kịch bản kiểm thử thực tế.
-Chương 5: Kết luận và hướng phát triển - Tổng kết các kết quả đạt được, chỉ ra các hạn chế và đề xuất hướng hoàn thiện trong tương lai.
+Báo cáo đồ án tốt nghiệp được tổ chức thành 5 chương chính:
+
+- Chương 1: Tổng quan về đề tài - Trình bày lý do, mục tiêu, đối tượng, phạm vi và phương pháp nghiên cứu.
+- Chương 2: Cơ sở lý thuyết - Nghiên cứu các khái niệm nền tảng về AI (CNN), MediaPipe, Edge Computing (WebAssembly) và các mô hình toán học áp dụng trong hệ thống.
+- Chương 3: Phân tích và thiết kế hệ thống - Đặc tả kiến trúc Hybrid Client-Server, luồng dữ liệu thời gian thực và thuật toán cốt lõi tính điểm tập trung.
+- Chương 4: Thực nghiệm và đánh giá - Trình bày kết quả triển khai thực tế, ma trận nhầm lẫn, khả năng chịu tải và phân tích phản hồi người dùng (khảo sát SUS).
+- Chương 5: Kết luận và hướng phát triển - Tổng kết các đóng góp, chỉ ra hạn chế kỹ thuật và đề xuất lộ trình nâng cấp trong tương lai.
 

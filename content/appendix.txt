@@ -10,16 +10,18 @@ Yêu cầu môi trường:
 - Webcam có độ phân giải tối thiểu 720p.
 
 Các bước khởi chạy Backend:
-- Bước 1: Sao chép tệp `.env.example` thành `.env` và điền thông tin kết nối database, SECRET_KEY và ALGORITHM (HS256).
-- Bước 2: Cài đặt các thư viện phụ thuộc bằng lệnh: `pip install -r requirements.txt`
-- Bước 3: Khởi chạy server với lệnh: `python app/main.py`
-- Bước 4: Backend tự động khởi tạo các bảng database và dữ liệu mẫu (seed) qua cơ chế lifespan. API được phục vụ tại `http://localhost:8000`.
+
+1. Sao chép tệp `.env.example` thành `.env` và điền thông tin kết nối database, `SECRET_KEY` và `ALGORITHM` (HS256).
+2. Cài đặt các thư viện phụ thuộc bằng lệnh: `pip install -r requirements.txt`
+3. Khởi chạy server với lệnh: `python app/main.py`
+4. Backend tự động khởi tạo các bảng database và dữ liệu mẫu (seed) qua cơ chế lifespan. API được phục vụ tại `http://localhost:8000`.
 
 Các bước khởi chạy Frontend:
-- Bước 1: Sao chép tệp `.env.example` thành `.env` và cập nhật địa chỉ Backend API.
-- Bước 2: Cài đặt các gói Node.js bằng lệnh: `npm install`
-- Bước 3: Khởi chạy giao diện bằng lệnh: `npm run dev`
-- Bước 4: Truy cập `http://localhost:5173` để sử dụng hệ thống.
+
+1. Sao chép tệp `.env.example` thành `.env` và cập nhật địa chỉ Backend API.
+2. Cài đặt các gói Node.js bằng lệnh: `npm install`
+3. Khởi chạy giao diện bằng lệnh: `npm run dev`
+4. Truy cập `http://localhost:5173` để sử dụng hệ thống.
 
 CH0_H2|Phụ lục B: Cấu trúc mã nguồn chính
 

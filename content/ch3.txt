@@ -31,11 +31,26 @@ CH3_IMAGE|usecase_diagram.png|Hình 3.1. Biểu đồ Use case tổng thể củ
 Các Use case được phân rã thành hai nhóm chức năng theo từng tác nhân. Bảng dưới đây đặc tả chi tiết từng Use case theo chuẩn UML, bao gồm tiền điều kiện, luồng chính và hậu điều kiện:
 
 1. Nhóm Use case của Sinh viên:
-- Đăng nhập (Login). Tiền điều kiện: Người dùng chưa được xác thực. Luồng chính: Sinh viên nhập thông tin đăng nhập; hệ thống kiểm tra thông tin với cơ sở dữ liệu (mật khẩu được băm bằng thuật toán bcrypt); nếu hợp lệ, hệ thống cấp phát JWT token và chuyển hướng vào trang chính. Hậu điều kiện: Phiên làm việc được khởi tạo, token JWT lưu trên trình duyệt.
-- Đăng ký định danh (Identity Registration). Tiền điều kiện: Sinh viên đã đăng nhập, chưa có dữ liệu khuôn mặt trong hệ thống. Luồng chính: Sinh viên cấp quyền truy cập camera; hệ thống AI kiểm tra chất lượng ánh sáng và góc mặt; nếu đạt tiêu chuẩn, trích xuất vector nhúng 256 chiều rồi lưu làm dữ liệu đối chiếu gốc. Hậu điều kiện: Dữ liệu sinh trắc học của sinh viên được lưu trữ trên máy chủ, sẵn sàng cho các phiên giám sát tiếp theo.
-- Quản lý phiên (Session Management). Tiền điều kiện: Sinh viên đã đăng nhập và đã hoàn tất đăng ký định danh. Luồng chính: Sinh viên khởi động phiên giám sát, camera bắt đầu thu hình; hệ thống AI phân tích liên tục theo thời gian thực; khi kết thúc, sinh viên đóng phiên và hệ thống lưu tổng kết. Hậu điều kiện: Dữ liệu phiên học/thi (điểm tập trung, chuỗi thời gian hành vi) được lưu trữ đầy đủ trên máy chủ.
-- Heartbeat (Đồng bộ trạng thái). Tiền điều kiện: Phiên giám sát đang hoạt động. Luồng chính (kích hoạt tự động - Include): Định kỳ mỗi 5 giây, AI cục bộ tổng hợp các chỉ số đã tính (EAR, góc quay đầu, Focus Score, kết quả đối chiếu danh tính), ký xác thực bằng HMAC và gửi lên máy chủ. Hậu điều kiện: Bản ghi viễn trắc mới được lưu; giảng viên thấy trạng thái sinh viên cập nhật trên Bảng điều khiển.
-- Phản hồi thử thách (Submit Challenge). Tiền điều kiện: Phiên giám sát đang hoạt động, hệ thống đã phát ra thử thách. Luồng chính: Màn hình hiển thị hướng dẫn cử động; sinh viên thực hiện trong vòng 15 giây; hệ thống đo góc quay thực tế và so sánh với yêu cầu. Hậu điều kiện: Nếu đạt, thử thách thành công; nếu thất bại hoặc hết giờ, hệ thống ghi nhận vi phạm và thông báo lên Bảng điều khiển.
+- Đăng nhập (Login):
+  + Tiền điều kiện: Người dùng chưa được xác thực.
+  + Luồng chính: Sinh viên nhập thông tin đăng nhập. Hệ thống kiểm tra thông tin với cơ sở dữ liệu (mật khẩu băm bằng bcrypt); nếu hợp lệ, hệ thống cấp phát JWT token và chuyển hướng vào trang chính.
+  + Hậu điều kiện: Phiên làm việc được khởi tạo, token JWT lưu trên trình duyệt.
+- Đăng ký định danh (Identity Registration):
+  + Tiền điều kiện: Sinh viên đã đăng nhập, chưa có dữ liệu khuôn mặt trong hệ thống.
+  + Luồng chính: Sinh viên cấp quyền truy cập camera; hệ thống kiểm tra chất lượng ánh sáng và góc mặt; nếu đạt tiêu chuẩn, trích xuất vector 256 chiều rồi lưu làm dữ liệu gốc.
+  + Hậu điều kiện: Dữ liệu sinh trắc học được lưu trữ, sẵn sàng cho các phiên giám sát.
+- Quản lý phiên (Session Management):
+  + Tiền điều kiện: Sinh viên đã đăng nhập và hoàn tất đăng ký định danh.
+  + Luồng chính: Sinh viên khởi động phiên giám sát. AI phân tích liên tục theo thời gian thực; khi kết thúc, hệ thống lưu tổng kết.
+  + Hậu điều kiện: Dữ liệu phiên học/thi được lưu trữ đầy đủ trên máy chủ.
+- Heartbeat (Đồng bộ trạng thái):
+  + Tiền điều kiện: Phiên giám sát đang hoạt động.
+  + Luồng chính (tự động): Định kỳ mỗi 5 giây, AI tổng hợp các chỉ số (EAR, Head Pose, Focus Score, kết quả đối chiếu), ký xác thực HMAC và gửi lên máy chủ.
+  + Hậu điều kiện: Bản ghi mới được lưu; Bảng điều khiển giảng viên được cập nhật.
+- Phản hồi thử thách (Submit Challenge):
+  + Tiền điều kiện: Phiên giám sát đang hoạt động, có thử thách được phát ra.
+  + Luồng chính: Màn hình hiển thị hướng dẫn cử động. Sinh viên thực hiện trong 15 giây; hệ thống đo góc quay thực tế và so sánh.
+  + Hậu điều kiện: Ghi nhận thành công hoặc vi phạm (nếu thất bại/hết giờ) và thông báo lên Bảng điều khiển.
 
 2. Nhóm Use case của Giảng viên / Quản trị viên:
 - Login (Đăng nhập). Tương tự như sinh viên nhưng hệ thống cấp phát token với quyền Admin, mở khóa toàn bộ các chức năng quản lý.
@@ -47,15 +62,11 @@ Các Use case được phân rã thành hai nhóm chức năng theo từng tác 
 CH3_H3|Biểu đồ hoạt động (Activity Diagram)
 Biểu đồ hoạt động mô tả luồng nghiệp vụ chính của hệ thống qua hai làn bơi (Swim Lane) tương ứng với hai thành phần: Client và Backend (Hình 3.2).
 
-Giai đoạn 1 — Khởi động phiên học/thi: Sinh viên nhấn nút bắt đầu. Hệ thống kiểm tra hai điều kiện: JWT token còn hiệu lực và camera đã được cấp quyền. Nếu một trong hai thất bại, giao diện hiển thị thông báo lỗi và dừng lại. Khi cả hai điều kiện thỏa mãn, hệ thống đồng thời khởi chạy hai luồng xử lý song song.
-
-Giai đoạn 2 — Luồng phân tích AI (chạy liên tục 60 FPS): Webcam liên tục cung cấp khung hình cho MediaPipe Face Mesh. Với mỗi khung hình, hệ thống phát hiện khuôn mặt, trích xuất 468 điểm mốc không gian, tính toán độ mở mắt (EAR) và góc quay đầu. Các chỉ số này được cập nhật vào bộ nhớ tạm (useRef) mà không kích hoạt việc kết xuất lại (re-render) giao diện, giúp duy trì hiệu năng 60 FPS ổn định.
-
-Giai đoạn 3 — Luồng đồng bộ Heartbeat (mỗi 5 giây): Định kỳ 5 giây, hệ thống đọc các chỉ số tổng hợp từ bộ nhớ tạm, ký xác thực bằng HMAC SHA-256 và gửi gói tin JSON lên Server. Phía Server xác minh chữ ký: nếu không hợp lệ, hệ thống ghi nhận cảnh báo giả mạo dữ liệu; nếu hợp lệ, Server lưu bản ghi vào PostgreSQL và cập nhật trạng thái trên Bảng điều khiển của giảng viên.
-
-Giai đoạn 4 — Thử thách Liveness (khi được kích hoạt): Thử thách có thể được kích hoạt theo hai cách: tự động khi Server phát hiện sinh viên có Attention Score liên tục thấp, hoặc thủ công khi giảng viên nhấn nút trên Bảng điều khiển. Màn hình sinh viên hiển thị yêu cầu thực hiện một cử động ngẫu nhiên trong vòng 15 giây. Nếu góc quay đầu đo được khớp với yêu cầu, thử thách được đánh dấu thành công. Nếu hết giờ hoặc không đạt, Server ghi nhận vi phạm và thông báo ngay lên Bảng điều khiển.
-
-Giai đoạn 5 — Kết thúc phiên học/thi: Khi sinh viên nhấn kết thúc, hai luồng song song dừng lại và hợp nhất. Server cập nhật trạng thái phiên thành COMPLETED, tính toán Focus Score tổng kết toàn phiên và lưu báo cáo cuối để giảng viên có thể xem lại sau.
+- **Giai đoạn 1 — Khởi động phiên học/thi:** Sinh viên nhấn nút bắt đầu. Hệ thống kiểm tra hai điều kiện (JWT token và quyền camera). Nếu một trong hai thất bại, hiển thị lỗi và dừng. Nếu thỏa mãn, khởi chạy hai luồng xử lý song song.
+- **Giai đoạn 2 — Luồng phân tích AI (chạy liên tục 60 FPS):** Webcam cung cấp khung hình cho MediaPipe Face Mesh. Hệ thống phát hiện khuôn mặt, trích xuất 468 điểm mốc, tính toán EAR và góc quay đầu. Chỉ số được cập nhật vào bộ nhớ tạm (useRef) để duy trì hiệu năng 60 FPS.
+- **Giai đoạn 3 — Luồng đồng bộ Heartbeat (mỗi 5 giây):** Hệ thống đọc chỉ số tổng hợp, ký xác thực HMAC SHA-256 và gửi lên Server. Server xác minh chữ ký; nếu hợp lệ sẽ lưu bản ghi vào PostgreSQL và cập nhật trạng thái lên Bảng điều khiển.
+- **Giai đoạn 4 — Thử thách Liveness:** Kích hoạt tự động (Focus Score thấp) hoặc thủ công. Sinh viên có 15 giây để thực hiện cử động theo hướng dẫn. Hệ thống đối chiếu góc quay thực tế để đánh giá đạt hay vi phạm.
+- **Giai đoạn 5 — Kết thúc phiên học/thi:** Hai luồng song song dừng lại. Server cập nhật trạng thái COMPLETED, tính toán Focus Score tổng kết và lưu báo cáo.
 
 CH3_IMAGE|activity_diagram.png|Hình 3.2. Biểu đồ hoạt động hệ thống giám sát
 
@@ -64,7 +75,10 @@ CH3_H2|Kiến trúc hệ thống Hybrid Client-Server
 Thay vì áp dụng mô hình Server-side AI truyền thống, hệ thống áp dụng kiến trúc Hybrid Client-Server, phân bổ tải trọng tính toán dựa trên nguyên tắc "xử lý dữ liệu ngay tại nguồn sinh ra" (Hình 3.3).
 
 CH3_H3|Biện luận Kiến trúc Hybrid Client-Server
-Trong mô hình này, Client đảm nhiệm toàn bộ khối lượng tính toán liên quan đến thị giác máy tính. Quá trình phát hiện khuôn mặt, trích xuất điểm mốc và chạy mô hình Deep Learning được thực thi cục bộ thông qua các công nghệ WebAssembly và WebGL. Backend tập trung vào vai trò tiếp nhận, lưu trữ và quản trị luồng dữ liệu viễn trắc. Quyết định dịch chuyển lõi AI xuống thiết bị đầu cuối thông qua tính toán biên xuất phát từ việc giải quyết triệt để ba thách thức lớn nhất của các hệ thống AI thời gian thực truyền thống. Đầu tiên là bài toán băng thông mạng: Thay vì ép mỗi sinh viên phải truyền tải một luồng video liên tục tiêu tốn từ 2 đến 10 Mbps lên đám mây để phân tích, trình duyệt sẽ tự đóng vai trò là trung tâm xử lý tại chỗ. Kết quả trích xuất được nén lại thành một chuỗi JSON siêu nhẹ (chỉ khoảng 300 byte) và gửi đi mỗi 5 giây. Khối lượng dữ liệu đẩy qua mạng giảm xuống hàng vạn lần, đảm bảo hệ thống vẫn mượt mà ngay cả khi sinh viên học tập hoặc thi cử ở những vùng có kết nối Internet kém. Rào cản thứ hai là vấn đề quyền riêng tư: Bằng cách giữ nguyên dữ liệu hình ảnh nhạy cảm trên thiết bị cục bộ, hệ thống miễn nhiễm hoàn toàn với các vụ rò rỉ dữ liệu hoặc tấn công đánh cắp hình ảnh trên đường truyền mạng. Cuối cùng là bài toán về khả năng mở rộng: Chi phí để duy trì một cụm máy chủ GPU đủ sức chạy AI thời gian thực cho hàng ngàn người là một con số khổng lồ. Kiến trúc Hybrid phân tán tải trọng tính toán này xuống chính thiết bị của sinh viên. Backend nhờ đó được giải phóng khỏi các tác vụ nặng, chỉ đóng vai trò ghi nhận trạng thái, cho phép hệ thống triển khai trên các máy chủ CPU thông thường nhưng vẫn chịu tải được hàng vạn sinh viên học/thi cùng lúc.
+Trong mô hình này, Client đảm nhiệm toàn bộ khối lượng tính toán liên quan đến thị giác máy tính (WebAssembly, WebGL). Backend chỉ tập trung tiếp nhận, lưu trữ và quản trị dữ liệu viễn trắc. Quyết định dịch chuyển lõi AI xuống thiết bị đầu cuối giúp giải quyết ba thách thức lớn:
+- **Bài toán băng thông mạng:** Thay vì truyền tải luồng video tốn kém (2-10 Mbps), trình duyệt tự xử lý tại chỗ và chỉ gửi đi chuỗi JSON siêu nhẹ (khoảng 300 byte) mỗi 5 giây. Giúp hệ thống hoạt động mượt mà ngay cả khi kết nối mạng kém.
+- **Vấn đề quyền riêng tư:** Toàn bộ dữ liệu hình ảnh nhạy cảm được giữ và xử lý trên thiết bị cục bộ, loại bỏ nguy cơ rò rỉ hình ảnh cá nhân trên đường truyền mạng.
+- **Khả năng mở rộng (Scalability):** Kiến trúc phân tán tải trọng giúp loại bỏ nhu cầu về các cụm máy chủ GPU đắt đỏ. Backend được giải phóng khỏi các tác vụ nặng, dễ dàng chịu tải hàng vạn sinh viên cùng lúc với chi phí hạ tầng tối thiểu.
 
 CH3_IMAGE|hybrid_architecture_diagram_1777606426835.png|Hình 3.3. Kiến trúc tổng thể Hybrid Client-Server
 
@@ -86,12 +100,18 @@ Quy trình chính hoạt động đệ quy liên tục dựa trên hàm `request
 
 CH3_IMAGE|pipeline_vi_new.png|Hình 3.4. Luồng xử lý phân tích hành vi thời gian thực
 
-CH3_IMAGE|face_biometric_auth_1777606446899.png|Hình 3.5. Quá trình đối chiếu vector danh tính
+CH3_IMAGE|face_biometric_auth.png|Hình 3.5. Quá trình đối chiếu vector danh tính
 
 CH3_H3|Thiết lập mô hình Zero Trust và bảo vệ luồng dữ liệu viễn trắc
-Khi dịch chuyển toàn bộ quá trình xử lý AI xuống thiết bị người dùng (Client-side), hệ thống phải đối mặt với một thách thức bảo mật cốt lõi: môi trường trình duyệt nằm hoàn toàn trong tầm kiểm soát của sinh viên. Theo nguyên tắc bảo mật thông tin, máy khách luôn bị xem là một môi trường không đáng tin cậy (Zero Trust). Nguy cơ sinh viên sử dụng các công cụ can thiệp bộ nhớ (RAM injection) hoặc đánh chặn gói tin HTTP để chỉnh sửa điểm số `focus_score` từ 0.2 (mất tập trung) thành 1.0 (tập trung) trước khi gửi về máy chủ là hoàn toàn hiện hữu. Bên cạnh đó, hệ thống còn phải đối phó với nguy cơ tấn công bằng hình ảnh giả mạo (Presentation Attack), khi sinh viên đặt một bức ảnh tĩnh hoặc phát một đoạn video quay sẵn trước webcam để đánh lừa thuật toán AI.
+Khi dịch chuyển toàn bộ quá trình xử lý AI xuống thiết bị người dùng (Client-side), hệ thống phải đối mặt với thách thức bảo mật cốt lõi: máy khách luôn bị xem là môi trường không đáng tin cậy (Zero Trust). Nguy cơ sinh viên sử dụng công cụ đánh chặn để chỉnh sửa điểm số `focus_score` từ 0.2 thành 1.0, hoặc dùng hình ảnh giả mạo tĩnh để đánh lừa thuật toán AI là hoàn toàn hiện hữu.
 
-Để triệt tiêu những rủi ro này, kiến trúc hệ thống áp dụng cơ chế bảo mật đa lớp khép kín. Lớp bảo vệ đầu tiên nhắm vào tính toàn vẹn của dữ liệu thông qua tiêu chuẩn chữ ký điện tử HMAC SHA-256 (Hash-based Message Authentication Code). Khi sinh viên đăng nhập thành công, máy chủ sẽ sinh ra một Khóa bí mật đối xứng (Symmetric Key) 256-bit độc bản và cấp phát an toàn cho phiên làm việc đó qua giao thức HTTPS. Trong quá trình học tập hoặc thi cử, cứ mỗi chu kỳ 5 giây, trình duyệt không chỉ đóng gói các số liệu viễn trắc thành một payload JSON mà còn phải sử dụng API window.crypto.subtle để băm toàn bộ payload này cùng với Khóa bí mật. Chuỗi Hash 256-bit sinh ra đóng vai trò như một "niêm phong điện tử" và được đính kèm vào HTTP Header. Khi tiếp nhận, máy chủ tách lấy payload nguyên bản và tự tính toán lại mã Hash bằng Khóa bí mật đang lưu trữ ở backend. Đặc tính nổi bật của thuật toán SHA-256 là "hiệu ứng tuyết lở" (Avalanche Effect): chỉ một sự thay đổi cực nhỏ trên payload (ví dụ sửa giá trị thập phân của điểm số) cũng khiến mã Hash sinh ra khác biệt hoàn toàn. Nếu hai mã Hash không trùng khớp, máy chủ lập tức từ chối gói tin với mã lỗi 403 Forbidden. Lớp bảo vệ thứ hai nhắm vào tính trung thực của hình ảnh thông qua cơ chế Liveness Challenge (Hình 3.6). Thay vì xác thực tĩnh, hệ thống sử dụng thuật toán xác suất ngẫu nhiên để kích hoạt yêu cầu sinh viên thực hiện chuyển động vật lý. Ngay lúc này, thuật toán xử lý cục bộ sẽ trích xuất đạo hàm góc quay theo thời gian thực từ ma trận Face Mesh 3D. Nếu quỹ đạo góc quay không khớp với bài thử thách trong thời gian đếm ngược 15 giây, hệ thống nhận định đây là hình ảnh giả mạo tĩnh, lập tức khóa phiên học/thi và gửi cảnh báo trực tiếp cho giảng viên giám thị.
+Để triệt tiêu rủi ro, hệ thống áp dụng cơ chế bảo mật đa lớp khép kín:
+
+**1. Bảo vệ tính toàn vẹn dữ liệu (HMAC SHA-256)**
+Khi đăng nhập, máy chủ sinh ra một Khóa bí mật đối xứng (Symmetric Key) độc bản. Định kỳ 5 giây, trình duyệt không chỉ đóng gói payload JSON mà còn dùng Web Crypto API để băm toàn bộ payload bằng khóa bí mật này, tạo ra một "niêm phong điện tử" gửi trong HTTP Header. Nhờ "hiệu ứng tuyết lở" (Avalanche Effect) của thuật toán SHA-256, bất kỳ can thiệp dù nhỏ nhất vào payload cũng sẽ thay đổi hoàn toàn mã Hash. Khi tiếp nhận, máy chủ tính toán lại và từ chối gói tin nếu có sự sai lệch.
+
+**2. Bảo vệ tính trung thực bằng Thử thách Liveness (Hình 3.6)**
+Để ngăn chặn tấn công bằng hình ảnh tĩnh hoặc video giả mạo (Presentation Attack), hệ thống kích hoạt ngẫu nhiên yêu cầu sinh viên thực hiện chuyển động vật lý cụ thể. Thuật toán trích xuất đạo hàm góc quay theo thời gian thực từ ma trận 3D; nếu quỹ đạo chuyển động không khớp với yêu cầu trong 15 giây, hệ thống khóa phiên và ghi nhận vi phạm.
 
 CH3_IMAGE|liveness_vi2_1777524433515.png|Hình 3.6. Luồng xác thực người thật (Liveness Challenge)
 
@@ -106,9 +126,13 @@ Thay vì tính toán trung bình cộng tuyến tính $O(n)$ truyền thống ch
 CH3_IMAGE|sliding_window_diagram.png|Hình 3.7. Cửa sổ trượt đánh giá trạng thái
 
 CH3_H2|Kiến trúc Frontend và tối ưu hóa luồng hiển thị
-Giao diện người dùng (Frontend) không đơn thuần chỉ là nơi hiển thị thông tin mà còn là nền tảng trực tiếp gánh vác toàn bộ khối lượng tính toán AI của hệ thống. Một trong những nút thắt kỹ thuật lớn nhất khi phát triển ứng dụng thời gian thực trên ReactJS là việc quản lý vòng đời kết xuất (Render Lifecycle). Theo mặc định, mỗi khi trạng thái (State) thay đổi, React sẽ kích hoạt thuật toán đối chiếu Virtual DOM để cập nhật lại giao diện. Tuy nhiên, luồng phân tích Face Mesh của hệ thống hoạt động đệ quy liên tục 60 lần mỗi giây. Nếu hệ thống lưu trữ tọa độ điểm mốc hoặc điểm số tức thời trực tiếp vào trạng thái Component thông qua Hook `useState`, trình duyệt sẽ bị ép buộc phải tính toán lại toàn bộ cấu trúc DOM 60 lần trong một giây. Khối lượng công việc khổng lồ này lập tức vượt quá giới hạn của Luồng chính (Main Thread), gây ra hiện tượng đơ cứng giao diện (UI Freeze) và kích hoạt quá trình thu gom rác bộ nhớ (Garbage Collection) liên tục, khiến thiết bị của sinh viên nóng lên nhanh chóng.
+Giao diện người dùng (Frontend) không đơn thuần chỉ hiển thị thông tin mà còn trực tiếp gánh vác toàn bộ tính toán AI. Nút thắt lớn nhất của ReactJS là quản lý vòng đời kết xuất (Render Lifecycle). Luồng phân tích Face Mesh hoạt động 60 lần/giây; nếu lưu trữ điểm mốc tức thời vào trạng thái Component (`useState`), trình duyệt sẽ bị ép kết xuất lại cấu trúc DOM 60 lần/giây, gây đơ cứng giao diện (UI Freeze) và tràn bộ nhớ.
 
-Để giải quyết triệt để nút thắt này, kiến trúc Frontend được thiết kế phân tách giữa dữ liệu điện toán và dữ liệu hiển thị. Toàn bộ khối dữ liệu biến thiên ở tần số cao được cô lập hoàn toàn vào trong useRef. Bản chất của useRef là cung cấp một vùng nhớ tham chiếu tồn tại xuyên suốt vòng đời của Component, cho phép vòng lặp AI đọc/ghi dữ liệu liên tục 60 FPS mà không kích hoạt kết xuất lại (re-render). Giao diện chỉ thực sự được cập nhật mỗi 5 giây khi gói tin đã được gửi thành công, hoặc ngay lập tức khi phát hiện hành vi gian lận cần cảnh báo. Sự kết hợp giữa WebAssembly ở tầng tính toán và chiến lược useRef ở tầng giao diện giúp giải phóng gánh nặng cho Luồng chính. Nhờ đó, mức tiêu thụ CPU luôn được duy trì ổn định, đảm bảo giao diện mượt mà và cho phép sinh viên học tập hoặc làm bài thi liên tục hàng giờ liền mà không gặp tình trạng tràn bộ nhớ hay giảm sút hiệu năng.
+Để giải quyết, kiến trúc Frontend được thiết kế phân tách rõ ràng giữa dữ liệu điện toán và dữ liệu hiển thị:
+- **Sử dụng useRef cho dữ liệu tần số cao:** Toàn bộ dữ liệu AI (60 FPS) được cô lập vào `useRef`. Vùng nhớ này duy trì tham chiếu xuyên suốt mà không kích hoạt kết xuất lại (re-render) khi thay đổi.
+- **Cập nhật giao diện có kiểm soát:** Trạng thái giao diện chỉ thực sự được cập nhật mỗi 5 giây (khi gói tin gửi thành công) hoặc khi phát hiện vi phạm.
+
+Chiến lược này kết hợp với WebAssembly giúp giải phóng hoàn toàn Luồng chính (Main Thread), duy trì mức CPU thấp, đảm bảo thiết bị sinh viên không bị nóng và hoạt động mượt mà trong nhiều giờ liên tục.
 
 Giao diện hệ thống được thiết kế theo hướng hiện đại, đơn giản hóa và tập trung vào người dùng (User-Centric Design), nhằm đáp ứng đặc thù của một hệ thống hoạt động thời gian thực. Bên cạnh đó, hệ thống tích hợp khả năng đa ngôn ngữ (Tiếng Anh và Tiếng Việt), cho phép người dùng linh hoạt chuyển đổi giao diện theo nhu cầu, đảm bảo tính tiếp cận cho nhiều đối tượng sinh viên khác nhau.
 
