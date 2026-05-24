@@ -170,4 +170,29 @@ Trong môi trường thực tế, hệ thống phải đối mặt với nhiều
 - Vật cản trên khuôn mặt: Kính mắt có thể gây phản xạ che khuất vùng mắt, trong khi khẩu trang che khuất phần dưới khuôn mặt gây ảnh hưởng đến việc xác định điểm mốc môi và cằm.
 - Góc đặt camera: Camera đặt quá thấp hoặc quá cao sẽ gây biến dạng tỷ lệ hình học, dẫn đến sai lệch trong việc tính toán góc Pitch.
 - Sự khác biệt sinh học cá nhân: Chỉ số EAR "bình thường" của mỗi người là khác nhau (ví dụ: người có cấu trúc mắt to sẽ có EAR cao hơn người mắt nhỏ dù cả hai đều đang tỉnh táo). Nếu sử dụng một ngưỡng EAR cố định, hệ thống sẽ dễ phát sinh các cảnh báo dương tính giả (False Positive) đối với những người có mắt nhỏ.
-Giải pháp: ngưỡng thích ứng — trong 30 giây đầu phiên, hệ thống ghi nhận phân bố EAR của người dùng hiện tại và tự động điều chỉnh ngưỡng phân loại riêng cho từng người. Phương pháp này đảm bảo công bằng và chính xác hơn đáng kể so với ngưỡng toàn cục cố định.
+- Giải pháp: ngưỡng thích ứng — trong 30 giây đầu phiên, hệ thống ghi nhận phân bố EAR của người dùng hiện tại và tự động điều chỉnh ngưỡng phân loại riêng cho từng người. Phương pháp này đảm bảo công bằng và chính xác hơn đáng kể so với ngưỡng toàn cục cố định.
+
+CH2_H2|Tổng quan các nghiên cứu và hệ thống liên quan
+CH2_H3|Các hệ thống giám sát thi cử trực tuyến hiện có
+Trong những năm gần đây, nhiều nền tảng giám sát thi cử trực tuyến (Online Proctoring) đã được phát triển và triển khai rộng rãi trên quy mô toàn cầu. Nigam và cộng sự (2021) đã thực hiện khảo sát hệ thống (systematic review) về các giải pháp giám sát thi cử dựa trên AI, phân loại thành ba thế hệ chính: giám thị viên trực tuyến (live proctoring) như ProctorU, giám sát hoàn toàn tự động (automated proctoring) như Proctorio, và phân tích sau phiên thi (post-exam review) như ExamSoft [17]. Nghiên cứu của Alessio và cộng sự (2017) đã chứng minh rằng việc áp dụng giám sát trực tuyến có tác động tích cực đến tính trung thực của kết quả thi, khi điểm thi có giám sát thấp hơn đáng kể so với thi không giám sát trên cùng nhóm sinh viên [16]. Tuy nhiên, các hệ thống thương mại hiện tại đều chia sẻ một số hạn chế chung: yêu cầu cài đặt phần mềm chuyên dụng trên máy thí sinh, truyền tải toàn bộ luồng video lên máy chủ (tốn băng thông lớn và gây nguy cơ rò rỉ dữ liệu riêng tư), và chi phí vận hành cao do phụ thuộc vào hạ tầng GPU phía máy chủ để xử lý AI. Coghlan và cộng sự (2021) đã phân tích các khía cạnh đạo đức của công nghệ giám sát thi cử, cảnh báo rằng việc thu thập và truyền tải dữ liệu sinh trắc học qua mạng tạo ra nguy cơ giám sát quá mức (over-surveillance) và xâm phạm quyền riêng tư người học [18].
+
+CH2_H3|Các nghiên cứu về phát hiện mức độ tập trung và buồn ngủ
+Lĩnh vực phát hiện trạng thái buồn ngủ và mức độ chú ý đã có nhiều nghiên cứu đáng kể. Dewi và cộng sự (2022) đề xuất hệ thống phát hiện buồn ngủ thời gian thực sử dụng chỉ số EAR kết hợp với mô hình trích xuất điểm mốc khuôn mặt, đạt độ chính xác 94% trên bộ dữ liệu thực tế [19]. Tuy nhiên, hệ thống này chỉ phát hiện trạng thái buồn ngủ đơn lẻ mà không tích hợp đánh giá tổng hợp mức độ tập trung. Về bài toán đo lường sự chú ý trong giáo dục, Dewan và cộng sự (2019) đã thực hiện khảo sát toàn diện, phân loại các phương pháp thành ba nhóm: dựa trên cảm biến sinh lý (EEG, GSR), dựa trên thị giác máy tính (theo dõi ánh mắt, biểu cảm khuôn mặt) và dựa trên hành vi tương tác (nhấp chuột, gõ phím) [20]. Nghiên cứu chỉ ra rằng phương pháp thị giác máy tính đạt sự cân bằng tốt nhất giữa chi phí triển khai và độ chính xác cho bối cảnh giáo dục. Gần đây hơn, Abedi và Shirmohammadi (2023) đã đề xuất khung giám sát thi trực tuyến dựa trên AI với khả năng phát hiện đa hành vi (multi-behavior detection), bao gồm phát hiện vắng mặt, nhìn ngoài màn hình và có người lạ trong khung hình [21]. Tuy vậy, các hệ thống nêu trên đều xử lý AI trên máy chủ hoặc thiết bị nhúng chuyên dụng, chưa có giải pháp nào triển khai hoàn toàn trên trình duyệt web.
+
+CH2_H3|Định vị hệ thống đề xuất trong bối cảnh nghiên cứu
+Bảng dưới đây tổng hợp so sánh giữa hệ thống đề xuất trong đồ án và các giải pháp tiêu biểu:
+
+| Tiêu chí | Hệ thống thương mại (ProctorU, Proctorio) [17] | Dewi và cs. (2022) [19] | Abedi và cs. (2023) [21] | Hệ thống đề xuất |
+| Nền tảng xử lý AI | Máy chủ (Cloud) | Thiết bị nhúng | Máy chủ (Cloud) | Trình duyệt web (Edge AI) |
+| Cài đặt phần mềm | Bắt buộc | Bắt buộc | Bắt buộc | Không cần |
+| Truyền video lên server | Có (toàn bộ) | Không | Có (toàn bộ) | Không (chỉ gửi JSON ~300 byte) |
+| Bảo vệ quyền riêng tư | Thấp | Cao | Thấp | Cao (Privacy by Design) |
+| Phát hiện buồn ngủ (EAR) | Có | Có | Không | Có |
+| Ước lượng hướng đầu | Có | Không | Có | Có (5 trạng thái, O(1)) |
+| Nhận diện cảm xúc | Không | Không | Không | Có (7 trạng thái) |
+| Xác thực danh tính liên tục | Có | Không | Có | Có (ResNet-34, HNSW) |
+| Chống giả mạo (Liveness) | Giám thị viên | Không | Không | Tự động (Liveness Challenge) |
+| Tổng hợp điểm tập trung | Không công khai | Không | Không | Có (Sliding Window O(1)) |
+| Chi phí vận hành | Cao (GPU server) | Thấp | Cao (GPU server) | Thấp (Edge AI) |
+
+Qua bảng so sánh, hệ thống đề xuất có hai lợi thế cạnh tranh chính: (1) khả năng chạy hoàn toàn trên trình duyệt web mà không cần cài đặt phần mềm nhờ kiến trúc Edge AI, và (2) bảo vệ quyền riêng tư dữ liệu hình ảnh do toàn bộ xử lý thị giác máy tính diễn ra tại máy khách. Ngoài ra, hệ thống là giải pháp duy nhất trong bảng so sánh tích hợp đồng thời cả ba tín hiệu hành vi (EAR, hướng đầu, cảm xúc) vào một thuật toán tổng hợp điểm tập trung duy nhất. Tuy nhiên, hệ thống cũng có hạn chế so với các giải pháp thương mại về quy mô kiểm thử thực tế và các tính năng nâng cao (như phát hiện Deepfake, phân tích âm thanh môi trường).

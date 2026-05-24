@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<!-- Nhúng thư viện icon FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    .container { display: flex; align-items: center; gap: 25px; position: relative; padding: 70px 40px 40px; background: white; border: 1px solid #e5e7eb; box-shadow: 0 15px 35px rgba(0,0,0,0.08); border-radius: 12px;}
+    
+    .main-title { position: absolute; top: 20px; width: 100%; text-align: center; color: #0f172a; margin: 0; left: 0; font-size: 24px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;}
+    
+    .box-main { border: 2px solid; border-radius: 12px; width: 380px; padding: 25px; text-align: center; background: white; box-shadow: inset 0 0 20px rgba(0,0,0,0.02);}
+    .client-box { border-color: #3b82f6; background: linear-gradient(to bottom, #f0f7ff, #ffffff); }
+    .server-box { border-color: #10b981; background: linear-gradient(to bottom, #f0fdf4, #ffffff); }
+    
+    .title { font-weight: 800; font-size: 18px; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; gap: 8px;}
+    .client-title { color: #1e3a8a; }
+    .server-title { color: #064e3b; }
+    
+    .inner-box { background: white; border: 1px solid; border-radius: 8px; padding: 12px 15px; margin: 12px 0; font-size: 14px; font-weight: 600; color: #334155; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: center; gap: 8px;}
+    .client-inner { border-color: #93c5fd; }
+    .server-inner { border-color: #6ee7b7; }
+    
+    .inner-box i { font-size: 16px; opacity: 0.8; }
+    .client-inner i { color: #2563eb; }
+    .server-inner i { color: #059669; }
+    
+    .arrow-down { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid; margin: -5px auto 0; }
+    .client-arrow { border-top-color: #3b82f6; }
+    .server-arrow { border-top-color: #10b981; }
+
+    .middle-arrows { display: flex; flex-direction: column; justify-content: center; gap: 90px; width: 220px; position: relative; }
+    .arrow-container { text-align: center; position: relative; }
+    .arrow-text { font-size: 13px; color: #d97706; font-weight: bold; margin-bottom: 8px; }
+    .arrow-text.red { color: #dc2626; }
+    .arrow-sub { font-size: 12px; color: #b45309; margin-top: 8px; font-style: italic;}
+    .arrow-sub.red { color: #b91c1c; }
+    .arrow-line { height: 3px; background: #f59e0b; width: 100%; position: relative; }
+    .arrow-line.red { background: #ef4444; }
+    .arrow-head-right { position: absolute; right: -5px; top: -5px; width: 0; height: 0; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-left: 12px solid #f59e0b; }
+    .arrow-head-left { position: absolute; left: -5px; top: -5px; width: 0; height: 0; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-right: 12px solid #ef4444; }
+
+    .tag { font-size: 11px; background: #e2e8f0; padding: 3px 6px; border-radius: 4px; color: #475569; font-weight: 700; margin-left: auto; border: 1px solid #cbd5e1;}
+    .group-box { border: 1.5px dashed #93c5fd; padding: 15px; border-radius: 8px; margin: 15px 0; background: rgba(255,255,255,0.7); position: relative;}
+    .group-title { font-size: 12px; color: #1d4ed8; font-weight: 800; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 6px;}
+</style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="main-title">HYBRID CLIENT-SERVER ARCHITECTURE</h2>
+        
+        <div class="box-main client-box">
+            <div class="title client-title"><i class="fa-brands fa-react fa-lg"></i> Web Browser (Client - Edge AI)</div>
+            
+            <div class="inner-box client-inner"><i class="fa-solid fa-video"></i> Webcam Input</div>
+            <div class="arrow-down client-arrow"></div>
+            
+            <div class="group-box">
+                <div class="group-title"><i class="fa-solid fa-microchip"></i> Processing Engine</div>
+                <div class="inner-box client-inner" style="margin: 6px 0; justify-content: flex-start;">
+                    <i class="fa-solid fa-vr-cardboard"></i> MediaPipe Face Mesh <span class="tag">WASM</span>
+                </div>
+                <div class="inner-box client-inner" style="margin: 6px 0; justify-content: flex-start;">
+                    <i class="fa-solid fa-face-smile"></i> Emotion CNN (face-api.js)
+                </div>
+                <div class="inner-box client-inner" style="margin: 6px 0; justify-content: flex-start;">
+                    <i class="fa-solid fa-fingerprint"></i> FaceNet / ResNet-34 <span class="tag">WASM</span>
+                </div>
+            </div>
+            <div class="arrow-down client-arrow"></div>
+            
+            <div class="inner-box client-inner" style="flex-direction: column; gap: 5px;">
+                <div style="display: flex; align-items: center; gap: 6px; font-weight: 800; color: #1d4ed8;"><i class="fa-solid fa-magnifying-glass-chart"></i> Data Extraction</div>
+                <span style="font-size: 12px; color: #475569; font-weight: 600;">EAR & Head Pose | 7 Emotions | 256-dim Vector</span>
+            </div>
+            <div class="arrow-down client-arrow"></div>
+            
+            <div class="inner-box client-inner"><i class="fa-solid fa-gauge-high"></i> Focus Score & Rule Engine</div>
+        </div>
+        
+        <div class="middle-arrows">
+            <div class="arrow-container">
+                <div class="arrow-text"><i class="fa-solid fa-file-code"></i> JSON Telemetry + Vector + HMAC</div>
+                <div class="arrow-line"><div class="arrow-head-right"></div></div>
+                <div class="arrow-sub">(Sent every 5 seconds)</div>
+            </div>
+            
+            <div class="arrow-container">
+                <div class="arrow-text red"><i class="fa-solid fa-shield-cat"></i> Liveness Challenge</div>
+                <div class="arrow-line red"><div class="arrow-head-left"></div></div>
+                <div class="arrow-sub red">(Random verification)</div>
+            </div>
+        </div>
+        
+        <div class="box-main server-box">
+            <div class="title server-title"><i class="fa-solid fa-server fa-lg"></i> FastAPI Server (Backend)</div>
+            
+            <div class="inner-box server-inner"><i class="fa-solid fa-network-wired"></i> REST API Gateway</div>
+            <div class="arrow-down server-arrow"></div>
+            
+            <div class="inner-box server-inner" style="flex-direction: column; gap: 5px;">
+                <div style="display: flex; align-items: center; gap: 6px;"><i class="fa-solid fa-shield-halved"></i> JWT Auth & HMAC Validation</div>
+                <div style="color: #ef4444; font-size: 12px; font-weight: 800;"><i class="fa-solid fa-ban"></i> Zero-Trust: Drop delay > 30s</div>
+            </div>
+            <div class="arrow-down server-arrow"></div>
+            
+            <div class="inner-box server-inner"><i class="fa-solid fa-layer-group"></i> Telemetry & Violations Aggregation</div>
+            <div class="arrow-down server-arrow"></div>
+            
+            <div class="inner-box server-inner"><i class="fa-solid fa-database"></i> PostgreSQL + pgvector DB</div>
+        </div>
+    </div>
+</body>
+</html>

@@ -288,6 +288,31 @@ def parse_file(doc, filepath):
 
     in_code_block = False
     code_lines = []
+    
+    table_lines = []
+    
+    def flush_table():
+        if not table_lines: return
+        data_lines = [l for l in table_lines if not re.match(r'^\|[\-\s\|]+\|$', l.strip())]
+        if data_lines:
+            rows = len(data_lines)
+            cols = len(data_lines[0].strip().strip('|').split('|'))
+            table = doc.add_table(rows=rows, cols=cols)
+            table.style = 'Table Grid'
+            for r_idx, l in enumerate(data_lines):
+                cells = [c.strip() for c in l.strip().strip('|').split('|')]
+                for c_idx, cell_text in enumerate(cells):
+                    if c_idx < cols:
+                        cell = table.cell(r_idx, c_idx)
+                        cell.text = cell_text
+                        for p in cell.paragraphs:
+                            for r in p.runs:
+                                r.font.name = 'Times New Roman'
+                                r.font.size = Pt(13)
+                                if r_idx == 0:
+                                    r.bold = True
+            doc.add_paragraph()
+        table_lines.clear()
 
     for line in lines_all:
             line = line.rstrip('\n\r')
@@ -295,6 +320,7 @@ def parse_file(doc, filepath):
 
             # --- Code block fence detection ---
             if stripped.startswith('```'):
+                if table_lines: flush_table()
                 if not in_code_block:
                     in_code_block = True
                     code_lines = []
@@ -307,6 +333,13 @@ def parse_file(doc, filepath):
             if in_code_block:
                 code_lines.append(line)
                 continue
+                
+            # --- Table block detection ---
+            if stripped.startswith('|') and stripped.endswith('|'):
+                table_lines.append(stripped)
+                continue
+            elif table_lines:
+                flush_table()
 
             if not stripped: continue
 
@@ -428,6 +461,9 @@ def parse_file(doc, filepath):
                                     cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
                                 else:
                                     para(doc, stripped)
+    
+    if table_lines:
+        flush_table()
 
 def generate_cover_page(doc):
     """Hàm tạo trang bìa chuẩn cho Word (Anh có thể chỉnh sửa khoảng cách, text ở đây)"""

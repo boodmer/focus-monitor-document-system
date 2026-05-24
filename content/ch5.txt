@@ -7,6 +7,16 @@ Trải qua thời gian nghiên cứu và thực hiện, em đã triển khai th�
 3. Ứng dụng kiến trúc lai (Hybrid Client-Server): Việc đẩy phần tính toán hình ảnh nặng nề xuống máy sinh viên giúp máy chủ không bị quá tải mạng, tiết kiệm chi phí vận hành và bảo mật hoàn toàn hình ảnh riêng tư của người dùng.
 4. Xây dựng cơ chế chống gian lận (Anti-Spoofing): Kết hợp đối chiếu khuôn mặt liên tục và các bài kiểm tra phản xạ ngẫu nhiên (Liveness Challenge) nhằm ngăn chặn tình trạng nhờ người thi hộ hoặc dùng ảnh/video giả mạo.
 5. Giao diện thân thiện, dễ sử dụng: Hệ thống có hỗ trợ song ngữ (Anh/Việt) và hiển thị biểu đồ trực quan, giúp cả giảng viên lẫn sinh viên dễ dàng làm quen và sử dụng.
+
+Bảng dưới đây đối chiếu cụ thể từng mục tiêu nghiên cứu đặt ra tại Chương 1 với kết quả đạt được:
+
+| STT | Mục tiêu nghiên cứu (Chương 1) | Kết quả đạt được | Chương trình bày |
+| 1 | Xây dựng quy trình xử lý AI trên trình duyệt | MediaPipe Face Mesh + face-api.js chạy qua WebAssembly, đạt 58.2 FPS trung bình trên phần cứng phổ thông | Chương 2 (mục 2.3, 2.5), Chương 3 (mục 3.3), Chương 4 (mục 4.3) |
+| 2 | Thiết kế thuật toán định lượng hành vi (EAR, Head Pose) | Chỉ số EAR đạt 94.2% độ chính xác (benchmark CEW), hướng đầu phân loại 5 trạng thái với độ phức tạp O(1) | Chương 2 (mục 2.4), Chương 3 (mục 3.4), Chương 4 (mục 4.2) |
+| 3 | Nhận diện cảm xúc bằng mạng CNN | Phân loại 7 trạng thái cảm xúc, trạng thái Neutral đạt 92.4% (benchmark FER-2013) | Chương 2 (mục 2.4.4), Chương 4 (mục 4.2) |
+| 4 | Tối ưu thuật toán Focus Score với độ phức tạp O(1) | Sliding Window với Ring Buffer (Float64Array), xử lý cửa sổ 5 phút (18.000 mẫu) không tích lũy độ trễ | Chương 3 (mục 3.4), Chương 4 (mục 4.3) |
+| 5 | Xây dựng cơ chế chống gian lận đa lớp | HMAC SHA-256 bảo vệ toàn vẹn gói tin + Liveness Challenge ngẫu nhiên + Xác thực danh tính liên tục (ResNet-34, 99.38% trên LFW) | Chương 3 (mục 3.3.2), Chương 4 (mục 4.4) |
+
 CH5_H2|Hạn chế
 Mặc dù đã nỗ lực hết sức để hoàn thiện hệ thống, quá trình nghiên cứu và phát triển vẫn tồn tại một số điểm hạn chế nhất định:
 
@@ -14,7 +24,7 @@ Mặc dù đã nỗ lực hết sức để hoàn thiện hệ thống, quá tr�
 - Hạn chế của mô hình AI có sẵn: Do sử dụng các mô hình AI được huấn luyện sẵn trên dữ liệu chung, hệ thống đôi khi nhận diện chưa tốt với một số sinh viên có nét mặt đặc thù hoặc đeo kính gọng quá dày che khuất phần mắt.
 - Mới chỉ đánh giá qua khuôn mặt: Hiện tại, hệ thống chỉ dựa vào hình ảnh camera để chấm điểm. Trong thực tế, sự tập trung của sinh viên còn thể hiện qua nhiều hành động khác như nhịp độ gõ phím, thao tác rê chuột hay âm thanh xung quanh.
 - Nguy cơ gian lận bằng phần mềm (Camera ảo và Deepfake): Dù cơ chế Liveness Challenge có thể chống lại việc dùng ảnh tĩnh hay phát lại video quay sẵn một cách hiệu quả, hệ thống hiện tại vẫn gặp khó khăn nếu sinh viên tinh vi sử dụng công nghệ hoán đổi khuôn mặt theo thời gian thực (Real-time Face Swap / Deepfake) kết hợp với Camera ảo để đánh lừa cả AI lẫn người giám sát.
-- Đánh giá sai do thói quen cá nhân: Mỗi người có một cách tập trung khác nhau (ví dụ: có sinh viên thói quen nhìn ra ngoài cửa sổ để suy nghĩ, hoặc người mắc chứng ADHD thường hay lắc lư đầu). Việc AI mặc định "phải nhìn thẳng vào màn hình mới là tập trung" có thể trừ điểm oan những trường hợp này, do đó vẫn cần sự đánh giá linh hoạt từ phía giảng viên.
+- Đánh giá sai do thói quen cá nhân: Mỗi người có một cách tập trung khác nhau (ví dụ: có sinh viên thói quen nhìn ra ngoài cửa sổ hoặc ngước lên trần nhà để suy nghĩ). Việc AI mặc định "phải nhìn thẳng vào màn hình mới là tập trung" có thể trừ điểm oan những trường hợp này, do đó vẫn cần sự đánh giá linh hoạt từ phía giảng viên.
 CH5_H2|Giá trị ứng dụng thực tế
 Sản phẩm của đồ án mang lại những giá trị thực tiễn rất lớn, không chỉ giới hạn trong môi trường giáo dục:
 - Đối với nhà trường: Hệ thống cung cấp một công cụ đắc lực để duy trì kỷ luật và sự trung thực trong quá trình học và thi trực tuyến, góp phần nâng cao uy tín của các chương trình đào tạo từ xa. Hệ thống cũng giúp tự động hóa quá trình giám thị, giảm bớt gánh nặng về nhân sự và chi phí cho nhà trường.
@@ -29,6 +39,11 @@ Từ những hạn chế đã nhìn nhận, em đề xuất các hướng phát 
 4. Đóng gói theo chuẩn giáo dục quốc tế (LTI): Biến hệ thống thành một tiện ích mở rộng chuẩn hóa, cho phép các trường đại học dễ dàng "lắp ghép" trực tiếp vào các nền tảng học trực tuyến lớn (như Moodle, Canvas) chỉ với vài thao tác.
 5. Đo nhịp tim không chạm (công nghệ rPPG): Ứng dụng AI phân tích những thay đổi siêu nhỏ về màu sắc trên da mặt qua camera để đo nhịp tim sinh viên. Điều này không chỉ giúp đánh giá sự tập trung mà còn phát hiện được mức độ căng thẳng (stress) của sinh viên trong quá trình làm bài.
 
+CH5_H2|Thảo luận về khía cạnh đạo đức
+Việc triển khai hệ thống giám sát dựa trên AI trong môi trường giáo dục đặt ra những câu hỏi đạo đức quan trọng cần được cân nhắc kỹ lưỡng. Coghlan và cộng sự (2021) đã chỉ ra rằng các công nghệ giám sát thi cử trực tuyến, dù mang lại lợi ích về tính minh bạch, vẫn tiềm ẩn nguy cơ xâm phạm quyền riêng tư và tạo ra áp lực tâm lý bị theo dõi quá mức cho người học [18].
+Trong bối cảnh đó, hệ thống đề xuất đã nỗ lực giải quyết vấn đề đạo đức thông qua một số nguyên tắc thiết kế: (1) Toàn bộ hình ảnh webcam được xử lý cục bộ trên trình duyệt và không bao giờ rời khỏi thiết bị người dùng, giảm thiểu tối đa nguy cơ rò rỉ dữ liệu sinh trắc học; (2) Sinh viên được hiển thị minh bạch điểm tập trung theo thời gian thực thay vì chỉ giám sát ngầm, giúp sinh viên chủ động điều chỉnh hành vi; (3) Hệ thống được thiết kế với mục tiêu hỗ trợ học tập (nhắc nhở khi mất tập trung) chứ không thuần túy trừng phạt, điều này được phản ánh qua kết quả khảo sát SUS khi 87% sinh viên xem cơ chế cảnh báo như một "trợ lý ảo" hữu ích.
+Tuy nhiên, tác giả nhận thức rằng vẫn tồn tại những giới hạn đạo đức chưa được giải quyết triệt để. Thứ nhất, vector nhúng khuôn mặt 256 chiều vẫn là dữ liệu sinh trắc học nhạy cảm được lưu trữ trên máy chủ khi đăng ký. Thứ hai, việc AI tự động đánh giá mức độ tập trung dựa trên hành vi khuôn mặt có thể gây bất công cho những sinh viên có nét mặt đặc thù hoặc thói quen học tập khác biệt (như đã nêu tại phần Hạn chế). Thứ ba, ranh giới giữa "giám sát để hỗ trợ" và "giám sát để kiểm soát" phụ thuộc nhiều vào cách triển khai của từng tổ chức giáo dục, nằm ngoài phạm vi kỹ thuật của đề tài.
+Để hướng tới triển khai có trách nhiệm, hệ thống cần được áp dụng kèm theo các chính sách rõ ràng: thông báo trước cho sinh viên về phạm vi giám sát, cho phép sinh viên phản hồi khi bị đánh giá sai, và đảm bảo dữ liệu sinh trắc học được xóa sau khi kết thúc khóa học theo nguyên tắc tối thiểu hóa dữ liệu (Data Minimization).
 
 CH5_TITLE|TÀI LIỆU THAM KHẢO
 Tiếng Việt
@@ -49,3 +64,9 @@ Tiếng Anh
 [13] Schroff, F., Kalenichenko, D. và Philbin, J. (2015). FaceNet: A Unified Embedding for Face Recognition and Clustering. Trong Kỷ yếu Hội nghị IEEE CVPR, Boston, MA, trang 815–823.
 [14] Soukupová, T. và Čech, J. (2016). Real-Time Eye Blink Detection using Facial Landmarks. Trong Kỷ yếu Hội thảo Computer Vision Winter Workshop lần thứ 21, Rimske Toplice, Slovenia, trang 1–8.
 [15] Tihanyi, S. (2022). FastAPI Framework Documentation. Truy xuất từ https://fastapi.tiangolo.com/
+[16] Alessio, H.M., Malay, N., Maurer, K., Bailer, A.J. và Rubin, B. (2017). Examining the Effect of Proctoring on Online Test Scores. Online Learning, 21(1), trang 146–161.
+[17] Nigam, A., Pasricha, R., Singh, T. và Churi, P. (2021). A Systematic Review on AI-based Proctoring Systems: Past, Present and Future. Education and Information Technologies, 26(6), trang 6421–6445.
+[18] Coghlan, S., Miller, T. và Paterson, J. (2021). Good Proctor or "Big Brother"? Ethics of Online Exam Supervision Technologies. Philosophy & Technology, 34(4), trang 1581–1606.
+[19] Dewi, C., Chen, R.C., Chang, C.W., Wu, S.H., Jiang, X. và Yu, H. (2022). Eye Aspect Ratio for Real-Time Drowsiness Detection to Improve Driver Safety. Electronics, 11(19), 3038.
+[20] Dewan, M.A.A., Murshed, M. và Lin, F. (2019). Engagement Detection in Online Learning: A Review. Smart Learning Environments, 6, Article 1.
+[21] Abedi, A. và Shirmohammadi, S. (2023). Detecting Cheating in Online Exams Using Deep Learning. Trong Kỷ yếu IEEE International Instrumentation and Measurement Technology Conference (I2MTC), Kuala Lumpur, trang 1–6.

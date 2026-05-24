@@ -1,0 +1,184 @@
+# Slide Thuyết trình Bảo vệ Đồ án Tốt nghiệp
+**Đề tài:** Hệ thống giám sát mức độ tập trung dựa trên phân tích hành vi khuôn mặt và cảm xúc sử dụng Trí tuệ nhân tạo
+**Sinh viên thực hiện:** Nguyễn Quang Minh (2024600002)
+**Giảng viên hướng dẫn:** TS. Phạm Huy Thông
+
+---
+
+## Slide 1: Trang Bìa
+**Tiêu đề:** BẢO VỆ ĐỒ ÁN TỐT NGHIỆP ĐẠI HỌC
+**Tên đề tài:** Hệ thống giám sát mức độ tập trung của người dùng dựa trên phân tích hành vi khuôn mặt và cảm xúc sử dụng AI
+**Người trình bày:** Nguyễn Quang Minh
+**Giảng viên hướng dẫn:** TS. Phạm Huy Thông
+
+> **🗣 Lời dẫn:** Kính thưa quý thầy cô trong Hội đồng. Em là Nguyễn Quang Minh. Hôm nay, em xin phép được trình bày đồ án tốt nghiệp với đề tài "Hệ thống giám sát mức độ tập trung của người dùng dựa trên phân tích hành vi khuôn mặt và cảm xúc sử dụng Trí tuệ nhân tạo", dưới sự hướng dẫn của TS. Phạm Huy Thông.
+
+---
+
+## Slide 2: Đặt vấn đề & Lý do chọn đề tài
+- **Thực trạng:** Hình thức học và thi trực tuyến (E-learning) ngày càng phổ biến nhưng thiếu công cụ đánh giá chất lượng học tập hiệu quả.
+- **Hạn chế của các hệ thống hiện tại (VD: ProctorU, Proctorio):**
+  - Xâm phạm quyền riêng tư (liên tục truyền video của sinh viên lên Cloud).
+  - Yêu cầu hạ tầng máy chủ lớn để xử lý dữ liệu hình ảnh.
+  - Sinh viên bắt buộc phải cài đặt phần mềm bên thứ 3 phức tạp.
+- **Đề xuất giải pháp:** Chuyển đổi mô hình xử lý AI trực tiếp xuống trình duyệt web.
+
+> **🗣 Lời dẫn:** Như quý thầy cô đã biết, các hệ thống giám sát hiện nay chủ yếu hoạt động bằng cách truyền video của sinh viên lên máy chủ để phân tích. Cách làm này không chỉ gây nguy cơ rò rỉ hình ảnh cá nhân mà còn đòi hỏi chi phí vận hành hạ tầng máy chủ rất cao. Để giải quyết triệt để vấn đề này, đề tài đề xuất việc đưa các mô hình Trí tuệ nhân tạo xuống hoạt động trực tiếp tại trình duyệt của người dùng.
+
+---
+
+## Slide 3: Mục tiêu nghiên cứu
+1. Ứng dụng công nghệ xử lý tại biên **(Edge AI)** ngay trên trình duyệt.
+2. Phân tích độ tập trung qua **Cử chỉ vật lý** (độ mở mắt, hướng đầu) và **Cảm xúc**.
+3. Tổng hợp điểm số thời gian thực với **độ trễ thấp**.
+4. Bảo đảm tuyệt đối **quyền riêng tư** đối với hình ảnh của sinh viên.
+5. Phát triển cơ chế **chống gian lận (Anti-Spoofing)** đa lớp.
+
+> **🗣 Lời dẫn:** Từ đề xuất trên, đồ án tập trung vào 5 mục tiêu chính. Thách thức lớn nhất của đề tài là việc tối ưu hóa phần cứng để có thể chạy đồng thời nhiều mô hình AI trên nền tảng web mà không làm ảnh hưởng đến trải nghiệm của thiết bị, đồng thời phải duy trì được tính bảo mật và chống lại các hành vi gian lận kỹ thuật cao.
+
+---
+
+## Slide 4: 3 Mô hình AI Lõi & Công nghệ tối ưu
+Để hệ thống có khả năng phân tích toàn diện, đồ án kết hợp 3 mô hình AI chuyên biệt:
+1. **MediaPipe Face Mesh:** Tạo lưới 468 điểm mốc không gian 3D. Dùng để đo lường các đặc trưng hình học (tỷ lệ mở mắt, góc quay đầu).
+2. **Emotion CNN (face-api.js):** Mạng nơ-ron tích chập. Dùng để phân tích biểu cảm và nhận diện 7 trạng thái cảm xúc.
+3. **FaceNet / ResNet-34:** Mô hình sinh trắc học. Mã hóa khuôn mặt thành vector 256 chiều để xác thực danh tính.
+- **Công nghệ tối ưu:** Biên dịch mô hình qua `WebAssembly (WASM)`, xử lý mảng dữ liệu bằng `Cửa sổ trượt O(1)`, lưu trữ danh tính bằng `PostgreSQL + pgvector`.
+
+> **🗣 Lời dẫn:** Lõi phân tích của hệ thống là sự kết hợp của 3 mô hình AI. MediaPipe chịu trách nhiệm trích xuất các thông số hình học của khuôn mặt. Mạng CNN đảm nhiệm việc phân tích trạng thái tâm lý thông qua biểu cảm. Và FaceNet hoạt động như một lớp bảo mật sinh trắc học để chống thi hộ. Để giải quyết bài toán hiệu năng trên web, toàn bộ các mô hình này đều được biên dịch qua chuẩn WebAssembly.
+
+---
+
+## Slide 5: Tổng quan Kiến trúc (Hybrid Client-Server)
+*(Chèn hình: Sơ đồ kiến trúc U-Shape - Chụp ảnh màn hình từ file `images/overall_architecture.html`)*
+- **Phía Client (Trình duyệt):** 
+  - Đóng vai trò xử lý toàn bộ video đầu vào, trích xuất dữ liệu và tính toán điểm.
+  - *Hình ảnh video bị hủy bỏ hoàn toàn khỏi bộ nhớ sau khi phân tích.*
+- **Phía Server (Máy chủ):** 
+  - Chỉ nhận các chuỗi dữ liệu JSON (viễn trắc) dung lượng nhỏ định kỳ mỗi vài giây.
+  - Tối ưu hóa băng thông truyền tải lên mức tối đa.
+
+> **🗣 Lời dẫn:** Về mặt kiến trúc, hệ thống được thiết kế theo mô hình Hybrid Client-Server. Điểm khác biệt cốt lõi là trình duyệt của sinh viên sẽ tự gánh vác toàn bộ quá trình phân tích hình ảnh nặng nề, và hình ảnh này không bao giờ được truyền đi đâu cả. Máy chủ chỉ đóng vai trò tiếp nhận các bản ghi log dạng văn bản (JSON). Nhờ vậy, máy chủ của trường có thể quản lý đồng thời hàng ngàn sinh viên mà không gặp hiện tượng nghẽn mạng.
+
+---
+
+## Slide 6: Định lượng Hành vi & Tính điểm (Focus Score)
+- **Khẩu độ mắt (EAR):** 
+  - Áp dụng cơ chế *Tự hiệu chuẩn (Adaptive Calibration)* trong 30s đầu để cá nhân hóa ngưỡng nhắm/mở mắt cho từng sinh viên.
+- **Hướng quay đầu (Head Pose):** Ước lượng và phân loại 5 góc nhìn cơ bản.
+- **Thuật toán Focus Score:**
+  - Áp dụng bộ đệm Cửa sổ trượt (Sliding Window).
+  - Độ phức tạp tính toán **O(1)**, giúp duy trì tốc độ cập nhật liên tục 60 FPS.
+
+> **🗣 Lời dẫn:** Để đánh giá chính xác hành vi, hệ thống đo lường độ mở của mắt và hướng quay đầu. Một đóng góp kỹ thuật quan trọng là tính năng "Adaptive". Hệ thống sẽ tự động đo lường và học thói quen của từng sinh viên trong 30 giây đầu tiên, giúp loại bỏ sai số do đặc điểm sinh lý cá nhân như mắt nhỏ bẩm sinh. Ngoài ra, việc tổng hợp điểm số được tối ưu bằng thuật toán Cửa sổ trượt độ phức tạp O(1) để không gây hiện tượng tràn bộ nhớ.
+
+---
+
+## Slide 7: Nhận diện Cảm xúc & Xác thực Danh tính
+- **Phân loại Cảm xúc (Emotion CNN):**
+  - Quét 7 biểu cảm nhằm phát hiện trạng thái tiêu cực (căng thẳng, mệt mỏi). Tần suất xử lý 1 lần/giây.
+- **Xác thực Danh tính (Face Recognition):**
+  - Chuyển đổi khuôn mặt thành vector 256 chiều.
+  - So sánh khoảng cách Euclidean liên tục. Báo cáo vi phạm tức thời nếu phát hiện sai lệch danh tính.
+
+> **🗣 Lời dẫn:** Bên cạnh các yếu tố vật lý, hệ thống chạy nền một mạng CNN thứ hai để theo dõi tâm lý người học, hỗ trợ đánh giá mức độ tiếp thu bài giảng. Đồng thời, mô hình sinh trắc học liên tục mã hóa khuôn mặt trên camera thành vector 256 chiều để đối chiếu với hồ sơ sinh viên, nhằm ngăn chặn hoàn toàn khả năng thi hộ.
+
+---
+
+## Slide 8: Cơ chế Chống gian lận (Anti-Spoofing)
+- **Bảo mật mạng (Kiến trúc Zero-Trust):**
+  - Dữ liệu đánh giá từ Client luôn bị xem xét nghiêm ngặt. Gói tin được bảo vệ tính toàn vẹn bằng chữ ký số `HMAC SHA-256`.
+  - Hủy bỏ tự động các gói tin truyền tải trễ > 30s để chống tấn công phát lại (Replay Attack).
+- **Thử thách thực thể (Liveness Challenge):**
+  - Đưa ra yêu cầu hành động ngẫu nhiên (VD: "Quay đầu sang trái trong 10 giây").
+  - Chống lại các thủ đoạn tinh vi như sử dụng ảnh in tĩnh hoặc phần mềm Camera ảo.
+
+> **🗣 Lời dẫn:** Khi giao quyền xử lý về cho máy khách, rủi ro sinh viên can thiệp dữ liệu là rất lớn. Do đó, hệ thống áp dụng tiêu chuẩn Zero-Trust. Mọi gói dữ liệu gửi về máy chủ đều phải mang chữ ký số hợp lệ và không được trễ quá 30 giây. Hơn thế nữa, tính năng "Thử thách thực thể" sẽ ngẫu nhiên yêu cầu sinh viên thực hiện một thao tác để chứng minh họ là người thật, giúp chặn đứng các thủ đoạn dùng camera giả mạo.
+
+---
+
+## Slide 9: Môi trường & Kịch bản Thực nghiệm
+- **Thiết bị thử nghiệm:** Laptop tiêu chuẩn (CPU Core i5 gen 11, RAM 8GB, Webcam 720p).
+- **Kịch bản mô phỏng:** 
+  1. Chăm chú làm bài.
+  2. Bị xao nhãng (sử dụng điện thoại).
+  3. Mất tập trung hoàn toàn (ngủ gật).
+  4. Xuất hiện người lạ trong khung hình.
+*(Chèn layout 4 ảnh thu nhỏ: Hình 4.1 đến 4.4 lấy từ file Chương 4 của báo cáo Word)*
+
+> **🗣 Lời dẫn:** Hệ thống được cấu hình và thử nghiệm trên thiết bị máy tính cá nhân phổ thông để đảm bảo tính thực tiễn. Quá trình đánh giá được thực hiện qua 4 kịch bản sát với thực tế nhất: từ trạng thái học tập lý tưởng cho đến các tình huống xao nhãng, mệt mỏi và cả trường hợp vi phạm quy chế thi.
+
+---
+
+## Slide 10: Đánh giá Hiệu năng & Băng thông
+*(Chèn Hình 4.6. Biểu đồ diễn biến mức độ tập trung lấy từ báo cáo Word)*
+- **Tài nguyên phần cứng:** 
+  - Mức tiêu thụ CPU dao động 15-25%. 
+  - Tốc độ khung hình xử lý ổn định ở mức ~58 FPS.
+- **Lưu lượng mạng:** Tiết kiệm tối đa, chỉ tiêu tốn **2-5 KB/phút**.
+
+> **🗣 Lời dẫn:** Kết quả đo đạc cho thấy hiệu năng hệ thống rất ổn định. Việc vận hành song song nhiều mô hình AI chỉ chiếm khoảng 20% tài nguyên CPU. Đặc biệt, lưu lượng truyền tải mạng đo được chỉ ở mức vài Kilobytes mỗi phút, cho phép sinh viên ở những khu vực có tốc độ internet thấp vẫn có thể tham gia hệ thống một cách trơn tru.
+
+---
+
+## Slide 11: So sánh với các hệ thống thương mại
+| Tiêu chí | Proctorio / ProctorU | Hệ thống Đề xuất |
+|---|---|---|
+| **Yêu cầu môi trường** | Bắt buộc cài đặt Tiện ích/Phần mềm | **Truy cập trực tiếp qua Web** |
+| **Bảo vệ quyền riêng tư** | Rủi ro rò rỉ (Truyền video lên Cloud) | **An toàn tuyệt đối (Local processing)** |
+| **Chi phí hạ tầng máy chủ**| Rất cao (Hệ thống GPU phân tích video) | **Tối thiểu (Chỉ tiếp nhận văn bản JSON)** |
+
+> **🗣 Lời dẫn:** Khi so sánh trực tiếp với các phần mềm thương mại hiện hành, giải pháp của đề tài giải quyết triệt để 2 rào cản lớn nhất: xóa bỏ sự bất tiện khi phải cài đặt phần mềm bên ngoài, và cung cấp một kiến trúc thân thiện với ngân sách của nhà trường nhờ việc loại bỏ hoàn toàn nhu cầu thuê cụm máy chủ cấu hình cao.
+
+---
+
+## Slide 12: Hạn chế & Hướng phát triển
+**Hạn chế:**
+- Hiệu suất nhận diện vẫn phụ thuộc vào điều kiện ánh sáng phòng và chất lượng camera.
+- Chưa bao phủ được toàn bộ các trường hợp sinh viên có thói quen tư duy đặc thù.
+
+**Hướng phát triển:**
+- Tích hợp giao thức LTI để liên kết hệ thống trực tiếp với nền tảng Moodle của trường.
+- Triển khai công nghệ WebGPU nhằm tối ưu tính toán đồ họa.
+- Áp dụng công nghệ đo nhịp tim quang học (rPPG) để đánh giá chỉ số căng thẳng (Stress Level).
+
+> **🗣 Lời dẫn:** Tuy đạt được các mục tiêu cốt lõi, hệ thống vẫn tồn tại hạn chế về sự phụ thuộc vào điều kiện ánh sáng môi trường. Hướng phát triển tiềm năng nhất trong tương lai là đóng gói hệ thống theo chuẩn LTI để nhà trường có thể dễ dàng nhúng vào các nền tảng có sẵn, và tích hợp thêm công nghệ đo nhịp tim qua hình ảnh để hiểu sâu hơn về áp lực tâm lý của sinh viên.
+
+---
+
+## Slide 13: Lời cảm ơn
+**XIN TRÂN TRỌNG CẢM ƠN QUÝ THẦY CÔ ĐÃ LẮNG NGHE!**
+
+> **🗣 Lời dẫn:** Dạ, phần trình bày báo cáo của em xin phép được kết thúc tại đây. Em xin chân thành cảm ơn TS. Phạm Huy Thông đã hỗ trợ và hướng dẫn em hoàn thành đề tài này. Em rất mong nhận được những nhận xét và câu hỏi góp ý từ quý thầy cô trong hội đồng ạ. Em xin cảm ơn!
+
+---
+---
+
+## 🛑 PHẦN BACKUP SLIDES (CHỈ MỞ KHI HỘI ĐỒNG HỎI ĐẾN)
+
+### Slide 14: Nguyên lý hoạt động của Mạng CNN
+- **Câu hỏi kỳ vọng:** *Mạng CNN phân tích cảm xúc như thế nào?*
+- **Nội dung hiển thị:**
+  - **Lớp Tích chập (Convolutional Layer):** Áp dụng bộ lọc (Filters) quét qua ảnh để trích xuất các đặc trưng biên cạnh (nếp nhăn cơ mặt, góc môi).
+  - **Lớp Gộp (Pooling Layer):** Giảm chiều dữ liệu, loại bỏ nhiễu và tăng tốc độ tính toán.
+  - **Lớp Kết nối đầy đủ (Fully Connected):** Dựa trên đặc trưng thu được để dự đoán xác suất thuộc về 1 trong 7 nhóm cảm xúc.
+
+### Slide 15: Phương pháp Đối chiếu Danh tính (FaceNet)
+- **Câu hỏi kỳ vọng:** *Dựa vào cơ sở toán học nào để biết người ngồi trước máy là sinh viên A?*
+- **Nội dung hiển thị:**
+  - Khối FaceNet biến đổi hình ảnh khuôn mặt thành **1 tọa độ duy nhất trong không gian 256 chiều**.
+  - Áp dụng công thức tính **Khoảng cách Euclidean ($d$)** giữa vector hiện tại và vector lưu trong hồ sơ.
+  - Nếu $d < \text{Ngưỡng cho phép}$, hệ thống kết luận khớp danh tính.
+
+### Slide 16: Công thức tính Khẩu độ mắt (EAR)
+- **Câu hỏi kỳ vọng:** *Thuật toán tính độ nhắm mắt hoạt động ra sao?*
+- **Nội dung hiển thị:**
+  - Sử dụng 6 điểm mốc quanh mắt với phương trình: $\text{EAR} = \frac{||p_2-p_6||+||p_3-p_5||}{2||p_1-p_4||}$
+  - Cơ chế **Adaptive Calibration:** Tự động lấy trung bình EAR trong 30 giây đầu làm mốc cơ sở, giúp hệ thống không bị sai lệch đối với những cá nhân có đặc điểm mắt nhỏ bẩm sinh.
+
+### Slide 17: Tối ưu Cửa sổ trượt (Sliding Window O(1))
+- **Câu hỏi kỳ vọng:** *Mảng dữ liệu 5 phút chứa hàng vạn mẫu, tại sao máy tính không bị quá tải khi tính toán lại liên tục?*
+- **Nội dung hiển thị:**
+  - Áp dụng cấu trúc dữ liệu mảng vòng (Ring Buffer) và thuật toán **Tổng tích lũy (Moving Sum)**. 
+  - **Phương trình O(1):** `Tổng_mới = Tổng_cũ + [Mẫu_vừa_vào] - [Mẫu_cũ_nhất_bị_đẩy_ra]`
+  - Giúp loại bỏ hoàn toàn các vòng lặp `for`, đảm bảo tài nguyên CPU không bị lãng phí.
