@@ -80,7 +80,7 @@ Trong mô hình này, Client đảm nhiệm toàn bộ khối lượng tính to�
 - **Vấn đề quyền riêng tư:** Toàn bộ dữ liệu hình ảnh nhạy cảm được giữ và xử lý trên thiết bị cục bộ, loại bỏ nguy cơ rò rỉ hình ảnh cá nhân trên đường truyền mạng.
 - **Khả năng mở rộng (Scalability):** Kiến trúc phân tán tải trọng giúp loại bỏ nhu cầu về các cụm máy chủ GPU đắt đỏ. Backend được giải phóng khỏi các tác vụ nặng, dễ dàng chịu tải hàng vạn sinh viên cùng lúc với chi phí hạ tầng tối thiểu.
 
-CH3_IMAGE|hybrid_architecture_diagram_new.png|Hình 3.3. Kiến trúc tổng thể Hybrid Client-Server (Đã cập nhật đầy đủ)
+CH3_IMAGE|hybrid_architecture_diagram_new.png|Hình 3.3. Kiến trúc tổng thể Hybrid Client-Server
 
 CH3_H3|Luồng xử lý viễn trắc (Data Pipeline) từ Client đến Server
 Để hiện thực hóa kiến trúc Hybrid, các thành phần của hệ thống được thiết kế thành một quy trình dữ liệu (Data Pipeline) liền mạch từ Client tới Server. Tại điểm khởi đầu trên thiết bị người dùng (Client-side), dữ liệu hình ảnh thô được thu nhận ở tốc độ 60 khung hình/giây thông qua API `WebRTC`. Luồng video này ngay lập tức được chuyển giao cho Động cơ tính toán (Processing Engine), nơi chứa lõi `MediaPipe Face Mesh` và `face-api.js` đã được biên dịch sâu dưới dạng WebAssembly (WASM) để vượt qua giới hạn của JavaScript. Tại đây, hình ảnh được xử lý thành dữ liệu số (tọa độ 468 điểm mốc, vector danh tính 256 chiều). Những dữ liệu này không được gửi đi ngay lập tức mà đi vào Tầng quản lý trạng thái, nơi thuật toán Cửa sổ trượt (Sliding Window) tổng hợp chúng thành một Điểm tập trung (Focus Score) duy nhất. Dữ liệu sau khi chắt lọc sẽ được giao diện ReactJS hiển thị lên màn hình để sinh viên tự điều chỉnh hành vi. 
