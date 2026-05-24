@@ -25,54 +25,132 @@ Các bước khởi chạy Frontend:
 
 CH0_H2|Phụ lục B: Cấu trúc mã nguồn chính
 
-Mã nguồn Backend được tổ chức theo kiến trúc module hóa:
+Mã nguồn Backend được tổ chức theo kiến trúc module hóa, mỗi module phân tách rõ ràng các tầng (models, schemas, service, router):
 
-```
+```text
 focus-monitor-backend/
-├── app/
-│   ├── main.py              # Điểm khởi động FastAPI, cấu hình CORS và lifespan
-│   ├── core/
-│   │   ├── security.py      # JWT, thuật toán băm bcrypt, HMAC SHA-256 cho Challenge
-│   │   ├── deps.py          # Tiêm phụ thuộc (Dependency injection: CurrentStudent, DbSession)
-│   │   └── constants.py     # Định nghĩa hằng số (Enum): SessionStatus, ViolationType, ChallengeType
-│   ├── db/
-│   │   ├── database.py      # Cấu hình async engine PostgreSQL + pgvector
-│   │   └── seed.py          # Dữ liệu mẫu khởi tạo
-│   └── modules/
-│       ├── users/           # Đăng ký, đăng nhập, lưu embedding khuôn mặt
-│       ├── sessions/        # Vòng lặp giám sát: start/heartbeat/end/challenge
-│       └── admin/           # Cấu hình hệ thống (ngưỡng vi phạm, xác suất Challenge)
-└── requirements.txt
+├── docker-compose.yaml
+├── requirements.txt
+└── app/
+    ├── main.py                  # Điểm khởi động FastAPI, cấu hình CORS và lifespan
+    ├── core/
+    │   ├── config.py            # Biến môi trường (DATABASE_URL, SECRET_KEY,...)
+    │   ├── constants.py         # Định nghĩa Enum: SessionStatus, FocusState, ViolationType,...
+    │   ├── deps.py              # Tiêm phụ thuộc (CurrentStudent, CurrentAdmin, DbSession)
+    │   └── security.py          # JWT, bcrypt, HMAC SHA-256
+    ├── db/
+    │   ├── database.py          # Async engine PostgreSQL + pgvector
+    │   └── seed.py              # Dữ liệu mẫu khởi tạo
+    └── modules/
+        ├── users/               # models.py, schemas.py, service.py, router.py
+        ├── sessions/            # models.py, schemas.py, service.py, router.py
+        └── admin/               # models.py, schemas.py, service.py, router.py
+                                 # + analytics_service.py, config_service.py
 ```
 
-Mã nguồn Frontend được tổ chức theo module chức năng:
+Mã nguồn Frontend được tổ chức theo module chức năng, tách biệt rõ ràng giữa logic AI và giao diện:
 
-```
+```text
 focus-ai-web/src/
-├── App.tsx                  # Định tuyến và quản lý trạng thái phiên
-├── components/              # Các thành phần giao diện (MonitorView, Dashboard)
-├── hooks/                   # Các móc tùy chỉnh (Custom hooks: useFaceLandmarker, useMonitoring)
-├── services/                # Dịch vụ giao tiếp API (heartbeatService, authService)
-├── utils/                   # Tính EAR, Head Pose, Focus Score
-└── constants.ts             # Ngưỡng EAR, trọng số Focus Score, cấu hình vòng lặp
+├── App.tsx, main.tsx            # Điểm khởi động ứng dụng và định tuyến
+├── constants.ts                 # Enum đồng bộ với Backend (FocusState, HeadPose, Emotion,...)
+├── components/
+│   ├── Webcam.tsx               # Luồng video và overlay điểm mốc khuôn mặt
+│   ├── FocusHUD.tsx             # Bảng hiển thị Focus Score, EAR, cảm xúc
+│   ├── ChallengeBanner.tsx      # Giao diện thử thách Liveness Challenge
+│   ├── FocusTimelineChart.tsx   # Biểu đồ chuỗi thời gian Focus Score
+│   ├── LoginScreen.tsx          # Màn hình đăng nhập
+│   ├── LanguageSwitcher.tsx     # Nút chuyển đổi ngôn ngữ
+│   └── admin/                   # Giao diện Giảng viên
+│       ├── AdminDashboard.tsx   # Trang tổng quan
+│       ├── LiveMonitor.tsx      # Giám sát trực tiếp
+│       ├── SessionHistory.tsx   # Lịch sử phiên giám sát
+│       ├── SessionDetails.tsx   # Phân tích chi tiết một phiên
+│       ├── StudentRoster.tsx    # Danh sách sinh viên
+│       ├── StudentDetail.tsx    # Chi tiết một sinh viên
+│       ├── ChallengeLog.tsx     # Nhật ký thử thách
+│       └── SystemSettings.tsx   # Cấu hình ngưỡng hệ thống
+├── hooks/
+│   ├── useFaceLandmarker.tsx    # Khởi tạo MediaPipe Face Mesh
+│   └── useFaceRecognition.tsx   # Khởi tạo face-api.js
+├── i18n/                        # Đa ngôn ngữ (en.json, vi.json)
+├── services/
+│   ├── api.ts                   # API sinh viên (login, heartbeat, challenge)
+│   └── adminApi.ts              # API quản trị (live, sessions, analytics)
+├── styles/                      # Các file CSS
+└── utils/                       # Các thuật toán xử lý lõi
+    ├── ear.ts                   # Tính chỉ số EAR
+    ├── headPose.ts              # Ước lượng hướng quay đầu
+    ├── emotionDetector.ts       # Phân loại cảm xúc (face-api.js)
+    ├── focusScoreEngine.ts      # Thuật toán Sliding Window tính Focus Score
+    ├── focusBuffer.ts           # Bộ đệm vòng (Ring Buffer)
+    ├── blinkDetector.ts         # Đếm tần suất chớp mắt
+    ├── faceMatcher.ts           # Đối chiếu vector danh tính (Euclidean distance)
+    ├── hmac.ts                  # Ký HMAC-SHA256 qua Web Crypto API
+    ├── livenessChallenge.ts     # Xử lý thử thách Liveness
+    ├── cropFace.ts              # Cắt vùng khuôn mặt từ canvas
+    ├── drawLandmarks.ts         # Vẽ điểm mốc lên overlay
+    ├── camera.ts                # Quản lý WebRTC getUserMedia
+    └── audioAlert.ts            # Phát cảnh báo âm thanh
 ```
 
 CH0_H2|Phụ lục C: Các API endpoint chính của Backend
 
-Bảng dưới đây liệt kê các endpoint cốt lõi của hệ thống:
+Bảng dưới đây liệt kê các endpoint cốt lõi của hệ thống, được phân nhóm theo chức năng:
+
+1. Nhóm Xác thực và Định danh (Users):
 
 | Method | Endpoint | Mô tả |
-| POST | /api/auth/login | Đăng nhập, trả về JWT token |
-| POST | /api/identity/register | Đăng ký embedding khuôn mặt sinh trắc học |
+| POST | /api/auth/login | Đăng nhập, trả về JWT token và HMAC secret |
+| GET | /api/identity/status | Kiểm tra trạng thái đăng ký sinh trắc học |
+| POST | /api/identity/register | Đăng ký vector nhúng khuôn mặt 256 chiều |
+
+2. Nhóm Giám sát thời gian thực (Sessions):
+
+| Method | Endpoint | Mô tả |
 | POST | /api/session/start | Khởi tạo phiên giám sát mới |
-| POST | /api/session/heartbeat | Gửi gói tin viễn trắc định kỳ (5 giây/lần) |
+| POST | /api/session/heartbeat | Gửi gói tin viễn trắc (5 giây/lần, có HMAC) |
 | POST | /api/session/end | Kết thúc phiên giám sát |
-| POST | /api/challenge/submit | Nộp kết quả thử thách Liveness |
-| GET | /api/admin/sessions | Xem danh sách phiên (dành cho giảng viên) |
+| POST | /api/challenge/submit | Nộp kết quả thử thách Liveness (có HMAC) |
+
+3. Nhóm Quản trị và Thống kê (Admin):
+
+| Method | Endpoint | Mô tả |
+| GET | /api/admin/live | Danh sách sinh viên đang trực tuyến |
+| GET | /api/admin/sessions | Lịch sử các phiên giám sát |
+| GET | /api/admin/students | Danh sách sinh viên đã đăng ký |
+| GET | /api/admin/students/{user_id} | Chi tiết một sinh viên |
+| GET | /api/admin/challenges | Nhật ký thử thách Liveness |
+| POST | /api/admin/challenge | Kích hoạt thử thách thủ công |
+| GET | /api/admin/config | Xem cấu hình hệ thống |
+| POST | /api/admin/config | Cập nhật ngưỡng cấu hình |
+| GET | /api/admin/stats | Thống kê tổng quan |
+| GET | /api/admin/charts | Biểu đồ tổng quan theo thời gian |
+
+4. Nhóm Phân tích chi tiết phiên (Analytics):
+
+| Method | Endpoint | Mô tả |
+| GET | /api/analytics/timeline/{session_id} | Chuỗi thời gian Focus Score |
+| GET | /api/analytics/distribution/{session_id} | Phân bổ trạng thái tập trung |
+| GET | /api/analytics/violations/{session_id} | Danh sách vi phạm |
+| GET | /api/analytics/emotion-trend/{session_id} | Xu hướng cảm xúc |
+| GET | /api/analytics/head-pose/{session_id} | Phân bổ hướng quay đầu |
+| GET | /api/analytics/summary/{session_id} | Tổng kết phiên giám sát |
 
 CH0_H2|Phụ lục D: Cấu trúc gói tin Heartbeat
 
-Đây là cấu trúc JSON thực tế của một gói tin Heartbeat được trình duyệt gửi lên Backend mỗi 5 giây:
+Đây là cấu trúc thực tế của một yêu cầu HTTP Heartbeat được trình duyệt gửi lên Backend mỗi 5 giây. Gói tin bao gồm ba HTTP Header phục vụ xác thực HMAC-SHA256 và phần thân JSON chứa dữ liệu viễn trắc:
+
+```text
+POST /api/session/heartbeat HTTP/1.1
+Authorization: Bearer <JWT Token>
+Content-Type: application/json
+X-Signature: a1b2c3d4e5...   (HMAC-SHA256 của chuỗi canonical)
+X-Nonce: 550e8400-e29b-...   (UUID ngẫu nhiên chống replay attack)
+X-Timestamp: 1714550400       (UNIX epoch giây, cửa sổ ±30s)
+```
+
+Phần thân JSON (Request Body):
 
 ```json
 {
@@ -83,9 +161,9 @@ CH0_H2|Phụ lục D: Cấu trúc gói tin Heartbeat
   "state": "FOCUSED",
   "blink_rate": 14,
   "avg_ear": 0.312,
-  "head_pose": "FORWARD",
-  "emotion": "neutral",
-  "identity_status": "MATCH",
+  "head_pose": "CENTER",
+  "emotion": "NEUTRAL",
+  "identity_status": "VERIFIED",
   "identity_score": 0.91,
   "violations": {
     "multi_face": false,
@@ -94,3 +172,5 @@ CH0_H2|Phụ lục D: Cấu trúc gói tin Heartbeat
   }
 }
 ```
+
+Quy trình ký HMAC-SHA256 trên trình duyệt sử dụng Web Crypto API theo giao thức: canonical = "{timestamp}.{nonce}.{SHA256(body)}", sau đó signature = HMAC-SHA256(hmac_secret, canonical). Máy chủ tái tạo chữ ký từ cùng các tham số để xác minh tính toàn vẹn gói tin.

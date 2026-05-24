@@ -4,6 +4,7 @@ from docx import Document
 from docx.shared import Pt, Inches, Cm, Mm, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.style import WD_STYLE_TYPE
+from docx.enum.section import WD_SECTION
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 from lxml import etree
@@ -79,6 +80,40 @@ def set_update_fields_false(doc):
     except Exception as e:
         print(f"  Warning: Could not set updateFields: {e}")
 
+def start_new_section(doc, fmt='decimal', start=1, show_page_number=True):
+    """Insert a section break (new page) with specific page numbering in the header.
+    fmt: 'decimal' for 1,2,3 or 'lowerRoman' for i,ii,iii
+    """
+    new_sec = doc.add_section(WD_SECTION.NEW_PAGE)
+    new_sec.page_width = Mm(210)
+    new_sec.page_height = Mm(297)
+    new_sec.top_margin = Cm(2.5)
+    new_sec.bottom_margin = Cm(2.0)
+    new_sec.left_margin = Cm(3.5)
+    new_sec.right_margin = Cm(2.0)
+
+    # Set page number format and starting number
+    sectPr = new_sec._sectPr
+    pgNumType = OxmlElement('w:pgNumType')
+    pgNumType.set(qn('w:fmt'), fmt)
+    pgNumType.set(qn('w:start'), str(start))
+    sectPr.append(pgNumType)
+
+    # Unlink header and footer from the previous section
+    new_sec.header.is_linked_to_previous = False
+    new_sec.footer.is_linked_to_previous = False
+
+    if show_page_number:
+        header = new_sec.header
+        p = header.paragraphs[0] if header.paragraphs else header.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        run = p.add_run()
+        add_page_number(run)
+        run.font.name = 'Times New Roman'
+        run.font.size = Pt(13)
+
+    return new_sec
+
 def update_fields_via_word(filepath):
     """Use Word COM automation to update TOC, page numbers, and all fields."""
     try:
@@ -137,14 +172,7 @@ def setup(doc):
         s.bottom_margin = Cm(2.0)
         s.left_margin = Cm(3.5)
         s.right_margin = Cm(2.0)
-        
-        # Add footer with page number (not on first page)
-        s.different_first_page_header_footer = True
-        footer = s.footer
-        p = footer.paragraphs[0] if footer.paragraphs else footer.add_paragraph()
-        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        run = p.add_run()
-        add_page_number(run)
+
 
     for i in range(1, 4):
         h_style = doc.styles[f'Heading {i}']
@@ -304,7 +332,11 @@ def parse_file(doc, filepath):
                     else:
                         display = clean
                     
-                    doc.add_page_break()
+                    # Skip page break if this is the first content after a section break
+                    if not getattr(doc, '_skip_next_page_break', False):
+                        doc.add_page_break()
+                    else:
+                        doc._skip_next_page_break = False
                     heading(doc, display, level=1)
                     break
             else:
@@ -423,7 +455,7 @@ def generate_cover_page(doc):
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     for r in p.runs: r.bold = True; r.font.size = Pt(18)
     
-    for _ in range(3): doc.add_paragraph("")
+    doc.add_paragraph("")
     
     # Use table for exact alignment of info block
     table = doc.add_table(rows=4, cols=3)
@@ -453,7 +485,7 @@ def generate_cover_page(doc):
     set_cell(2, "Mã số sinh viên:", config.META['student_id'])
     set_cell(3, "Lớp:", config.META['class_name'])
     
-    for _ in range(2): doc.add_paragraph("")
+    doc.add_paragraph("")
     
     p = doc.add_paragraph(f"{config.META['location']} - {config.META['year']}")
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -509,6 +541,13 @@ def build():
     p = doc.add_paragraph("NGƯỜI HƯỚNG DẪN                              TRƯỞNG ĐƠN VỊ")
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     for r in p.runs: r.bold = True
+    # === SECTION 2: Preliminary pages — Roman numerals (i, ii, iii...) in header ===
+    start_new_section(doc, fmt='lowerRoman', start=1)
+
+    # === LỜI CẢM ƠN (abstract.txt) ===
+    abstract_file = os.path.join(CONTENT_DIR, config.CHAPTER_FILES[0])
+    doc._skip_next_page_break = True  # section break already started new page
+    parse_file(doc, abstract_file)
     doc.add_page_break()
 
     # === MỤC LỤC ===
@@ -561,9 +600,16 @@ def build():
 
     # === DANH MỤC VIẾT TẮT ===
     heading(doc, "DANH MỤC CÁC TỪ VIẾT TẮT", level=1)
+    
+    def set_table_widths(table, widths):
+        for row in table.rows:
+            for idx, width in enumerate(widths):
+                row.cells[idx].width = width
+
     abbrevs = config.ABBREVIATIONS
     table = doc.add_table(rows=len(abbrevs)+1, cols=3)
     table.style = 'Table Grid'
+    set_table_widths(table, [Cm(1.5), Cm(3.5), Cm(10.5)])
     hdr = table.rows[0].cells
     for i, t in enumerate(['STT', 'Viết tắt', 'Ý nghĩa']):
         hdr[i].text = t
@@ -579,23 +625,46 @@ def build():
 
     # === DANH MỤC KÝ HIỆU ===
     heading(doc, "DANH MỤC CÁC KÝ HIỆU", level=1)
-    symbols = config.SYMBOLS_WORD
+    symbols = config.SYMBOLS_LATEX
     table2 = doc.add_table(rows=len(symbols)+1, cols=3)
     table2.style = 'Table Grid'
+    set_table_widths(table2, [Cm(1.5), Cm(4.5), Cm(9.5)])
     hdr2 = table2.rows[0].cells
     for i, t in enumerate(['STT', 'Ký hiệu', 'Ý nghĩa']):
         hdr2[i].text = t
         for r in hdr2[i].paragraphs[0].runs: r.bold = True; r.font.name = 'Times New Roman'; r.font.size = Pt(13)
+
+    def _render_cell_math(cell, text):
+        """Render text with inline $...$ as OMML equations in a table cell."""
+        p = cell.paragraphs[0]
+        parts = re.split(r'(\$.*?\$)', text)
+        for part in parts:
+            if part.startswith('$') and part.endswith('$'):
+                latex_str = part[1:-1]
+                try:
+                    add_omml_to_paragraph(p, latex_str)
+                except Exception as e:
+                    r = p.add_run(latex_str)
+                    r.font.name = 'Cambria Math'; r.font.size = Pt(13); r.font.italic = True
+                    print(f"  [WARN] Symbol OMML fallback: {latex_str}: {e}")
+            else:
+                if part:
+                    r = p.add_run(part)
+                    r.font.name = 'Times New Roman'; r.font.size = Pt(13)
+
     for idx, (sym, meaning) in enumerate(symbols):
         row = table2.rows[idx+1].cells
         row[0].text = str(idx+1)
-        row[1].text = sym
-        row[2].text = meaning
-        for cell in row:
-            for r in cell.paragraphs[0].runs: r.font.name = 'Times New Roman'; r.font.size = Pt(13)
-    # === NỘI DUNG CHÍNH ===
-    chapter_files = [os.path.join(CONTENT_DIR, f) for f in config.CHAPTER_FILES]
+        for r in row[0].paragraphs[0].runs: r.font.name = 'Times New Roman'; r.font.size = Pt(13)
+        _render_cell_math(row[1], sym)
+        _render_cell_math(row[2], meaning)
+    # === SECTION 3: Main content — Arabic numerals (1, 2, 3...) in header ===
+    start_new_section(doc, fmt='decimal', start=1)
 
+    # === NỘI DUNG CHÍNH (skip abstract.txt, already processed in Section 2) ===
+    chapter_files = [os.path.join(CONTENT_DIR, f) for f in config.CHAPTER_FILES[1:]]
+
+    doc._skip_next_page_break = True  # section break already started new page
     for cf in chapter_files:
         parse_file(doc, cf)
 

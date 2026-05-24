@@ -111,7 +111,7 @@ SYMBOLS_LATEX = [
     ('$z = \\sum w_i x_i + b$', 'Tổng có trọng số trước khi áp dụng hàm kích hoạt'),
     ('$f(z) = \\max(0, z)$', 'Hàm kích hoạt ReLU (Rectified Linear Unit)'),
     ('$\\sigma(z) = 1/(1+e^{-z})$', 'Hàm kích hoạt Sigmoid'),
-    ('$\\|.\\|$', 'Khoảng cách Euclidean giữa hai điểm trong không gian $n$ chiều'),
+    ('$|| \\cdot ||$', 'Khoảng cách Euclidean giữa hai điểm trong không gian $n$ chiều'),
     # --- Ký hiệu tối ưu hóa ---
     ('$L(\\hat{y}, y)$', 'Hàm mất mát đo sai số giữa dự đoán và thực tế'),
     ('$\\partial L / \\partial w$', 'Đạo hàm riêng của hàm mất mát theo trọng số $w$'),
@@ -119,7 +119,7 @@ SYMBOLS_LATEX = [
     ('$m_1, m_2$', 'Trung bình động bậc 1 và bậc 2 của gradient trong Adam'),
     # --- Ký hiệu EAR ---
     ('$p_1, p_2, ..., p_6$', 'Tọa độ 2D của 6 điểm mốc quanh mắt dùng để tính EAR'),
-    ('$\\text{EAR} = \\frac{\\|p_2-p_6\\|+\\|p_3-p_5\\|}{2\\|p_1-p_4\\|}$', 'Công thức tính Eye Aspect Ratio'),
+    ('$\\text{EAR} = \\frac{||p_2-p_6||+||p_3-p_5||}{2||p_1-p_4||}$', 'Công thức tính Eye Aspect Ratio'),
     ('$\\text{EAR}_{threshold}$', 'Ngưỡng phân loại mắt nhắm/mở, giá trị chuẩn = 0.20'),
     ('$\\theta$', 'Góc quay đầu (yaw/pitch/roll) so với trục tọa độ camera'),
     # --- Ký hiệu nhận diện khuôn mặt ---
