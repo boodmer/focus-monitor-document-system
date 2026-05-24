@@ -2,17 +2,19 @@ CH5_TITLE|KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
 CH5_H2|Kết luận
 Trải qua thời gian nghiên cứu và thực hiện, em đã triển khai thành công hệ thống giám sát mức độ tập trung của sinh viên dựa trên việc phân tích hành vi khuôn mặt và cảm xúc. Đồ án đã đáp ứng đầy đủ các mục tiêu và yêu cầu kỹ thuật được đặt ra ban đầu. Những kết quả chính mà em đã đạt được bao gồm:
 
-1. Xây dựng quy trình xử lý biên (Edge AI) trên trình duyệt: Đảm bảo khả năng thực thi các mô hình AI ở tốc độ thời gian thực ngay trên thiết bị phổ thông mà không yêu cầu cài đặt phần mềm bên thứ ba.
-2. Thuật toán tính Điểm tập trung (Focus Score) đa tín hiệu: Việc kết hợp EAR, hướng đầu (Head Pose), biểu cảm cảm xúc cùng kỹ thuật Cửa sổ trượt (Sliding Window) đã chứng minh được tính ổn định và phản hồi tức thời.
-3. Ứng dụng kiến trúc Hybrid Client-Server: Toàn bộ quá trình tính toán thị giác máy tính được thực hiện tại máy khách, giúp giảm độ trễ mạng, tiết kiệm tài nguyên máy chủ và bảo vệ tuyệt đối quyền riêng tư sinh trắc học.
-4. Cơ chế chống gian lận đa lớp (Anti-Spoofing): Xác thực danh tính liên tục qua vector nhúng và thử thách Liveness Challenge ngẫu nhiên giúp ngăn chặn hiệu quả hành vi thi hộ hoặc sử dụng hình ảnh giả mạo.
-5. Giao diện thân thiện hướng người dùng: Hệ thống hỗ trợ đa ngôn ngữ (Tiếng Anh/Tiếng Việt) và cập nhật số liệu trực quan theo thời gian thực, đảm bảo tính tiếp cận rộng rãi.
+1. Đưa AI xuống chạy trực tiếp trên trình duyệt (Edge AI): Giúp mô hình nhận diện khuôn mặt hoạt động mượt mà theo thời gian thực ngay trên máy tính sinh viên mà không cần cài thêm phần mềm.
+2. Xây dựng thuật toán tính Điểm tập trung (Focus Score): Kết hợp nhịp chớp mắt (EAR), góc quay đầu (Head Pose) và biểu cảm khuôn mặt cùng kỹ thuật Cửa sổ trượt (Sliding Window) để cho ra kết quả ổn định, hạn chế trừ điểm oan do các phản xạ tự nhiên.
+3. Ứng dụng kiến trúc lai (Hybrid Client-Server): Việc đẩy phần tính toán hình ảnh nặng nề xuống máy sinh viên giúp máy chủ không bị quá tải mạng, tiết kiệm chi phí vận hành và bảo mật hoàn toàn hình ảnh riêng tư của người dùng.
+4. Xây dựng cơ chế chống gian lận (Anti-Spoofing): Kết hợp đối chiếu khuôn mặt liên tục và các bài kiểm tra phản xạ ngẫu nhiên (Liveness Challenge) nhằm ngăn chặn tình trạng nhờ người thi hộ hoặc dùng ảnh/video giả mạo.
+5. Giao diện thân thiện, dễ sử dụng: Hệ thống có hỗ trợ song ngữ (Anh/Việt) và hiển thị biểu đồ trực quan, giúp cả giảng viên lẫn sinh viên dễ dàng làm quen và sử dụng.
 CH5_H2|Hạn chế
 Mặc dù đã nỗ lực hết sức để hoàn thiện hệ thống, quá trình nghiên cứu và phát triển vẫn tồn tại một số điểm hạn chế nhất định:
 
-- Phụ thuộc vào điều kiện môi trường: Độ chính xác của quá trình định vị điểm mốc và phân loại cảm xúc có thể suy giảm trong môi trường chiếu sáng kém (ngược sáng, thiếu sáng) hoặc khi chất lượng webcam quá thấp, dẫn đến sai số cục bộ đối với Điểm tập trung.
-- Hiện tượng thiên lệch mô hình (Model Bias): Các mô hình Deep Learning sử dụng là các mô hình tổng quát đã được huấn luyện sẵn, do đó có thể phát sinh sai lệch hoặc giảm độ chính xác đối với nhóm người dùng có các đặc điểm khuôn mặt đặc thù chưa được bao phủ đầy đủ trong tập dữ liệu gốc.
-- Giới hạn ở tín hiệu thị giác đơn phương thức: Hiện tại, hệ thống mới chỉ phân tích hình ảnh khuôn mặt. Trong thực tế, sự tập trung còn được thể hiện thông qua nhiều tín hiệu đa phương thức khác (như thao tác chuột, tần suất gõ phím, hoặc phân tích âm thanh môi trường).
+- Phụ thuộc vào ánh sáng và thiết bị: Hệ thống có thể nhận diện kém chính xác hoặc tính điểm sai nếu sinh viên ngồi học ở nơi quá tối, bị ngược sáng, hoặc sử dụng webcam đời cũ có độ phân giải thấp.
+- Hạn chế của mô hình AI có sẵn: Do sử dụng các mô hình AI được huấn luyện sẵn trên dữ liệu chung, hệ thống đôi khi nhận diện chưa tốt với một số sinh viên có nét mặt đặc thù hoặc đeo kính gọng quá dày che khuất phần mắt.
+- Mới chỉ đánh giá qua khuôn mặt: Hiện tại, hệ thống chỉ dựa vào hình ảnh camera để chấm điểm. Trong thực tế, sự tập trung của sinh viên còn thể hiện qua nhiều hành động khác như nhịp độ gõ phím, thao tác rê chuột hay âm thanh xung quanh.
+- Nguy cơ gian lận bằng phần mềm (Camera ảo và Deepfake): Dù cơ chế Liveness Challenge có thể chống lại việc dùng ảnh tĩnh hay phát lại video quay sẵn một cách hiệu quả, hệ thống hiện tại vẫn gặp khó khăn nếu sinh viên tinh vi sử dụng công nghệ hoán đổi khuôn mặt theo thời gian thực (Real-time Face Swap / Deepfake) kết hợp với Camera ảo để đánh lừa cả AI lẫn người giám sát.
+- Đánh giá sai do thói quen cá nhân: Mỗi người có một cách tập trung khác nhau (ví dụ: có sinh viên thói quen nhìn ra ngoài cửa sổ để suy nghĩ, hoặc người mắc chứng ADHD thường hay lắc lư đầu). Việc AI mặc định "phải nhìn thẳng vào màn hình mới là tập trung" có thể trừ điểm oan những trường hợp này, do đó vẫn cần sự đánh giá linh hoạt từ phía giảng viên.
 CH5_H2|Giá trị ứng dụng thực tế
 Sản phẩm của đồ án mang lại những giá trị thực tiễn rất lớn, không chỉ giới hạn trong môi trường giáo dục:
 - Đối với nhà trường: Hệ thống cung cấp một công cụ đắc lực để duy trì kỷ luật và sự trung thực trong quá trình học và thi trực tuyến, góp phần nâng cao uy tín của các chương trình đào tạo từ xa. Hệ thống cũng giúp tự động hóa quá trình giám thị, giảm bớt gánh nặng về nhân sự và chi phí cho nhà trường.
@@ -21,11 +23,11 @@ Sản phẩm của đồ án mang lại những giá trị thực tiễn rất l
 
 CH5_H2|Hướng phát triển trong tương lai
 Từ những hạn chế đã nhìn nhận, em đề xuất các hướng phát triển chuyên sâu cho hệ thống trong tương lai như sau:
-1. Nghiên cứu ứng dụng Lượng tử hóa mô hình: Tiếp tục tối ưu và nén các mô hình Deep Learning xuống định dạng 8-bit hoặc 4-bit để giảm mạnh dung lượng mô hình, giúp tải trang nhanh hơn trên các mạng di động yếu.
-2. Tích hợp WebGPU: Chuyển đổi mã thực thi từ WebAssembly sang chuẩn WebGPU mới nhất để khai thác trực tiếp sức mạnh của card đồ họa rời trên trình duyệt, mở đường cho việc áp dụng các mô hình AI lớn hơn (như Transformer).
-3. Triển khai Phân tích Đa phương thức: Bổ sung thêm các luồng phân tích âm thanh và ghi nhận thao tác thiết bị để đánh giá sự tập trung toàn diện hơn.
-4. Tích hợp chuẩn LTI: Đóng gói hệ thống thành một phần mở rộng chuẩn hóa, cho phép tích hợp và triển khai nhanh chóng vào các nền tảng giáo dục lớn như Moodle, Canvas, Blackboard.
-5. Ứng dụng công nghệ rPPG: Đo lường nhịp tim sinh viên thông qua những biến đổi vi mô về màu sắc trên da mặt được camera ghi lại, từ đó không chỉ đánh giá mức độ tập trung nhưng còn phân tích được trạng thái căng thẳng của sinh viên trong lúc học tập hoặc làm bài.
+1. Nén mô hình AI (Quantization): Tiếp tục tối ưu và nén các mô hình Deep Learning xuống định dạng nhỏ hơn (8-bit hoặc 4-bit) giúp tải trang web nhanh hơn, đặc biệt khi sinh viên dùng mạng 3G/4G yếu.
+2. Tận dụng card đồ họa (WebGPU): Chuyển đổi công nghệ cốt lõi sang chuẩn WebGPU mới nhất để khai thác trực tiếp sức mạnh card đồ họa rời của máy tính, từ đó có thể chạy các mô hình AI phức tạp hơn mà không làm đơ máy.
+3. Phân tích kết hợp nhiều hành vi (Multimodal): Mở rộng theo dõi thêm thao tác gõ phím, rê chuột hoặc âm thanh môi trường để đưa ra điểm số tập trung chính xác hơn, thay vì chỉ phụ thuộc vào camera.
+4. Đóng gói theo chuẩn giáo dục quốc tế (LTI): Biến hệ thống thành một tiện ích mở rộng chuẩn hóa, cho phép các trường đại học dễ dàng "lắp ghép" trực tiếp vào các nền tảng học trực tuyến lớn (như Moodle, Canvas) chỉ với vài thao tác.
+5. Đo nhịp tim không chạm (công nghệ rPPG): Ứng dụng AI phân tích những thay đổi siêu nhỏ về màu sắc trên da mặt qua camera để đo nhịp tim sinh viên. Điều này không chỉ giúp đánh giá sự tập trung mà còn phát hiện được mức độ căng thẳng (stress) của sinh viên trong quá trình làm bài.
 
 
 CH5_TITLE|TÀI LIỆU THAM KHẢO
