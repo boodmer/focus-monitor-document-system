@@ -97,11 +97,9 @@ Quá trình thu thập, phân tích và đồng bộ dữ liệu được tổ c
 
 CH3_H3|Luồng xử lý chính và phụ trợ
 Quy trình chính hoạt động đệ quy liên tục dựa trên hàm `requestAnimationFrame`, đồng bộ hóa với tần số quét của màn hình (thường là 60 Hz). Tại mỗi khung hình, hình ảnh từ webcam được đưa qua công cụ MediaPipe Face Landmarker để trích xuất 468 điểm mốc trong không gian ba chiều. Từ dữ liệu này, hệ thống áp dụng tính toán hình học để xác định Tỷ lệ Khía cạnh Mắt (EAR) và hướng đầu (Hình 3.4).
-Để ngăn chặn tình trạng quá tải luồng xử lý chính của JavaScript (Main Thread Blocking), hệ thống tích hợp bộ định thời (Intervals) cho các tác vụ AI phức tạp. Cụ thể, luồng nhận diện cảm xúc sử dụng mạng nơ-ron tích chập (CNN) chỉ được kích hoạt 1 lần/giây. Song song đó, quy trình xác thực danh tính được thực thi 2 lần/giây, nơi khuôn mặt hiện tại được đối chiếu với vector gốc thông qua thuật toán tính khoảng cách Euclidean (Hình 3.5).
+Để ngăn chặn tình trạng quá tải luồng xử lý chính của JavaScript (Main Thread Blocking), hệ thống tích hợp bộ định thời (Intervals) cho các tác vụ AI phức tạp. Cụ thể, luồng nhận diện cảm xúc sử dụng mạng nơ-ron tích chập (CNN) chỉ được kích hoạt 1 lần/giây. Song song đó, quy trình xác thực danh tính được thực thi 2 lần/giây, nơi khuôn mặt hiện tại được đối chiếu với vector gốc thông qua thuật toán tính khoảng cách Euclidean.
 
 CH3_IMAGE|pipeline_vi_new.png|Hình 3.4. Luồng xử lý phân tích hành vi thời gian thực
-
-CH3_IMAGE|face_biometric_auth.png|Hình 3.5. Quá trình đối chiếu vector danh tính
 
 CH3_H3|Thiết lập mô hình Zero Trust và bảo vệ luồng dữ liệu viễn trắc
 Khi dịch chuyển toàn bộ quá trình xử lý AI xuống thiết bị người dùng (Client-side), hệ thống phải đối mặt với thách thức bảo mật cốt lõi: máy khách luôn bị xem là môi trường không đáng tin cậy (Zero Trust). Nguy cơ sinh viên sử dụng công cụ đánh chặn để chỉnh sửa điểm số `focus_score` từ 0.2 thành 1.0, hoặc dùng hình ảnh giả mạo tĩnh để đánh lừa thuật toán AI là hoàn toàn hiện hữu.
@@ -111,10 +109,10 @@ Khi dịch chuyển toàn bộ quá trình xử lý AI xuống thiết bị ngư
 **1. Bảo vệ tính toàn vẹn dữ liệu (HMAC SHA-256)**
 Khi đăng nhập, máy chủ sinh ra một Khóa bí mật đối xứng (Symmetric Key) độc bản. Định kỳ 5 giây, trình duyệt không chỉ đóng gói payload JSON mà còn dùng Web Crypto API để băm toàn bộ payload bằng khóa bí mật này, tạo ra một "niêm phong điện tử" gửi trong HTTP Header. Nhờ "hiệu ứng tuyết lở" (Avalanche Effect) của thuật toán SHA-256, bất kỳ can thiệp dù nhỏ nhất vào payload cũng sẽ thay đổi hoàn toàn mã Hash. Khi tiếp nhận, máy chủ tính toán lại và từ chối gói tin nếu có sự sai lệch.
 
-**2. Bảo vệ tính trung thực bằng Thử thách Liveness (Hình 3.6)**
+**2. Bảo vệ tính trung thực bằng Thử thách Liveness (Hình 3.5)**
 Để ngăn chặn tấn công bằng hình ảnh tĩnh hoặc video giả mạo (Presentation Attack), hệ thống kích hoạt ngẫu nhiên yêu cầu sinh viên thực hiện chuyển động vật lý cụ thể. Thuật toán trích xuất đạo hàm góc quay theo thời gian thực từ ma trận 3D; nếu quỹ đạo chuyển động không khớp với yêu cầu trong 15 giây, hệ thống khóa phiên và ghi nhận vi phạm. Trong thời gian thử thách đang diễn ra, việc sinh viên phải thay đổi góc quay đầu (ví dụ: quay sang trái/phải) là hành động bắt buộc, do đó hệ thống sẽ tạm ngưng việc trừ điểm "Mất tập trung" dựa trên tín hiệu Head Pose để đảm bảo tính công bằng và chính xác của Focus Score.
 
-CH3_IMAGE|liveness_vi2_1777524433515.png|Hình 3.6. Luồng xác thực người thật (Liveness Challenge)
+CH3_IMAGE|liveness_vi2_1777524433515.png|Hình 3.5. Luồng xác thực người thật (Liveness Challenge)
 
 CH3_H2|Thiết kế thuật toán đánh giá mức độ tập trung
 
@@ -122,9 +120,9 @@ Tính toán Điểm tập trung (Focus Score) là công đoạn then chốt giú
 
 CH3_H3|Đầu vào và thuật toán cửa sổ trượt (Sliding Window)
 Quy trình bắt đầu bằng việc tính điểm cơ sở trên từng khung hình. Trạng thái "tập trung" được gán giá trị 1.0, "mất tập trung" là 0.2, "buồn ngủ" là 0.1 và "vắng mặt" là 0.0. Tiếp theo, một hệ số điều chỉnh (Emotion Modifier) được áp dụng nhằm phản ánh cảm xúc: trạng thái bình thường/vui vẻ sẽ có hệ số bù dương, trong khi các biểu cảm tiêu cực sẽ kéo giảm điểm số. Ngoài ra, tần suất chớp mắt bất thường trong 60 giây gần nhất cũng là tham số để áp dụng mức phạt thích hợp. Tất cả các tham số này được giới hạn qua hàm Clamp trong khoảng [0.0, 1.0].
-Thay vì tính toán trung bình cộng tuyến tính $O(n)$ truyền thống cho 18.000 phần tử dữ liệu (tương ứng với cửa sổ 5 phút ở 60 FPS), hệ thống sử dụng cấu trúc bộ đệm vòng thông qua `Float64Array`. Thuật toán Moving Sum giúp giảm độ phức tạp xuống mức $O(1)$: giá trị tổng mới được cập nhật nhanh chóng bằng cách cộng thêm điểm khung hình mới và trừ đi điểm của khung hình cũ nhất đã rời khỏi cửa sổ (Hình 3.7). Cải tiến này tối ưu hóa hàng triệu phép toán dư thừa mỗi giây, giúp hệ thống hoạt động mượt mà trên nền tảng phần cứng hạn chế.
+Thay vì tính toán trung bình cộng tuyến tính $O(n)$ truyền thống cho 18.000 phần tử dữ liệu (tương ứng với cửa sổ 5 phút ở 60 FPS), hệ thống sử dụng cấu trúc bộ đệm vòng thông qua `Float64Array`. Thuật toán Moving Sum giúp giảm độ phức tạp xuống mức $O(1)$: giá trị tổng mới được cập nhật nhanh chóng bằng cách cộng thêm điểm khung hình mới và trừ đi điểm của khung hình cũ nhất đã rời khỏi cửa sổ (Hình 3.6). Cải tiến này tối ưu hóa hàng triệu phép toán dư thừa mỗi giây, giúp hệ thống hoạt động mượt mà trên nền tảng phần cứng hạn chế.
 
-CH3_IMAGE|sliding_window_diagram.png|Hình 3.7. Cửa sổ trượt đánh giá trạng thái
+CH3_IMAGE|sliding_window_diagram.png|Hình 3.6. Cửa sổ trượt đánh giá trạng thái
 
 CH3_H2|Kiến trúc Frontend và tối ưu hóa luồng hiển thị
 Giao diện người dùng (Frontend) không đơn thuần chỉ hiển thị thông tin mà còn trực tiếp gánh vác toàn bộ tính toán AI. Nút thắt lớn nhất của ReactJS là quản lý vòng đời kết xuất (Render Lifecycle). Luồng phân tích Face Mesh hoạt động 60 lần/giây; nếu lưu trữ điểm mốc tức thời vào trạng thái Component (`useState`), trình duyệt sẽ bị ép kết xuất lại cấu trúc DOM 60 lần/giây, gây đơ cứng giao diện (UI Freeze) và tràn bộ nhớ.
@@ -155,7 +153,7 @@ CH3_H2|Thiết kế Cơ sở dữ liệu và API
 Để thực thi kiến trúc Stateless đồng bộ, hệ thống ủy thác hoàn toàn việc lưu trữ ngữ cảnh cho Cơ sở dữ liệu PostgreSQL. Cấu trúc lược đồ (Schema) được thiết kế riêng nhằm đáp ứng luồng lưu lượng chuỗi thời gian phân giải cao.
 
 CH3_H3|Mô hình thực thể liên kết (ERD) và Đặc tả dữ liệu
-Cơ sở dữ liệu được thiết kế đạt Chuẩn hóa mức 3 (3NF) với 6 thực thể nòng cốt (Hình 3.8). Hệ thống áp dụng quy tắc phân lập nghiêm ngặt giữa dữ liệu thông tin cá nhân và dữ liệu sinh trắc học:
+Cơ sở dữ liệu được thiết kế đạt Chuẩn hóa mức 3 (3NF) với 6 thực thể nòng cốt (Hình 3.7). Hệ thống áp dụng quy tắc phân lập nghiêm ngặt giữa dữ liệu thông tin cá nhân và dữ liệu sinh trắc học:
 
 1. Bảng `users`: Quản lý danh tính cơ bản và phân quyền.
 - `id` (UUID, Primary Key).
@@ -192,7 +190,7 @@ Cơ sở dữ liệu được thiết kế đạt Chuẩn hóa mức 3 (3NF) v�
 - `issued_at`, `expires_at` (TIMESTAMP): Khung thời gian hiệu lực của thử thách (thường là 15 giây).
 - `result` (ENUM): Kết quả phản hồi ('PENDING', 'PASSED', 'FAILED').
 
-CH3_IMAGE|erd_diagram.png|Hình 3.8. Biểu đồ thực thể liên kết (ERD)
+CH3_IMAGE|erd_diagram.png|Hình 3.7. Biểu đồ thực thể liên kết (ERD)
 
 CH3_H3|Thiết kế Giao diện lập trình ứng dụng (API)
 Mạng lưới API được phát triển trên nền tảng Python FastAPI, tuân thủ chặt chẽ các tiêu chuẩn RESTful và OpenAPI. Hệ thống bảo mật cấp ứng dụng ứng dụng chuẩn JSON Web Token (JWT) kết hợp thuật toán OAuth2 Password Bearer.

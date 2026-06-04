@@ -117,6 +117,19 @@ Kết quả khảo sát chỉ ra rằng 87% sinh viên không cảm thấy việ
 
 Kết quả cho thấy sự kết hợp giữa kỹ thuật tối ưu hóa phần cứng và thiết kế hướng người dùng đã giúp hệ thống đạt được mục tiêu kép: vừa giám sát chặt chẽ, vừa mang lại trải nghiệm học tập và thi cử công bằng và nhân văn.
 
+CH4_H2|Giao diện Quản trị Hệ thống (Admin Dashboard)
+
+Bên cạnh phân hệ dành cho sinh viên, hệ thống cung cấp một giao diện quản trị toàn diện dành riêng cho giảng viên và nhà trường. Đây là mắt xích quan trọng hoàn thiện kiến trúc Hybrid Client-Server, nơi thu nhận và trực quan hóa toàn bộ dữ liệu viễn trắc gửi về từ hàng trăm máy sinh viên.
+[SCREENSHOT]Hình 4.8. Giao diện trang quản trị dành cho giảng viên (Admin Dashboard)
+
+Dựa trên thiết kế thực tế, phân hệ quản trị (Hình 4.8) cung cấp các chức năng chuyên sâu bao gồm:
+- Bảng điều khiển tổng quan (Dashboard): Nắm bắt nhanh các chỉ số thống kê về mức độ tập trung trung bình và các cảnh báo vi phạm.
+- Giám sát trực tiếp (Live Monitor): Theo dõi trạng thái tập trung của toàn bộ sinh viên trong ca thi hiện tại theo thời gian thực.
+- Quản lý ca thi và lịch sử (Session History): Lưu trữ và cho phép xem lại chi tiết đồ thị biến thiên Điểm tập trung (Focus Score) của từng ca thi/học.
+- Quản lý sinh viên (Student Roster): Tra cứu thông tin, theo dõi tiến độ và lịch sử tham gia của từng cá nhân.
+- Nhật ký chống gian lận (Challenge Log): Lưu vết và cung cấp bằng chứng cho các trường hợp vi phạm, đặc biệt là các lần không vượt qua bài kiểm tra thực thể (Liveness Challenge) hoặc phát hiện sai danh tính.
+
+
 CH4_H2|Tổng kết Chương 4
 
 Chương 4 đã trình bày phương pháp luận và kết quả thực nghiệm chi tiết cho hệ thống giám sát. Các số liệu đánh giá trên bộ dữ liệu tiêu chuẩn (LFW, CEW) và đo lường hiệu năng thực tế (End-to-End) khẳng định tính khả thi của mô hình Hybrid Client-Server. Hệ thống đạt độ chính xác cao trong việc phát hiện hành vi, tối ưu hóa thành công băng thông mạng, và duy trì mức tiêu thụ tài nguyên phần cứng hợp lý, hoàn toàn đáp ứng được các tiêu chuẩn khắt khe của một môi trường giáo dục số trực tuyến.
