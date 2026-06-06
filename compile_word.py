@@ -704,7 +704,7 @@ def build():
     for cf in chapter_files:
         parse_file(doc, cf)
 
-    out = os.path.join(OUT_DIR, '2024600002_NguyenQuangMinh_DATN.docx')
+    out = os.path.join(OUT_DIR, '2024600002_NguyenQuangMinh_DATN_final.docx')
     
     doc.save(out)
     print(f"\n=== SAVED: {out} ===")
