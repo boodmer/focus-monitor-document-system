@@ -23,7 +23,7 @@ CH4_IMAGE|placeholder_scenario_drowsy.png|Hình 4.3. Giao diện cảnh báo ở
 CH4_IMAGE|placeholder_scenario_identity.png|Hình 4.4. Giao diện cảnh báo ở kịch bản Sai danh tính
 
 CH4_H3|Phương pháp thu thập và gán nhãn dữ liệu thực nghiệm
-Để có cơ sở đánh giá sát với môi trường thực tế, đề tài tiến hành thu thập dữ liệu thử nghiệm nội bộ thông qua các kịch bản giả lập. Cụ thể, đề tài đã thực hiện 5 phiên học tập, mỗi phiên kéo dài 10 phút, trong đó cố tình lồng ghép các hành vi mục tiêu (tập trung, quay đầu bấm điện thoại, nhắm mắt buồn ngủ, và nhờ người ngồi thay). Dữ liệu thu về bao gồm video quay lại phiên làm việc và tệp nhật ký viễn trắc do hệ thống ghi nhận.
+Để có cơ sở đánh giá sát với môi trường thực tế, đề tài tiến hành thu thập dữ liệu thử nghiệm nội bộ thông qua các kịch bản giả lập. Cụ thể, đề tài đã thực hiện 5 phiên học tập, mỗi phiên kéo dài 10 phút, trong đó cố tình lồng ghép các hành vi mục tiêu (tập trung, quay đầu bấm điện thoại, nhắm mắt buồn ngủ, và nhờ người ngồi thay). Dữ liệu thu về bao gồm video quay lại phiên làm việc và tệp nhật ký giám sát do hệ thống ghi nhận.
 
 Về phương pháp gán nhãn, đề tài tiến hành rà soát thủ công các video đã quay và đánh dấu nhãn trạng thái thực tế theo từng giây. Dữ liệu dán nhãn thủ công này sau đó được đối chiếu trực tiếp với tệp nhật ký dự đoán tự động của hệ thống AI. Phương pháp này đảm bảo tính minh bạch, cung cấp đầy đủ minh chứng (video và log thô) để tính toán sai số.
 
@@ -62,9 +62,9 @@ Theo các tài liệu kỹ thuật và kết quả điểm chuẩn trên tập d
 - Trạng thái Buồn bã: ~82.5%
 Biểu cảm con người có độ biến thiên cao. Tuy nhiên, hệ thống chỉ ứng dụng kết quả này làm một trọng số phụ trợ, chủ yếu dựa vào trạng thái bình thường (Neutral) và các biểu cảm tiêu cực rõ rệt, do đó sai số ở các biểu cảm vi tế không làm sai lệch Điểm tập trung.
 
-CH4_H2|Đánh giá hiệu năng và luồng dữ liệu toàn hệ thống (Đánh giá toàn trình)
+CH4_H2|Đánh giá hiệu năng toàn hệ thống
 
-Sau khi các module thành phần đạt tiêu chuẩn, đề tài tiến hành kiểm thử toàn trình theo thời gian thực nhằm đánh giá khả năng đáp ứng của kiến trúc kết hợp kết hợp Máy khách - Máy chủ.
+Sau khi các module thành phần đạt tiêu chuẩn, đề tài tiến hành kiểm thử toàn trình theo thời gian thực nhằm đánh giá khả năng đáp ứng của kiến trúc kết hợp Máy khách - Máy chủ.
 
 CH4_H3|Tính ổn định của Điểm tập trung
 Dữ liệu thu thập từ các kịch bản thực tế chứng minh hệ thống phản hồi chính xác sự thay đổi trạng thái.
@@ -79,7 +79,7 @@ Việc dịch chuyển lõi AI xuống phía máy khách yêu cầu sự đánh 
 - Trạng thái giám sát thời gian thực: RAM tăng lên mức 450MB (phục vụ nạp trọng số mô hình) và CPU dao động ổn định trong khoảng 15% - 25%.
 Tốc độ khung hình (FPS) trung bình đạt 58.2 FPS. Kết quả này khẳng định hệ thống hoàn toàn có khả năng hoạt động song song mượt mà với các ứng dụng học tập khác như các phần mềm họp trực tuyến hoặc hệ thống thi trắc nghiệm mà không gây quá tải tài nguyên phần cứng. Thử nghiệm chạy liên tục 3 giờ không phát sinh hiện tượng rò rỉ bộ nhớ (dưới 5MB/giờ).
 
-Áp dụng kỹ thuật gom nhóm, hệ thống loại bỏ việc truyền tải từng khung hình. Chỉ số viễn trắc được tổng hợp và đóng gói mỗi 5 giây. Lưu lượng mạng trung bình đo được ở mức rất thấp, khoảng 2-5 KB/phút. Ngay cả khi đính kèm báo cáo vi phạm, dung lượng gói tin không vượt quá 10 KB. Cơ chế này đảm bảo hệ thống vận hành trơn tru ngay cả trên các môi trường mạng di động có chất lượng thấp.
+Áp dụng kỹ thuật gom nhóm, hệ thống loại bỏ việc truyền tải từng khung hình. Chỉ số giám sát được tổng hợp và đóng gói mỗi 5 giây. Lưu lượng mạng trung bình đo được ở mức rất thấp, khoảng 2-5 KB/phút. Ngay cả khi đính kèm báo cáo vi phạm, dung lượng gói tin không vượt quá 10 KB. Cơ chế này đảm bảo hệ thống vận hành trơn tru ngay cả trên các môi trường mạng di động có chất lượng thấp.
 
 CH4_H2|Phân tích các tình huống ngoại lệ và giải pháp bảo mật
 
@@ -101,13 +101,13 @@ CH4_IMAGE|placeholder_liveness_test.png|Hình 4.7. Thử nghiệm cơ chế Live
 
 CH4_H2|Đánh giá hiệu năng phần cứng và Trải nghiệm người dùng
 
-Để chứng minh tính khả thi thực tiễn của mô hình kiến trúc kết hợp, hệ thống buộc phải vượt qua các bài kiểm thử nghiêm ngặt về cả năng lực tiêu thụ tài nguyên phần cứng lẫn mức độ chấp nhận của người dùng đầu cuối. Quá trình kiểm thử hiệu năng được thiết kế nhằm đánh giá mức độ chiếm dụng CPU và RAM của trình duyệt Google Chrome khi liên tục thực thi mô hình AI ở tốc độ 60 khung hình mỗi giây. Phương pháp luận kiểm thử yêu cầu hệ thống phải chạy liên tục trong 60 phút, mô phỏng đúng thời lượng của một buổi học hoặc ca thi tiêu chuẩn, trên ba phân khúc cấu hình máy tính khác nhau.
+Để chứng minh tính khả thi thực tiễn của mô hình kiến trúc kết hợp, hệ thống buộc phải vượt qua các bài kiểm thử về mức tiêu thụ tài nguyên phần cứng và mức độ hài lòng của người dùng. Kiểm thử hiệu năng đánh giá mức chiếm dụng CPU và RAM khi trình duyệt Chrome liên tục chạy mô hình AI ở tốc độ 60 FPS. Hệ thống được yêu cầu chạy liên tục trong 60 phút, mô phỏng đúng thời lượng của một buổi học hoặc ca thi tiêu chuẩn, trên ba phân khúc cấu hình máy tính khác nhau.
 
 Kết quả đo lường cho thấy, trên các thiết bị cấu hình cao (ví dụ bộ vi xử lý Intel Core i7 thế hệ 12, 16GB RAM), hệ thống chỉ mất từ 6 đến 8 mili-giây để xử lý xong một khung hình, với mức tiêu thụ CPU luôn ổn định ở dải 10-12%. 
 
 Chuyển sang phân khúc phổ thông chiếm đa số trong sinh viên (như Intel Core i5 thế hệ 8, 8GB RAM), thời gian xử lý tăng lên khoảng 12-15 mili-giây mỗi khung hình, kéo theo mức tiêu thụ CPU dao động quanh 18-25%. 
 
-Trong kịch bản kiểm thử trên thiết bị có giới hạn về phần cứng (chip Intel Celeron, 4GB RAM), dù CPU phải hoạt động liên tục ở mức 45-55% và có hiện tượng sụt khung hình xuống còn khoảng 30 FPS, đồ thị đánh giá Điểm tập trung vẫn hoàn toàn khớp với thực tế. Điều này chứng minh thuật toán Cửa sổ trượt và kỹ thuật nén mô hình đã hoạt động xuất sắc, cho phép hệ thống triển khai trên diện rộng mà hoàn toàn không gây cản trở hay tạo ra rào cản phần cứng cho những sinh viên có hoàn cảnh khó khăn.
+Trong kịch bản kiểm thử trên thiết bị có giới hạn về phần cứng (chip Intel Celeron, 4GB RAM), dù CPU phải hoạt động liên tục ở mức 45-55% và có hiện tượng sụt khung hình xuống còn khoảng 30 FPS, đồ thị đánh giá Điểm tập trung vẫn hoàn toàn khớp với thực tế. Điều này chứng minh thuật toán Cửa sổ trượt và kỹ thuật nén mô hình hoạt động hiệu quả, cho phép hệ thống triển khai trên diện rộng mà không đặt ra yêu cầu phần cứng cao.
 
 Song song với việc đo lường tài nguyên máy móc, khía cạnh con người cũng được đặc biệt chú trọng thông qua thang đo độ khả dụng hệ thống SUS. Cuộc khảo sát được tiến hành với tập mẫu 30 sinh viên đa ngành nghề nhằm đánh giá sự tương tác tâm lý khi bị giám sát bằng AI. Với 10 câu hỏi chuẩn hóa, điểm số thu về đạt mức 82.5/100, vượt xa ngưỡng 68 điểm tiêu chuẩn công nghiệp và được xếp hạng xuất sắc. 
 
@@ -115,11 +115,11 @@ Phân tích sâu hơn vào các chỉ số phụ, sinh viên đặc biệt đán
 
 Kết quả khảo sát chỉ ra rằng 87% sinh viên không cảm thấy việc cảnh báo vi phạm là một sự đe dọa; ngược lại, họ xem cơ chế viền đỏ chớp nháy như một "trợ lý ảo" giúp họ nhanh chóng nhận ra bản thân đang mất tập trung, từ đó điều chỉnh lại tư thế và nâng cao hiệu suất học tập và làm bài. Dù vậy, báo cáo cũng ghi nhận 13% phản hồi về hiện tượng mỏi mắt do ánh sáng viền đỏ trong điều kiện thi buổi tối. Đây là cơ sở quan trọng để đề tài định hướng phát triển các cơ chế cân bằng sáng tự động hoặc thiết kế chế độ tối cho các phiên bản cập nhật trong tương lai. 
 
-Kết quả cho thấy sự kết hợp giữa kỹ thuật tối ưu hóa phần cứng và thiết kế hướng người dùng đã giúp hệ thống đạt được mục tiêu kép: vừa giám sát chặt chẽ, vừa mang lại trải nghiệm học tập và thi cử công bằng và nhân văn.
+Kết quả cho thấy hệ thống đạt được cả hai mục tiêu: giám sát hiệu quả và đảm bảo trải nghiệm học tập, thi cử công bằng cho sinh viên.
 
 CH4_H2|Giao diện Quản trị Hệ thống
 
-Bên cạnh phân hệ dành cho sinh viên, hệ thống cung cấp một giao diện quản trị toàn diện dành riêng cho giảng viên và nhà trường. Đây là mắt xích quan trọng hoàn thiện toàn bộ kiến trúc giám sát, nơi thu nhận và trực quan hóa toàn bộ dữ liệu viễn trắc gửi về từ hàng trăm máy sinh viên.
+Bên cạnh phân hệ dành cho sinh viên, hệ thống cung cấp một giao diện quản trị toàn diện dành riêng cho giảng viên và nhà trường. Đây là phần quan trọng hoàn thiện kiến trúc giám sát, nơi thu nhận và trực quan hóa toàn bộ dữ liệu giám sát gửi về từ hàng trăm máy sinh viên.
 [SCREENSHOT]Hình 4.8. Giao diện trang quản trị dành cho giảng viên
 
 Dựa trên thiết kế thực tế, phân hệ quản trị (Hình 4.8) cung cấp các chức năng chuyên sâu bao gồm:
@@ -131,4 +131,4 @@ Dựa trên thiết kế thực tế, phân hệ quản trị (Hình 4.8) cung c
 
 CH4_H2|Tổng kết Chương 4
 
-Chương 4 đã trình bày phương pháp luận và kết quả thực nghiệm chi tiết cho hệ thống giám sát. Các số liệu đánh giá trên bộ dữ liệu tiêu chuẩn và đo lường hiệu năng thực tế khẳng định tính khả thi của hệ thống. Hệ thống đạt độ chính xác cao trong việc phát hiện hành vi, tối ưu hóa thành công băng thông mạng, và duy trì mức tiêu thụ tài nguyên phần cứng hợp lý, hoàn toàn đáp ứng được các tiêu chuẩn khắt khe của một môi trường giáo dục số trực tuyến.
+Chương 4 đã trình bày phương pháp luận và kết quả thực nghiệm chi tiết cho hệ thống giám sát. Các số liệu đánh giá trên bộ dữ liệu chuẩn và trong điều kiện thực tế cho thấy hệ thống đạt độ chính xác cao trong phát hiện hành vi, tiết kiệm băng thông mạng và tiêu thụ tài nguyên phần cứng ở mức hợp lý, đáp ứng được yêu cầu của môi trường giáo dục trực tuyến.

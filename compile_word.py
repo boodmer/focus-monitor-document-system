@@ -36,18 +36,41 @@ def add_omml_to_paragraph(paragraph, latex_str):
     omml_elem = latex_to_omml(latex_str)
     paragraph._element.append(omml_elem)
 
-def add_display_equation(doc, latex_str):
-    """Add a centered display equation paragraph (like ALT+= block equation)."""
-    p = doc.add_paragraph()
+def add_display_equation(doc, latex_str, eq_num=""):
+    """Add a centered display equation with an optional right-aligned equation number."""
+    table = doc.add_table(rows=1, cols=3)
+    table.autofit = False
+    
+    # Set exact widths
+    # Page width = 210mm. Left margin = 35mm, Right margin = 20mm. Content width = 155mm.
+    w1, w2, w3 = Mm(15), Mm(125), Mm(15)
+    table.columns[0].width = w1
+    table.columns[1].width = w2
+    table.columns[2].width = w3
+    for row in table.rows:
+        row.cells[0].width = w1
+        row.cells[1].width = w2
+        row.cells[2].width = w3
+    
+    p = table.cell(0, 1).paragraphs[0]
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.paragraph_format.space_before = Pt(3)
-    p.paragraph_format.space_after = Pt(3)
-    p.paragraph_format.line_spacing = 1.3
-    # Wrap in oMathPara for display-mode centering
     omml_elem = latex_to_omml(latex_str)
     omath_para = OxmlElement('m:oMathPara')
     omath_para.append(omml_elem)
     p._element.append(omath_para)
+    
+    if eq_num:
+        p_right = table.cell(0, 2).paragraphs[0]
+        p_right.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+        # Vertically center the text
+        tcPr = table.cell(0, 2)._tc.get_or_add_tcPr()
+        vAlign = OxmlElement('w:vAlign')
+        vAlign.set(qn('w:val'), 'center')
+        tcPr.append(vAlign)
+        
+        r = p_right.add_run(eq_num)
+        r.font.name = 'Times New Roman'
+        r.font.size = Pt(13)
 
 def add_page_number(run):
     fldChar1 = OxmlElement('w:fldChar')
@@ -276,9 +299,11 @@ def strip_number_prefix(title):
 _ch_num = 0
 _sec_num = 0
 _subsec_num = 0
+_eq_num = 0
+_table_num = 0
 
 def parse_file(doc, filepath):
-    global _ch_num, _sec_num, _subsec_num
+    global _ch_num, _sec_num, _subsec_num, _eq_num, _table_num
     if not os.path.exists(filepath):
         print(f"  SKIP: {filepath}")
         return
@@ -361,6 +386,8 @@ def parse_file(doc, filepath):
                         _ch_num += 1
                         _sec_num = 0
                         _subsec_num = 0
+                        _eq_num = 0
+                        _table_num = 0
                         display = f"CHƯƠNG {_ch_num}: {clean}"
                     else:
                         display = clean
@@ -425,42 +452,62 @@ def parse_file(doc, filepath):
                             for prefix in ['CH2_EQ|','CH3_EQ|','CH4_EQ|']:
                                 if stripped.startswith(prefix):
                                     math_latex = stripped.split('|', 1)[1]
+                                    _eq_num += 1
+                                    eq_num_str = f"({_ch_num}.{_eq_num})"
                                     try:
-                                        add_display_equation(doc, math_latex)
+                                        add_display_equation(doc, math_latex, eq_num_str)
                                     except Exception as e:
                                         print(f"  [WARN] Equation OMML error: {e}")
-                                        para(doc, f"[Equation: {math_latex}]")
+                                        para(doc, f"[Equation {eq_num_str}: {math_latex}]")
                                     break
                             else:
-                                # Screenshot placeholders
-                                if stripped.startswith('[SCREENSHOT]'):
-                                    caption = stripped.replace('[SCREENSHOT]', '').strip()
-                                    # Add empty bordered paragraph as placeholder
-                                    p = doc.add_paragraph()
-                                    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                                    r = p.add_run('\n\n\n[Chèn ảnh chụp màn hình tại đây]\n\n\n')
-                                    r.font.size = Pt(12)
-                                    r.font.italic = True
-                                    r.font.color.rgb = None
-                                    # Add border to paragraph
-                                    from docx.oxml.ns import qn
-                                    from docx.oxml import OxmlElement
-                                    pPr = p._element.get_or_add_pPr()
-                                    pBdr = OxmlElement('w:pBdr')
-                                    for border_name in ['top', 'left', 'bottom', 'right']:
-                                        border = OxmlElement(f'w:{border_name}')
-                                        border.set(qn('w:val'), 'single')
-                                        border.set(qn('w:sz'), '4')
-                                        border.set(qn('w:space'), '4')
-                                        border.set(qn('w:color'), '999999')
-                                        pBdr.append(border)
-                                    pPr.append(pBdr)
-                                    # Caption
-                                    cap = doc.add_paragraph(caption, style='ImgCaption')
-                                    cap.paragraph_format.space_after = Pt(0)
-                                    cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                                # Table Captions
+                                for prefix in ['CH2_TABLE|','CH3_TABLE|','CH4_TABLE|','CH5_TABLE|','APPENDIX_TABLE|']:
+                                    if stripped.startswith(prefix):
+                                        cap_text = stripped.split('|', 1)[1]
+                                        if prefix == 'APPENDIX_TABLE|':
+                                            cap_disp = "Bảng P.1:"
+                                        else:
+                                            _table_num += 1
+                                            cap_disp = f"Bảng {_ch_num}.{_table_num}:"
+                                            
+                                        cap = doc.add_paragraph(style='TableCaption')
+                                        cap.paragraph_format.space_after = Pt(6)
+                                        cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                                        r_num = cap.add_run(f"{cap_disp} ")
+                                        r_num.bold = True
+                                        cap.add_run(cap_text)
+                                        break
                                 else:
-                                    para(doc, stripped)
+                                    # Screenshot placeholders
+                                    if stripped.startswith('[SCREENSHOT]'):
+                                        caption = stripped.replace('[SCREENSHOT]', '').strip()
+                                        # Add empty bordered paragraph as placeholder
+                                        p = doc.add_paragraph()
+                                        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                                        r = p.add_run('\n\n\n[Chèn ảnh chụp màn hình tại đây]\n\n\n')
+                                        r.font.size = Pt(12)
+                                        r.font.italic = True
+                                        r.font.color.rgb = None
+                                        # Add border to paragraph
+                                        from docx.oxml.ns import qn
+                                        from docx.oxml import OxmlElement
+                                        pPr = p._element.get_or_add_pPr()
+                                        pBdr = OxmlElement('w:pBdr')
+                                        for border_name in ['top', 'left', 'bottom', 'right']:
+                                            border = OxmlElement(f'w:{border_name}')
+                                            border.set(qn('w:val'), 'single')
+                                            border.set(qn('w:sz'), '4')
+                                            border.set(qn('w:space'), '4')
+                                            border.set(qn('w:color'), '999999')
+                                            pBdr.append(border)
+                                        pPr.append(pBdr)
+                                        # Caption
+                                        cap = doc.add_paragraph(caption, style='ImgCaption')
+                                        cap.paragraph_format.space_after = Pt(0)
+                                        cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                                    else:
+                                        para(doc, stripped)
     
     if table_lines:
         flush_table()
@@ -539,6 +586,13 @@ def build():
         style.font.name = 'Times New Roman'
         style.font.size = Pt(13)
         style.font.italic = True
+        style.font.color.rgb = RGBColor(0,0,0)
+
+    # Create TableCaption style
+    if 'TableCaption' not in styles:
+        style = styles.add_style('TableCaption', WD_STYLE_TYPE.PARAGRAPH)
+        style.font.name = 'Times New Roman'
+        style.font.size = Pt(13)
         style.font.color.rgb = RGBColor(0,0,0)
 
     try:
@@ -623,6 +677,28 @@ def build():
     instrText = OxmlElement('w:instrText')
     instrText.set(qn('xml:space'), 'preserve')
     instrText.text = 'TOC \\h \\z \\t "ImgCaption,1"'
+    fldChar2 = OxmlElement('w:fldChar')
+    fldChar2.set(qn('w:fldCharType'), 'separate')
+    fldChar3 = OxmlElement('w:fldChar')
+    fldChar3.set(qn('w:fldCharType'), 'end')
+    run._r.append(fldChar1)
+    run._r.append(instrText)
+    run._r.append(fldChar2)
+    run._r.append(fldChar3)
+    
+    doc.add_page_break()
+
+    # === DANH SÁCH BẢNG BIỂU ===
+    heading(doc, "DANH SÁCH BẢNG BIỂU", level=1)
+    
+    # Add dynamic LOT field
+    lot_para = doc.add_paragraph()
+    run = lot_para.add_run()
+    fldChar1 = OxmlElement('w:fldChar')
+    fldChar1.set(qn('w:fldCharType'), 'begin')
+    instrText = OxmlElement('w:instrText')
+    instrText.set(qn('xml:space'), 'preserve')
+    instrText.text = 'TOC \\h \\z \\t "TableCaption,1"'
     fldChar2 = OxmlElement('w:fldChar')
     fldChar2.set(qn('w:fldCharType'), 'separate')
     fldChar3 = OxmlElement('w:fldChar')

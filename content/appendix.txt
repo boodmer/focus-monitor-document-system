@@ -100,6 +100,7 @@ Bảng dưới đây liệt kê các endpoint cốt lõi của hệ thống, đ�
 
 1. Nhóm Xác thực và Định danh (Users):
 
+APPENDIX_TABLE|Các API endpoint nhóm Xác thực và Định danh
 | Method | Endpoint | Mô tả |
 | POST | /api/auth/login | Đăng nhập, trả về JWT token và HMAC secret |
 | GET | /api/identity/status | Kiểm tra trạng thái đăng ký sinh trắc học |
@@ -107,14 +108,16 @@ Bảng dưới đây liệt kê các endpoint cốt lõi của hệ thống, đ�
 
 2. Nhóm Giám sát thời gian thực (Sessions):
 
+APPENDIX_TABLE|Các API endpoint nhóm Giám sát thời gian thực
 | Method | Endpoint | Mô tả |
 | POST | /api/session/start | Khởi tạo phiên giám sát mới |
-| POST | /api/session/heartbeat | Gửi gói tin viễn trắc (5 giây/lần, có HMAC) |
+| POST | /api/session/heartbeat | Gửi gói dữ liệu giám sát (5 giây/lần, có HMAC) |
 | POST | /api/session/end | Kết thúc phiên giám sát |
 | POST | /api/challenge/submit | Nộp kết quả thử thách Liveness (có HMAC) |
 
 3. Nhóm Quản trị và Thống kê (Admin):
 
+APPENDIX_TABLE|Các API endpoint nhóm Quản trị và Thống kê
 | Method | Endpoint | Mô tả |
 | GET | /api/admin/live | Danh sách sinh viên đang trực tuyến |
 | GET | /api/admin/sessions | Lịch sử các phiên giám sát |
@@ -129,6 +132,7 @@ Bảng dưới đây liệt kê các endpoint cốt lõi của hệ thống, đ�
 
 4. Nhóm Phân tích chi tiết phiên (Analytics):
 
+APPENDIX_TABLE|Các API endpoint nhóm Phân tích chi tiết
 | Method | Endpoint | Mô tả |
 | GET | /api/analytics/timeline/{session_id} | Chuỗi thời gian Focus Score |
 | GET | /api/analytics/distribution/{session_id} | Phân bổ trạng thái tập trung |
@@ -139,7 +143,7 @@ Bảng dưới đây liệt kê các endpoint cốt lõi của hệ thống, đ�
 
 CH0_H2|Phụ lục D: Cấu trúc gói tin Heartbeat
 
-Đây là cấu trúc thực tế của một yêu cầu HTTP Heartbeat được trình duyệt gửi lên Backend mỗi 5 giây. Gói tin bao gồm ba HTTP Header phục vụ xác thực HMAC-SHA256 và phần thân JSON chứa dữ liệu viễn trắc:
+Đây là cấu trúc thực tế của một yêu cầu HTTP Heartbeat được trình duyệt gửi lên Backend mỗi 5 giây. Gói tin bao gồm ba HTTP Header phục vụ xác thực HMAC-SHA256 và phần thân JSON chứa dữ liệu giám sát:
 
 ```text
 POST /api/session/heartbeat HTTP/1.1

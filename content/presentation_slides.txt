@@ -32,10 +32,10 @@
   1. Ứng dụng công nghệ xử lý tại biên (Edge AI) ngay trên trình duyệt.
   2. Phân tích độ tập trung qua Cử chỉ vật lý (độ mở mắt, hướng đầu) và Cảm xúc.
   3. Tổng hợp điểm số thời gian thực với độ trễ thấp.
-  4. Bảo đảm tuyệt đối quyền riêng tư đối với hình ảnh của sinh viên.
+  4. Bảo vệ quyền riêng tư đối với hình ảnh của sinh viên.
   5. Phát triển cơ chế chống gian lận (Anti-Spoofing) đa lớp.
 
-> **🗣 Lời dẫn:** Dựa trên những bất cập hiện tại của thi trực tuyến, đề tài của em tập trung giải quyết 5 mục tiêu. Thứ nhất, đưa hệ thống AI lên chạy thẳng trên trình duyệt để không ai phải cài đặt phần mềm. Thứ hai, đánh giá được sự tập trung qua cả cử chỉ và cảm xúc. Thứ ba, điểm số phải được tính toán mượt mà, liên tục mà không làm đơ máy. Thứ tư, cam kết bảo mật 100% bằng cách không bao giờ gửi video hình ảnh lên mạng. Và cuối cùng, xây dựng một hàng rào chống gian lận nhiều lớp để chặn đứng việc thi hộ hay dùng phần mềm camera giả mạo.
+> **🗣 Lời dẫn:** Dựa trên những bất cập hiện tại của thi trực tuyến, đề tài của em tập trung giải quyết 5 mục tiêu. Thứ nhất, đưa hệ thống AI lên chạy thẳng trên trình duyệt để không ai phải cài đặt phần mềm. Thứ hai, đánh giá được sự tập trung qua cả cử chỉ và cảm xúc. Thứ ba, điểm số phải được tính toán mượt mà, liên tục mà không làm đơ máy. Thứ tư, cam kết bảo mật bằng cách không bao giờ gửi video hình ảnh lên mạng. Và cuối cùng, xây dựng một hàng rào chống gian lận nhiều lớp để chặn đứng việc thi hộ hay dùng phần mềm camera giả mạo.
 
 ---
 
@@ -48,7 +48,7 @@
   - Chỉ nhận những dòng văn bản ngắn gọn báo cáo kết quả điểm số định kỳ.
   - Chạy rất nhẹ nhàng, có thể quản lý hàng ngàn sinh viên thi cùng lúc mà không lo nghẽn mạng.
 
-> **🗣 Lời dẫn:** Điểm khác biệt lớn nhất của hệ thống là thay vì gửi video về trường, máy tính của chính sinh viên sẽ tự gánh vác việc phân tích ảnh camera và chấm điểm. Cứ phân tích xong khung hình nào là hệ thống xóa luôn khung hình đó. Máy chủ của trường chỉ việc tiếp nhận các con số điểm đã được tính sẵn. Cách làm này vừa bảo vệ quyền riêng tư của sinh viên tuyệt đối, vừa giúp nhà trường không lo tốn tiền tỷ nâng cấp máy chủ phòng sập mạng.
+> **🗣 Lời dẫn:** Điểm khác biệt lớn nhất của hệ thống là thay vì gửi video về trường, máy tính của chính sinh viên sẽ tự gánh vác việc phân tích ảnh camera và chấm điểm. Cứ phân tích xong khung hình nào là hệ thống xóa luôn khung hình đó. Máy chủ của trường chỉ việc tiếp nhận các con số điểm đã được tính sẵn. Cách làm này vừa bảo vệ quyền riêng tư của sinh viên, vừa giúp nhà trường không lo tốn tiền nâng cấp máy chủ phòng sập mạng.
 
 ---
 
@@ -57,7 +57,7 @@ Hệ thống sử dụng cùng lúc 3 mô hình AI để theo dõi toàn diện:
 1. **Mô hình bắt cử động:** Chấm hàng trăm điểm trên mặt để đo độ mở của mắt và hướng quay đầu.
 2. **Mô hình phân tích cảm xúc:** Nhìn biểu cảm khuôn mặt để đánh giá xem sinh viên có đang căng thẳng hay mệt mỏi không.
 3. **Mô hình nhận diện khuôn mặt:** Quét sinh trắc học để xác nhận đúng người đang làm bài.
-- **Bí quyết công nghệ:** Cả 3 mô hình này đều được "ép cân" tối đa bằng các chuẩn công nghệ mới nhất để có thể chạy mượt mà trực tiếp trên web mà không bắt sinh viên phải cài phần mềm.
+- **Công nghệ chính:** Cả 3 mô hình này đều được nén và tối ưu bằng các chuẩn công nghệ mới nhất để chạy được trực tiếp trên web mà không bắt sinh viên phải cài phần mềm.
 
 > **🗣 Lời dẫn:** Trái tim của hệ thống là 3 mô hình AI cùng hoạt động song song. Một mô hình chuyên theo dõi mắt và đầu xem có ngó nghiêng không. Mô hình thứ hai đoán cảm xúc để xem người dùng có mệt mỏi chán nản không. Và mô hình thứ ba đóng vai trò như bảo vệ, liên tục soi xem có phải người thi hộ không. Bài toán khó nhất là bắt 3 mô hình nặng nề này chạy chung trên một trang web. Em đã phải dùng đến các công nghệ tối ưu đặc biệt để nén chúng lại, giúp hệ thống hoạt động trơn tru trên cả những chiếc laptop cũ.
 
@@ -108,7 +108,7 @@ Hệ thống sử dụng cùng lúc 3 mô hình AI để theo dõi toàn diện:
 
 ---
 
-## Slide 10: Hiệu năng & Ưu điểm vượt trội
+## Slide 10: Hiệu năng & Điểm mạnh
 - **Hiệu năng phần cứng:** Chỉ tiêu tốn 15-25% CPU, duy trì ~58 FPS.
 - **Siêu tiết kiệm mạng:** Băng thông chỉ **2-5 KB/phút**.
 - **So với phần mềm thương mại (ProctorU, Proctorio):**
@@ -116,7 +116,7 @@ Hệ thống sử dụng cùng lúc 3 mô hình AI để theo dõi toàn diện:
   - Không rò rỉ hình ảnh cá nhân.
   - Cắt giảm tối đa chi phí thuê máy chủ đồ họa (GPU).
 
-> **🗣 Lời dẫn:** Về mặt hiệu suất, hệ thống chỉ chạy mất 20% CPU và tốn vài KB mạng mỗi phút. So với các giải pháp thương mại đắt đỏ hiện nay, giải pháp này vượt trội ở chỗ: sinh viên không cần cài đặt gì, dữ liệu hình ảnh được giữ kín hoàn toàn, và nhà trường tiết kiệm được lượng lớn chi phí máy chủ.
+> **🗣 Lời dẫn:** Về mặt hiệu suất, hệ thống chỉ chạy mất 20% CPU và tốn vài KB mạng mỗi phút. So với các giải pháp thương mại hiện nay, giải pháp này có mấy điểm mạnh: sinh viên không cần cài đặt gì, dữ liệu hình ảnh được giữ kín hoàn toàn, và nhà trường tiết kiệm được chi phí máy chủ.
 
 ---
 
@@ -126,11 +126,11 @@ Hệ thống sử dụng cùng lúc 3 mô hình AI để theo dõi toàn diện:
 - **Giới hạn tầm nhìn & Thiếu phân tích âm thanh:** AI chỉ giám sát được trong góc quay hẹp của webcam. Chưa thể phát hiện các hành vi gian lận qua giọng nói (có người nhắc bài) hoặc dùng tài liệu ngoài khung hình.
 
 **2. Hướng phát triển tương lai:**
-- **Tối ưu hóa bằng WebGPU:** Chuyển đổi sang kiến trúc WebGPU để tận dụng sức mạnh card đồ họa, giảm tải triệt để cho CPU của sinh viên.
+- **Tối ưu hóa bằng WebGPU:** Chuyển đổi sang kiến trúc WebGPU để tận dụng sức mạnh card đồ họa, giảm tải đáng kể cho CPU của sinh viên.
 - **Bổ sung Module Giám sát Âm thanh:** Tích hợp AI phân tích tiếng ồn nền (Audio Analysis) để phát hiện giọng nói lạ trong quá trình thi.
 - **Tích hợp hệ sinh thái giáo dục:** Đóng gói hệ thống theo chuẩn LTI để nhúng trực tiếp vào các nền tảng LMS như Moodle của trường.
 
-> **🗣 Lời dẫn:** Dạ, đánh giá một cách khách quan thì hệ thống vẫn còn hai hạn chế lớn. Thứ nhất là bài toán phần cứng: vì AI xử lý trực tiếp tại máy sinh viên nên các laptop quá cũ sẽ dễ bị nóng máy. Thứ hai là hệ thống hiện tại mới chỉ "nhìn" chứ chưa biết "nghe", do đó có thể lọt lưới các trường hợp có người nhắc bài bên ngoài. Vì vậy, hướng phát triển sắp tới của đề tài là áp dụng WebGPU để tối ưu phần cứng triệt để hơn, và quan trọng nhất là tích hợp thêm AI phân tích âm thanh môi trường để tạo ra một hệ thống giám sát toàn diện 360 độ.
+> **🗣 Lời dẫn:** Dạ, đánh giá một cách khách quan thì hệ thống vẫn còn hai hạn chế lớn. Thứ nhất là bài toán phần cứng: vì AI xử lý trực tiếp tại máy sinh viên nên các laptop quá cũ sẽ dễ bị nóng máy. Thứ hai là hệ thống hiện tại mới chỉ "nhìn" chứ chưa biết "nghe", do đó có thể lọt lưới các trường hợp có người nhắc bài bên ngoài. Vì vậy, hướng phát triển sắp tới của đề tài là áp dụng WebGPU để tối ưu phần cứng hơn nữa, và tích hợp thêm AI phân tích âm thanh môi trường để giám sát được nhiều hơn.
 
 ---
 
@@ -158,4 +158,4 @@ Hệ thống sử dụng cùng lúc 3 mô hình AI để theo dõi toàn diện:
 
 ### Slide 16: Tối ưu Cửa sổ trượt (Sliding Window O(1))
 - **Câu hỏi:** *Thuật toán tổng hợp điểm hoạt động ra sao mà không nghẽn máy?*
-- **Trả lời:** Dùng cấu trúc Ring Buffer. Điểm mới = Điểm cũ + Mẫu mới vào - Mẫu cũ đẩy ra. Xóa bỏ hoàn toàn vòng lặp, giúp chạy siêu tốc.
+- **Trả lời:** Dùng cấu trúc Ring Buffer. Điểm mới = Điểm cũ + Mẫu mới vào - Mẫu cũ đẩy ra. Bỏ qua vòng lặp tính lại, giúp chạy rất nhanh.
