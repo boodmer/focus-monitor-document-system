@@ -83,7 +83,19 @@ Hệ thống sử dụng cùng lúc 3 mô hình AI để theo dõi toàn diện:
 
 ---
 
-## Slide 8: Kịch bản Thực nghiệm
+## Slide 8: Giao diện Quản trị & Giám sát (Admin Dashboard)
+*(Chèn hình: Hình 4.8. Giao diện trang quản trị dành cho giảng viên)*
+- **Bảng điều khiển tổng quan:** Hiển thị các chỉ số thống kê về mức độ tập trung trung bình và các cảnh báo vi phạm của lớp học.
+- **Giám sát trực tuyến:** Cập nhật trạng thái tập trung và cảnh báo của sinh viên theo thời gian thực.
+- **Kích hoạt thử thách (Liveness Challenge):** Cho phép giảng viên gửi yêu cầu thử thách thủ công đến một sinh viên cụ thể để kiểm tra xác thực.
+- **Cấu hình hệ thống:** Hỗ trợ tùy chỉnh các tham số giám sát (như ngưỡng EAR phát hiện nhắm mắt, tần suất thử thách) cho phù hợp với từng ca thi.
+- **Tra cứu lịch sử:** Quản lý danh sách sinh viên và xem lại kết quả, nhật ký cảnh báo của các phiên thi trước.
+
+> **🗣 Lời dẫn:** Bên cạnh phần mềm của sinh viên, hệ thống cung cấp một trang quản trị dành cho giảng viên. Tại đây, giảng viên có thể bao quát trạng thái chung của lớp học thông qua bảng thống kê tổng quan. Trong quá trình giám sát trực tuyến, nếu nhận thấy sinh viên có dấu hiệu khả nghi, giảng viên có thể chủ động gửi một yêu cầu xác thực (Liveness Challenge) đến máy của sinh viên đó. Hệ thống cũng cho phép giảng viên tùy chỉnh các thông số cảnh báo sao cho phù hợp với đặc thù của từng môn thi, đồng thời hỗ trợ xuất báo cáo chi tiết sau khi kết thúc giờ làm bài.
+
+---
+
+## Slide 9: Kịch bản Thực nghiệm
 - **Thiết bị:** Laptop sinh viên tiêu chuẩn (Core i5, 8GB RAM, Webcam 720p).
 - **4 Kịch bản mô phỏng:** 
   1. Tập trung làm bài.
@@ -96,7 +108,7 @@ Hệ thống sử dụng cùng lúc 3 mô hình AI để theo dõi toàn diện:
 
 ---
 
-## Slide 9: Hiệu năng & Ưu điểm vượt trội
+## Slide 10: Hiệu năng & Ưu điểm vượt trội
 - **Hiệu năng phần cứng:** Chỉ tiêu tốn 15-25% CPU, duy trì ~58 FPS.
 - **Siêu tiết kiệm mạng:** Băng thông chỉ **2-5 KB/phút**.
 - **So với phần mềm thương mại (ProctorU, Proctorio):**
@@ -108,7 +120,7 @@ Hệ thống sử dụng cùng lúc 3 mô hình AI để theo dõi toàn diện:
 
 ---
 
-## Slide 10: Hạn chế & Hướng phát triển
+## Slide 11: Hạn chế & Hướng phát triển
 **1. Hạn chế còn tồn tại:**
 - **Phụ thuộc phần cứng cá nhân (Client Hardware):** Do toàn bộ mô hình AI chạy trực tiếp trên trình duyệt, các thiết bị máy tính đời quá cũ có thể không duy trì được hiệu năng tối ưu, dễ gây nóng máy.
 - **Giới hạn tầm nhìn & Thiếu phân tích âm thanh:** AI chỉ giám sát được trong góc quay hẹp của webcam. Chưa thể phát hiện các hành vi gian lận qua giọng nói (có người nhắc bài) hoặc dùng tài liệu ngoài khung hình.
@@ -122,7 +134,7 @@ Hệ thống sử dụng cùng lúc 3 mô hình AI để theo dõi toàn diện:
 
 ---
 
-## Slide 11: Lời cảm ơn
+## Slide 12: Lời cảm ơn
 **XIN TRÂN TRỌNG CẢM ƠN QUÝ THẦY CÔ ĐÃ LẮNG NGHE!**
 
 > **🗣 Lời dẫn:** Phần trình bày của em đến đây là kết thúc. Em xin chân thành cảm ơn TS. Phạm Huy Thông đã tận tình hướng dẫn. Em rất mong nhận được những nhận xét quý báu từ quý thầy cô. Xin trân trọng cảm ơn!
@@ -132,18 +144,18 @@ Hệ thống sử dụng cùng lúc 3 mô hình AI để theo dõi toàn diện:
 
 ## 🛑 PHẦN BACKUP SLIDES (CHỈ MỞ KHI HỘI ĐỒNG HỎI ĐẾN)
 
-### Slide 12: Nguyên lý hoạt động của Mạng CNN
+### Slide 13: Nguyên lý hoạt động của Mạng CNN
 - **Câu hỏi:** *Mạng CNN phân tích cảm xúc thế nào?*
 - **Trả lời:** Dùng Lớp Tích chập quét nếp nhăn, góc môi -> Lớp Gộp giảm nhiễu -> Lớp kết nối phân loại 7 cảm xúc.
 
-### Slide 13: Phương pháp Đối chiếu Danh tính (FaceNet)
+### Slide 14: Phương pháp Đối chiếu Danh tính (FaceNet)
 - **Câu hỏi:** *Làm sao biết sinh viên là ai?*
 - **Trả lời:** FaceNet chuyển mặt thành 1 tọa độ trong không gian 256 chiều. Đo khoảng cách Euclidean giữa ảnh thực tế và ảnh hồ sơ.
 
-### Slide 14: Công thức Khẩu độ mắt (EAR)
+### Slide 15: Công thức Khẩu độ mắt (EAR)
 - **Câu hỏi:** *Thuật toán đo nhắm/mở mắt?*
 - **Trả lời:** Dùng 6 điểm mốc mắt tính tỷ lệ. Áp dụng "Adaptive Calibration" đo thói quen 30s đầu để loại trừ sai số cho người mắt nhỏ.
 
-### Slide 15: Tối ưu Cửa sổ trượt (Sliding Window O(1))
+### Slide 16: Tối ưu Cửa sổ trượt (Sliding Window O(1))
 - **Câu hỏi:** *Thuật toán tổng hợp điểm hoạt động ra sao mà không nghẽn máy?*
 - **Trả lời:** Dùng cấu trúc Ring Buffer. Điểm mới = Điểm cũ + Mẫu mới vào - Mẫu cũ đẩy ra. Xóa bỏ hoàn toàn vòng lặp, giúp chạy siêu tốc.

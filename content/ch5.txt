@@ -1,61 +1,62 @@
 CH5_TITLE|KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
 CH5_H2|Kết luận
-Trải qua thời gian nghiên cứu và thực hiện, em đã triển khai thành công hệ thống giám sát mức độ tập trung của sinh viên dựa trên việc phân tích hành vi khuôn mặt và cảm xúc. Đồ án đã đáp ứng đầy đủ các mục tiêu và yêu cầu kỹ thuật được đặt ra ban đầu. Những kết quả chính mà em đã đạt được bao gồm:
+Trải qua thời gian nghiên cứu và thực hiện, tác giả đã triển khai thành công hệ thống giám sát mức độ tập trung của sinh viên dựa trên việc phân tích hành vi khuôn mặt và cảm xúc. Đồ án đã đáp ứng đầy đủ các mục tiêu và yêu cầu kỹ thuật được đặt ra ban đầu. Những kết quả chính mà đề tài đã đạt được bao gồm:
 
-1. Đưa AI xuống chạy trực tiếp trên trình duyệt (Edge AI): Giúp mô hình nhận diện khuôn mặt hoạt động mượt mà theo thời gian thực ngay trên máy tính sinh viên mà không cần cài thêm phần mềm.
-2. Xây dựng thuật toán tính Điểm tập trung (Focus Score): Kết hợp nhịp chớp mắt (EAR), góc quay đầu (Head Pose) và biểu cảm khuôn mặt cùng kỹ thuật Cửa sổ trượt (Sliding Window) để cho ra kết quả ổn định, hạn chế trừ điểm oan do các phản xạ tự nhiên.
-3. Ứng dụng kiến trúc lai (Hybrid Client-Server): Việc đẩy phần tính toán hình ảnh nặng nề xuống máy sinh viên giúp máy chủ không bị quá tải mạng, tiết kiệm chi phí vận hành và bảo mật hoàn toàn hình ảnh riêng tư của người dùng.
-4. Xây dựng cơ chế chống gian lận (Anti-Spoofing): Kết hợp đối chiếu khuôn mặt liên tục và các bài kiểm tra phản xạ ngẫu nhiên (Liveness Challenge) nhằm ngăn chặn tình trạng nhờ người thi hộ hoặc dùng ảnh/video giả mạo.
+1. Đưa AI xuống chạy trực tiếp trên trình duyệt: Giúp mô hình nhận diện khuôn mặt hoạt động mượt mà theo thời gian thực ngay trên máy tính sinh viên mà không cần cài thêm phần mềm.
+2. Xây dựng thuật toán tính Điểm tập trung: Kết hợp nhịp chớp mắt (EAR), góc quay đầu và biểu cảm khuôn mặt cùng kỹ thuật Cửa sổ trượt để cho ra kết quả ổn định, hạn chế trừ điểm oan do các phản xạ tự nhiên.
+3. Ứng dụng kiến trúc kết hợp: Việc đẩy phần tính toán hình ảnh nặng nề xuống thiết bị đầu cuối giúp máy chủ không bị quá tải mạng, tiết kiệm chi phí vận hành và bảo mật hoàn toàn hình ảnh riêng tư của người dùng.
+4. Xây dựng cơ chế chống gian lận: Kết hợp đối chiếu khuôn mặt liên tục và các bài kiểm tra phản xạ ngẫu nhiên nhằm ngăn chặn tình trạng nhờ người thi hộ hoặc dùng ảnh, video giả mạo.
 5. Giao diện thân thiện, dễ sử dụng: Hệ thống có hỗ trợ song ngữ (Anh/Việt) và hiển thị biểu đồ trực quan, giúp cả giảng viên lẫn sinh viên dễ dàng làm quen và sử dụng.
 
 Bảng dưới đây đối chiếu cụ thể từng mục tiêu nghiên cứu đặt ra tại Chương 1 với kết quả đạt được:
 
 | STT | Mục tiêu nghiên cứu (Chương 1) | Kết quả đạt được | Chương trình bày |
-| 1 | Xây dựng quy trình xử lý AI trên trình duyệt | MediaPipe Face Mesh + face-api.js chạy qua WebAssembly, đạt 58.2 FPS trung bình trên phần cứng phổ thông | Chương 2 (mục 2.3, 2.5), Chương 3 (mục 3.3), Chương 4 (mục 4.3) |
-| 2 | Thiết kế thuật toán định lượng hành vi (EAR, Head Pose) | Chỉ số EAR đạt 94.2% độ chính xác (benchmark CEW), hướng đầu phân loại 5 trạng thái với độ phức tạp O(1) | Chương 2 (mục 2.4), Chương 3 (mục 3.4), Chương 4 (mục 4.2) |
-| 3 | Nhận diện cảm xúc bằng mạng CNN | Phân loại 7 trạng thái cảm xúc, trạng thái Neutral đạt 92.4% (benchmark FER-2013) | Chương 2 (mục 2.4.4), Chương 4 (mục 4.2) |
-| 4 | Tối ưu thuật toán Focus Score với độ phức tạp O(1) | Sliding Window với Ring Buffer (Float64Array), xử lý cửa sổ 5 phút (18.000 mẫu) không tích lũy độ trễ | Chương 3 (mục 3.4), Chương 4 (mục 4.3) |
-| 5 | Xây dựng cơ chế chống gian lận đa lớp | HMAC SHA-256 bảo vệ toàn vẹn gói tin + Liveness Challenge ngẫu nhiên + Xác thực danh tính liên tục (ResNet-34, 99.38% trên LFW) | Chương 3 (mục 3.3.2), Chương 4 (mục 4.4) |
+| 1 | Xây dựng quy trình xử lý AI trên trình duyệt | MediaPipe Face Mesh và face-api.js chạy qua WebAssembly, đạt 58.2 FPS trung bình trên phần cứng phổ thông | Chương 2 (mục 2.3, 2.5), Chương 3 (mục 3.3), Chương 4 (mục 4.3) |
+| 2 | Thiết kế thuật toán định lượng hành vi | Chỉ số EAR đạt 94.2% độ chính xác, hướng đầu phân loại 5 trạng thái với độ phức tạp O(1) | Chương 2 (mục 2.4), Chương 3 (mục 3.4), Chương 4 (mục 4.2) |
+| 3 | Nhận diện cảm xúc bằng mạng CNN | Phân loại 7 trạng thái cảm xúc, trạng thái bình thường đạt 92.4% độ chính xác | Chương 2 (mục 2.4.4), Chương 4 (mục 4.2) |
+| 4 | Tối ưu thuật toán tính Điểm tập trung | Áp dụng Cửa sổ trượt với bộ đệm vòng, xử lý khung thời gian 5 phút (18.000 mẫu) không tích lũy độ trễ | Chương 3 (mục 3.4), Chương 4 (mục 4.3) |
+| 5 | Xây dựng cơ chế chống gian lận đa lớp | Bảo vệ toàn vẹn gói tin bằng HMAC SHA-256, kiểm tra Liveness ngẫu nhiên và xác thực khuôn mặt liên tục (mạng ResNet-34) | Chương 3 (mục 3.3.2), Chương 4 (mục 4.4) |
 
 CH5_H2|Hạn chế
 Mặc dù đã nỗ lực hết sức để hoàn thiện hệ thống, quá trình nghiên cứu và phát triển vẫn tồn tại một số điểm hạn chế nhất định:
 
 - Phụ thuộc vào ánh sáng và thiết bị: Hệ thống có thể nhận diện kém chính xác hoặc tính điểm sai nếu sinh viên ngồi học ở nơi quá tối, bị ngược sáng, hoặc sử dụng webcam đời cũ có độ phân giải thấp.
-- Hạn chế của mô hình AI có sẵn: Do sử dụng các mô hình AI được huấn luyện sẵn trên dữ liệu chung, hệ thống đôi khi nhận diện chưa tốt với một số sinh viên có nét mặt đặc thù hoặc đeo kính gọng quá dày che khuất phần mắt.
-- Mới chỉ đánh giá qua khuôn mặt: Hiện tại, hệ thống chỉ dựa vào hình ảnh camera để chấm điểm. Trong thực tế, sự tập trung của sinh viên còn thể hiện qua nhiều hành động khác như nhịp độ gõ phím, thao tác rê chuột hay âm thanh xung quanh.
-- Nguy cơ gian lận bằng phần mềm (Camera ảo và Deepfake): Dù cơ chế Liveness Challenge có thể chống lại việc dùng ảnh tĩnh hay phát lại video quay sẵn một cách hiệu quả, hệ thống hiện tại vẫn gặp khó khăn nếu sinh viên tinh vi sử dụng công nghệ hoán đổi khuôn mặt theo thời gian thực (Real-time Face Swap / Deepfake) kết hợp với Camera ảo để đánh lừa cả AI lẫn người giám sát.
-- Đánh giá sai do thói quen cá nhân: Mỗi người có một cách tập trung khác nhau (ví dụ: có sinh viên thói quen nhìn ra ngoài cửa sổ hoặc ngước lên trần nhà để suy nghĩ). Việc AI mặc định "phải nhìn thẳng vào màn hình mới là tập trung" có thể trừ điểm oan những trường hợp này, do đó vẫn cần sự đánh giá linh hoạt từ phía giảng viên.
+- Hạn chế của mô hình AI có sẵn: Do sử dụng các mô hình AI được huấn luyện sẵn trên tập dữ liệu chung, hệ thống đôi khi nhận diện chưa tốt với một số sinh viên có nét mặt đặc thù hoặc đeo kính gọng quá dày che khuất phần mắt.
+- Giới hạn trong phương pháp đánh giá: Hiện tại, hệ thống chỉ dựa vào hình ảnh camera để chấm điểm. Trong thực tế, sự tập trung của sinh viên còn thể hiện qua nhiều hành vi khác như nhịp độ gõ phím, thao tác rê chuột hay âm thanh môi trường xung quanh.
+- Nguy cơ gian lận bằng Deepfake: Dù cơ chế Liveness Challenge có thể chống lại việc dùng ảnh tĩnh hay phát lại video quay sẵn một cách hiệu quả, hệ thống hiện tại vẫn gặp khó khăn nếu người dùng tinh vi sử dụng công nghệ hoán đổi khuôn mặt Deepfake theo thời gian thực kết hợp với Camera ảo để đánh lừa thuật toán.
+- Đánh giá sai do thói quen cá nhân: Mỗi người có một cách tập trung khác nhau (ví dụ: có sinh viên giữ thói quen nhìn ra ngoài cửa sổ hoặc ngước lên trần nhà để suy nghĩ). Việc mặc định "phải nhìn thẳng vào màn hình mới là tập trung" có thể dẫn đến việc trừ điểm oan những trường hợp này, do đó vẫn cần sự đánh giá linh hoạt từ phía giảng viên thông qua biểu đồ.
+
 CH5_H2|Giá trị ứng dụng thực tế
-Sản phẩm của đồ án mang lại những giá trị thực tiễn rất lớn, không chỉ giới hạn trong môi trường giáo dục:
-- Đối với nhà trường: Hệ thống cung cấp một công cụ đắc lực để duy trì kỷ luật và sự trung thực trong quá trình học và thi trực tuyến, góp phần nâng cao uy tín của các chương trình đào tạo từ xa. Hệ thống cũng giúp tự động hóa quá trình giám thị, giảm bớt gánh nặng về nhân sự và chi phí cho nhà trường.
+Sản phẩm của đồ án mang lại những giá trị thực tiễn lớn, không chỉ giới hạn trong môi trường giáo dục:
+- Đối với nhà trường: Hệ thống cung cấp một công cụ đắc lực để duy trì kỷ luật và sự trung thực trong quá trình học và thi trực tuyến, góp phần nâng cao uy tín của các chương trình đào tạo từ xa. Hệ thống cũng giúp tự động hóa quá trình giám thị, giảm bớt gánh nặng về nhân sự và chi phí hạ tầng máy chủ cho nhà trường.
 - Đối với bản thân sinh viên: Ứng dụng tạo ra một môi trường học tập công bằng. Bên cạnh đó, hệ thống còn đóng vai trò như một trợ lý học tập cá nhân, đưa ra các cảnh báo nhắc nhở khi sinh viên có dấu hiệu mệt mỏi hay mất tập trung, từ đó giúp cải thiện hiệu suất học tập và làm bài.
-- Đối với cộng đồng và giáo dục: Việc ứng dụng công nghệ AI trực tiếp trên trình duyệt góp phần cung cấp thêm giải pháp kỹ thuật hữu ích cho các nền tảng học tập trực tuyến, giúp nâng cao chất lượng đào tạo và tạo cơ hội tiếp cận tri thức công bằng hơn cho mọi đối tượng học viên.
+- Đối với cộng đồng công nghệ giáo dục: Việc ứng dụng trí tuệ nhân tạo trực tiếp trên trình duyệt góp phần cung cấp thêm định hướng kỹ thuật hữu ích cho các nền tảng học trực tuyến, giúp giải quyết bài toán khó về cân bằng giữa tính năng giám sát thông minh và yêu cầu bảo vệ quyền riêng tư cá nhân.
 
 CH5_H2|Hướng phát triển trong tương lai
-Từ những hạn chế đã nhìn nhận, em đề xuất các hướng phát triển chuyên sâu cho hệ thống trong tương lai như sau:
-1. Nén mô hình AI (Quantization): Tiếp tục tối ưu và nén các mô hình Deep Learning xuống định dạng nhỏ hơn (8-bit hoặc 4-bit) giúp tải trang web nhanh hơn, đặc biệt khi sinh viên dùng mạng 3G/4G yếu.
-2. Tận dụng card đồ họa (WebGPU): Chuyển đổi công nghệ cốt lõi sang chuẩn WebGPU mới nhất để khai thác trực tiếp sức mạnh card đồ họa rời của máy tính, từ đó có thể chạy các mô hình AI phức tạp hơn mà không làm đơ máy.
-3. Phân tích kết hợp nhiều hành vi (Multimodal): Mở rộng theo dõi thêm thao tác gõ phím, rê chuột hoặc âm thanh môi trường để đưa ra điểm số tập trung chính xác hơn, thay vì chỉ phụ thuộc vào camera.
-4. Đóng gói theo chuẩn giáo dục quốc tế (LTI): Biến hệ thống thành một tiện ích mở rộng chuẩn hóa, cho phép các trường đại học dễ dàng "lắp ghép" trực tiếp vào các nền tảng học trực tuyến lớn (như Moodle, Canvas) chỉ với vài thao tác.
-5. Đo nhịp tim không chạm (công nghệ rPPG): Ứng dụng AI phân tích những thay đổi siêu nhỏ về màu sắc trên da mặt qua camera để đo nhịp tim sinh viên. Điều này không chỉ giúp đánh giá sự tập trung mà còn phát hiện được mức độ căng thẳng (stress) của sinh viên trong quá trình làm bài.
+Từ những hạn chế đã nhìn nhận, đề tài đề xuất các hướng phát triển chuyên sâu cho hệ thống trong tương lai như sau:
+1. Lượng tử hóa mô hình AI: Tiếp tục tối ưu và nén các mô hình Deep Learning xuống định dạng trọng số nhỏ hơn (kỹ thuật lượng tử hóa 8-bit hoặc 4-bit) giúp tải trang web nhanh hơn, đặc biệt khi sinh viên sử dụng mạng có băng thông thấp.
+2. Ứng dụng WebGPU: Chuyển đổi công nghệ tính toán cốt lõi sang chuẩn WebGPU mới nhất nhằm khai thác trực tiếp sức mạnh phần cứng của card đồ họa rời trên máy tính cá nhân, từ đó hỗ trợ thực thi các mạng nơ-ron phức tạp hơn.
+3. Phân tích đa phương thức: Mở rộng khả năng theo dõi kết hợp với thao tác bàn phím, con trỏ chuột và phân tích âm thanh môi trường để tổng hợp ra một điểm số tập trung chính xác và toàn diện hơn, thay vì chỉ phụ thuộc vào thị giác máy tính.
+4. Tích hợp chuẩn LTI: Đóng gói hệ thống thành một tiện ích mở rộng tuân thủ tiêu chuẩn LTI quốc tế, cho phép các trường đại học dễ dàng nhúng hệ thống giám sát này trực tiếp vào các nền tảng quản lý học tập phổ biến (như Moodle, Canvas) một cách liền mạch.
+5. Đo nhịp tim không chạm (rPPG): Ứng dụng AI phân tích những thay đổi siêu nhỏ về sắc tố trên bề mặt da mặt qua camera để ước lượng nhịp tim sinh viên. Kỹ thuật nâng cao này không chỉ giúp đánh giá sinh lý sự tập trung mà còn phát hiện được mức độ căng thẳng bất thường trong quá trình làm bài thi.
 
 CH5_H2|Thảo luận về khía cạnh đạo đức
-Việc ứng dụng trí tuệ nhân tạo vào giám sát giáo dục luôn song hành với những thách thức về mặt đạo đức. Theo Coghlan và cộng sự (2021) [18], các công nghệ giám sát thi cử trực tuyến (online proctoring) tuy đảm bảo tính minh bạch nhưng lại tiềm ẩn nguy cơ xâm phạm quyền riêng tư và gây áp lực tâm lý nặng nề cho người học do cảm giác "bị theo dõi liên tục" (over-surveillance). 
+Việc ứng dụng trí tuệ nhân tạo vào giám sát giáo dục luôn song hành với những thách thức về mặt đạo đức. Theo Coghlan và cộng sự (2021) [18], các công nghệ giám sát thi cử trực tuyến tuy đảm bảo tính minh bạch nhưng lại tiềm ẩn nguy cơ xâm phạm quyền riêng tư và gây áp lực tâm lý nặng nề cho người học do cảm giác bị theo dõi liên tục. 
 
-Nhận thức được vấn đề này, đề tài đã chủ động tích hợp các nguyên tắc đạo đức (Ethics by Design) ngay từ khâu thiết kế hệ thống, cụ thể:
-- Đề cao quyền riêng tư (Privacy-first): Bằng cách áp dụng mô hình Edge AI, toàn bộ dữ liệu hình ảnh (luồng video từ webcam) chỉ được xử lý cục bộ trên thiết bị của sinh viên và bị tiêu hủy ngay lập tức, hoàn toàn không được truyền tải hay lưu trữ trên máy chủ.
-- Tính minh bạch (Transparency): Sinh viên luôn được quyền biết họ đang bị giám sát như thế nào. Giao diện hệ thống hiển thị rõ ràng luồng camera và điểm số tập trung theo thời gian thực, giúp sinh viên làm chủ được trạng thái của mình thay vì bị đánh giá ngầm.
-- Hỗ trợ thay vì trừng phạt (Support over Punishment): Hệ thống được định vị như một công cụ hỗ trợ học tập (nhắc nhở khi xao nhãng) thay vì công cụ định kiến. Sự tích cực này được minh chứng qua kết quả khảo sát, với 87% sinh viên đánh giá hệ thống mang lại cảm giác thân thiện như một "trợ lý ảo".
+Nhận thức được vấn đề này, tác giả đã chủ động tích hợp các nguyên tắc đạo đức ngay từ khâu thiết kế kiến trúc hệ thống, cụ thể:
+- Đề cao quyền riêng tư: Bằng cách áp dụng mô hình Edge AI, toàn bộ dữ liệu hình ảnh từ webcam chỉ được phân tích cục bộ trên RAM của thiết bị người dùng và bị tiêu hủy ngay lập tức, hoàn toàn không được truyền tải hay lưu trữ dưới mọi hình thức.
+- Tính minh bạch: Sinh viên luôn được quyền biết bản thân đang bị AI đánh giá như thế nào. Giao diện hệ thống hiển thị rõ ràng luồng camera và điểm số tập trung theo thời gian thực, giúp sinh viên làm chủ được trạng thái của mình thay vì bị đánh giá ngầm.
+- Định vị tính năng hỗ trợ: Hệ thống được thiết kế hướng tới vai trò một công cụ hỗ trợ nhắc nhở học tập tích cực thay vì công cụ định kiến mang tính trừng phạt. Phương pháp thiết kế viền đỏ nhấp nháy thân thiện nhằm mục đích khơi gợi sự tự giác của sinh viên.
 
-Tuy nhiên, nghiên cứu cũng thẳng thắn nhìn nhận những giới hạn chưa thể giải quyết triệt để:
-- Lưu trữ dữ liệu nhạy cảm: Dù không lưu hình ảnh, hệ thống vẫn phải lưu trữ vector nhúng khuôn mặt (256 chiều) của sinh viên trên cơ sở dữ liệu để phục vụ việc xác thực. Đây vẫn là một dạng dữ liệu sinh trắc học cá nhân cần được bảo mật nghiêm ngặt.
-- Nguy cơ thiên kiến của AI (AI Bias): Việc đánh giá dựa trên các tiêu chuẩn hành vi chung có thể gây ra sự bất bình đẳng. Những sinh viên có đặc điểm khuôn mặt khác biệt, khiếm khuyết vật lý, hoặc có thói quen tư duy đặc thù (ví dụ: nhắm mắt hoặc nhìn bâng quơ khi suy nghĩ) có thể bị hệ thống đánh giá sai lệch, dẫn đến điểm tập trung thấp một cách oan uổng.
-- Lạm dụng công cụ: Ranh giới giữa "giám sát để hỗ trợ" và "giám sát để kiểm soát" là rất mong manh. Điều này phụ thuộc hoàn toàn vào cách các cơ sở giáo dục áp dụng hệ thống trong thực tế, nằm ngoài khả năng kiểm soát kỹ thuật của đề tài.
+Tuy nhiên, nghiên cứu cũng thẳng thắn nhìn nhận những ranh giới chưa thể giải quyết triệt để:
+- Lưu trữ dữ liệu nhạy cảm: Dù không lưu hình ảnh, hệ thống vẫn phải lưu trữ vector nhúng khuôn mặt (256 chiều) của sinh viên trên cơ sở dữ liệu máy chủ để phục vụ việc xác thực chéo. Đây là một dạng dữ liệu sinh trắc học cá nhân cần được quản trị và bảo mật cực kỳ nghiêm ngặt.
+- Nguy cơ thiên kiến của AI: Việc đánh giá tự động dựa trên các tiêu chuẩn hành vi hình học chung có thể gây ra sự bất bình đẳng. Những sinh viên có khiếm khuyết vật lý ở vùng mắt, cấu trúc khuôn mặt khác biệt, hoặc có thói quen tư duy không truyền thống có thể bị hệ thống đánh giá sai lệch, dẫn đến điểm số bị hạ thấp.
+- Khả năng lạm dụng công cụ: Ranh giới giữa "giám sát để hỗ trợ" và "giám sát để kiểm soát cực đoan" phụ thuộc hoàn toàn vào cách các cơ sở giáo dục áp dụng hệ thống vào thực tế quy chế thi, nằm ngoài phạm vi kiểm soát kỹ thuật của đồ án.
 
-Do đó, để hệ thống có thể được triển khai một cách có trách nhiệm và nhân văn, cần thiết phải có một khung chính sách đi kèm:
-1. Quyền được thông báo (Informed Consent): Sinh viên cần được thông báo rõ ràng về các loại dữ liệu hệ thống sẽ thu thập và cách thức AI đánh giá trước khi bắt đầu sử dụng.
-2. Có sự can thiệp của con người (Human-in-the-loop) và cơ chế khiếu nại: Luôn cần có sự đánh giá cuối cùng từ giảng viên đối với các trường hợp bị AI cảnh báo, đồng thời cho phép sinh viên giải trình các hành vi bị đánh dấu sai.
-3. Tối thiểu hóa dữ liệu (Data Minimization): Có chính sách tự động xóa bỏ hoàn toàn dữ liệu sinh trắc học (vector khuôn mặt) và lịch sử đánh giá ngay sau khi học kỳ hoặc môn học kết thúc.
+Do đó, để hệ thống có thể được triển khai một cách có trách nhiệm và nhân văn, đề tài đề xuất các cơ sở giáo dục cần thiết lập một khung chính sách đi kèm:
+1. Quyền được thông báo: Sinh viên phải được cung cấp tài liệu giải thích rõ ràng về cơ chế hoạt động của thuật toán và các loại dữ liệu hệ thống sẽ thu thập trước khi đồng ý sử dụng.
+2. Có sự can thiệp của con người và cơ chế khiếu nại: Luôn cần có sự đánh giá cuối cùng từ giảng viên đối với các trường hợp bị hệ thống tự động cảnh báo gian lận, đồng thời cho phép sinh viên giải trình các hành vi bị AI đánh dấu sai lệch.
+3. Tối thiểu hóa dữ liệu: Thiết lập chính sách tự động xóa bỏ hoàn toàn dữ liệu sinh trắc học và lịch sử đánh giá của sinh viên ngay sau khi học kỳ hoặc môn học kết thúc.
 
 CH5_TITLE|TÀI LIỆU THAM KHẢO
 Tiếng Việt
